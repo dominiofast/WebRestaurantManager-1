@@ -1,0 +1,80 @@
+**Prompt para Replit: Criação de Estrutura e Módulos Iniciais para Aplicativo Web de Gestão de Restaurantes (Estilo Saipos)**
+
+**Objetivo Principal do Projeto:**
+Desenvolver a estrutura fundamental e os módulos iniciais de um aplicativo web completo para gestão de restaurantes, inspirado nas funcionalidades e no estilo profissional do `httpsaipos.com/`. O aplicativo deve ser moderno, eficiente e focado em ajudar restaurantes a otimizar suas operações e vendas. Este prompt visa gerar o **ponto de partida** do projeto.
+
+**Inspiração de Funcionalidades (Módulos Essenciais para Início – Versão Simplificada):**
+
+1.  **Autenticação de Usuários:**
+    * Cadastro e login para proprietários/gerentes de restaurantes.
+    * (Opcional inicial) Níveis de acesso simples (ex: Admin).
+
+2.  **Gestão de Cardápio Digital:**
+    * CRUD (Criar, Ler, Atualizar, Deletar) para categorias de itens.
+    * CRUD para itens do cardápio (nome, descrição, preço, categoria, foto opcional).
+    * Interface visual para exibir o cardápio de forma moderna e clara.
+
+3.  **Gestão de Pedidos (Simplificado):**
+    * Interface para registrar novos pedidos (manualmente no sistema, inicialmente).
+    * Campos: itens do pedido, quantidades, mesa (se aplicável), observações, valor total.
+    * Visualização de pedidos em andamento e finalizados (status simples: "Recebido", "Em Preparo", "Pronto", "Entregue/Finalizado").
+
+4.  **Dashboard Principal (Estrutura Inicial):**
+    * Layout para um painel de controle que futuramente exibirá informações chave (ex: total de vendas do dia, pedidos recentes). Inicialmente, pode conter placeholders.
+
+**Estilo Visual e Paleta de Cores (Aplicar em toda a interface do app):**
+
+* **Estilo Geral:** Moderno, limpo, profissional e intuitivo, similar à organização e clareza do Saipos. Interface focada na usabilidade para um ambiente de restaurante (potencialmente rápido).
+* **Paleta de Cores (ESTRITAMENTE A DEFINIDA ANTERIORMENTE):**
+    1.  **Cor Primária Principal (para estrutura, navegação, fundos importantes):**
+        * **Azul Marinho (Navy Blue):** Utilize um tom consistente (ex: `#001f3f`). Aplicar em barras de navegação principais, sidebars, cabeçalhos de modais, rodapés de dashboards, e como cor de destaque para informações importantes que não sejam CTAs.
+    2.  **Cores de Destaque Quentes (para CTAs primários, confirmações, elementos de ação importantes):**
+        * **Opções (ESCOLHA UMA ou DUAS de forma consistente para os CTAs principais):**
+            * **Coral Vibrante** (ex: `#FF7F50` ou `#FF6F61`)
+            * **Amarelo Mostarda Vibrante** (ex: `#FFDB58`)
+            * **Laranja Mais Suave** (ex: `#FFA07A`)
+        * **Aplicação:** Botões de "Salvar", "Adicionar Novo Item", "Finalizar Pedido", "Confirmar", ícones de ação importantes.
+    3.  **Cores Neutras Essenciais (para fundos de conteúdo, texto, tabelas, cards):**
+        * **Branco:** `#FFFFFF` (Principal para áreas de conteúdo, fundos de tabelas, cards).
+        * **Cinzas Claros e Médios:** (Ex: `#F0F2F5` para fundos sutis, `#DEE2E6` para bordas, `#6c757d` para texto secundário, `#212529` ou `#343A40` para corpo de texto principal).
+        * **Aplicação:** Garantir alta legibilidade para tabelas de dados, formulários e longos textos. O contraste é crucial.
+
+**Sugestão de Stack Tecnológico (Flexível, mas comum no Replit para apps web):**
+
+* **Frontend:** React.js (com Vite) ou Next.js para uma SPA moderna e responsiva. Considerar uma biblioteca de componentes UI como Material-UI, Chakra UI, ou Tailwind CSS para agilizar o desenvolvimento e garantir consistência visual com a paleta definida.
+* **Backend:** Node.js com Express.js (JavaScript/TypeScript) OU Python com Flask/Django. Escolher o que for mais produtivo para o desenvolvimento rápido de APIs RESTful.
+* **Banco de Dados:** PostgreSQL ou MongoDB (configurável via Replit secrets ou um serviço de DBaaS).
+* **Observação para a IA:** Priorizar uma estrutura que seja modular e escalável.
+
+**Estrutura de Arquivos e Código Esperado (Exemplo):**
+
+* **Diretório Raiz:**
+    * `frontend/` (ou `client/`)
+        * `src/`
+            * `components/` (componentes reutilizáveis: botões, inputs, cards, modais – estilizados com a paleta)
+            * `pages/` (ou `views/` - para cada módulo principal: Dashboard, MenuPage, OrdersPage, LoginPage)
+            * `contexts/` (para gerenciamento de estado, ex: AuthContext)
+            * `services/` (para chamadas de API)
+            * `App.js`, `index.js`, `Router.js`
+            * `assets/` (imagens, ícones – se necessário, com cores da paleta)
+    * `backend/` (ou `server/`)
+        * `controllers/` (ou `handlers/` - lógica para cada rota)
+        * `models/` (definição dos schemas do banco de dados, ex: User, MenuItem, Order)
+        * `routes/` (definição das rotas da API)
+        * `middleware/` (ex: para autenticação)
+        * `config/` (conexão com DB, variáveis de ambiente)
+        * `server.js` (ou `app.js`)
+    * `README.md` (com instruções básicas de como rodar o projeto)
+    * `.env.example` (para variáveis de ambiente)
+    * `package.json` (ou `requirements.txt` para Python)
+
+**Detalhes Adicionais para a IA:**
+
+* **Responsividade:** O design da interface deve ser pensado para ser responsivo (desktop, tablets).
+* **Componentização:** No frontend, criar componentes reutilizáveis para elementos de UI (botões, inputs, tabelas, cards) já estilizados conforme a paleta.
+* **APIs:** Definir rotas básicas de API RESTful para as operações CRUD dos módulos de Cardápio e Pedidos.
+* **Foco no MVP:** Concentrar em ter os fluxos básicos dos módulos essenciais funcionando com a interface estilizada. Funcionalidades avançadas do Saipos (financeiro complexo, estoque detalhado, integrações com delivery) são para futuras iterações.
+* **Legibilidade do Código:** Gerar código bem comentado e organizado.
+
+**Resultado Esperado:**
+Um projeto Replit inicializado com a estrutura de arquivos sugerida, contendo o código boilerplate para os módulos de Autenticação, Gestão de Cardápio e Gestão de Pedidos (simplificados), com a interface do usuário aplicando consistentemente a paleta "Azul Marinho + Toques Quentes". O projeto deve ser executável, permitindo visualizar as páginas e interações básicas.
