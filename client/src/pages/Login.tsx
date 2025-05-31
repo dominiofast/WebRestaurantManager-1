@@ -112,19 +112,19 @@ export default function Login() {
       </div>
 
       {/* Right Side - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-50">
-        <div className="w-full max-w-md">
-          <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
-            <CardHeader className="text-center pb-8">
-              <div className="w-16 h-16 bg-gradient-to-br from-coral to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg animate-pulse-glow">
-                <ChefHat className="w-8 h-8 text-white" />
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 bg-gray-50">
+        <div className="w-full max-w-sm">
+          <Card className="shadow-2xl border-0 bg-white">
+            <CardHeader className="text-center pb-6">
+              <div className="w-14 h-14 bg-gradient-to-br from-coral to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                <ChefHat className="w-7 h-7 text-white" />
               </div>
-              <CardTitle className="text-3xl font-bold text-navy mb-2">Fazer Login</CardTitle>
-              <p className="text-gray-600">Acesse sua conta para gerenciar seu restaurante</p>
+              <CardTitle className="text-2xl font-bold text-navy mb-2">Fazer Login</CardTitle>
+              <p className="text-gray-600 text-sm">Acesse sua conta para gerenciar seu restaurante</p>
             </CardHeader>
 
-            <CardContent className="space-y-6">
-              <form onSubmit={handleSubmit} className="space-y-6">
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-navy font-semibold">E-mail</Label>
                   <div className="relative group">

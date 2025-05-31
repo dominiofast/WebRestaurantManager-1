@@ -93,19 +93,19 @@ export default function Register() {
       </div>
 
       {/* Right Side - Registration Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-50">
-        <div className="w-full max-w-md">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 bg-gray-50">
+        <div className="w-full max-w-sm">
           <Card className="shadow-2xl border-0 bg-white">
-            <CardHeader className="text-center pb-8">
-              <div className="w-16 h-16 bg-gradient-to-br from-coral to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <ChefHat className="w-8 h-8 text-white" />
+            <CardHeader className="text-center pb-6">
+              <div className="w-14 h-14 bg-gradient-to-br from-coral to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                <ChefHat className="w-7 h-7 text-white" />
               </div>
-              <CardTitle className="text-3xl font-bold text-navy">Cadastre seu Restaurante</CardTitle>
-              <p className="text-gray-700 mt-2 font-medium">Comece a modernizar sua gestão hoje</p>
+              <CardTitle className="text-2xl font-bold text-navy">Cadastre seu Restaurante</CardTitle>
+              <p className="text-gray-700 mt-1 text-sm font-medium">Comece a modernizar sua gestão hoje</p>
             </CardHeader>
 
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="restaurantName" className="text-gray-800 font-bold text-sm">Nome do Restaurante</Label>
                   <div className="relative">
@@ -117,7 +117,7 @@ export default function Register() {
                       placeholder="Ex: Restaurante do Chef"
                       value={formData.restaurantName}
                       onChange={handleInputChange}
-                      className="pl-10 h-12 border-2 focus:border-coral text-gray-900 bg-white placeholder:text-gray-500"
+                      className="pl-10 h-10 border-2 focus:border-coral text-gray-900 bg-white placeholder:text-gray-500"
                       required
                     />
                   </div>
@@ -134,7 +134,7 @@ export default function Register() {
                       placeholder="Seu nome completo"
                       value={formData.ownerName}
                       onChange={handleInputChange}
-                      className="pl-10 h-12 border-2 focus:border-coral text-gray-900 bg-white placeholder:text-gray-500"
+                      className="pl-10 h-10 border-2 focus:border-coral text-gray-900 bg-white placeholder:text-gray-500"
                       required
                     />
                   </div>
@@ -151,7 +151,7 @@ export default function Register() {
                       placeholder="seu@email.com"
                       value={formData.email}
                       onChange={handleInputChange}
-                      className="pl-10 h-12 border-2 focus:border-coral text-gray-900 bg-white placeholder:text-gray-500"
+                      className="pl-10 h-10 border-2 focus:border-coral text-gray-900 bg-white placeholder:text-gray-500"
                       required
                     />
                   </div>
@@ -169,7 +169,7 @@ export default function Register() {
                         placeholder="••••••••"
                         value={formData.password}
                         onChange={handleInputChange}
-                        className="pl-10 h-12 border-2 focus:border-coral text-gray-900 bg-white placeholder:text-gray-500"
+                        className="pl-10 h-10 border-2 focus:border-coral text-gray-900 bg-white placeholder:text-gray-500"
                         required
                       />
                     </div>
@@ -186,7 +186,7 @@ export default function Register() {
                         placeholder="••••••••"
                         value={formData.confirmPassword}
                         onChange={handleInputChange}
-                        className="pl-10 h-12 border-2 focus:border-coral text-gray-900 bg-white placeholder:text-gray-500"
+                        className="pl-10 h-10 border-2 focus:border-coral text-gray-900 bg-white placeholder:text-gray-500"
                         required
                       />
                     </div>
@@ -195,11 +195,11 @@ export default function Register() {
 
                 <Button
                   type="submit"
-                  className="w-full btn-primary-cta text-lg h-12 group"
+                  className="w-full btn-primary-cta text-base h-10 group"
                 >
                   <span className="flex items-center justify-center">
                     Criar Conta
-                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </span>
                 </Button>
 
