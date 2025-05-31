@@ -31,7 +31,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex">
+    <div className="min-h-screen bg-navy flex">
       {/* Left Side - Visual Effects */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-navy to-blue-800 relative overflow-hidden">
         {/* Animated Background Elements */}

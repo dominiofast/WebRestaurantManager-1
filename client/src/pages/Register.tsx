@@ -31,7 +31,7 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex">
+    <div className="min-h-screen bg-navy flex">
       {/* Left Side - Visual Effects */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-navy to-blue-800 relative overflow-hidden">
         {/* Background Pattern */}
@@ -93,7 +93,7 @@ export default function Register() {
       </div>
 
       {/* Right Side - Registration Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-50">
         <div className="w-full max-w-md">
           <Card className="shadow-2xl border-0 bg-white">
             <CardHeader className="text-center pb-8">
