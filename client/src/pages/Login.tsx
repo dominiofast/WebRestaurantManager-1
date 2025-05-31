@@ -33,17 +33,17 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex">
       {/* Left Side - Visual Effects */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-navy via-blue-900 to-indigo-900 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-navy to-blue-800 relative overflow-hidden">
         {/* Animated Background Elements */}
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 opacity-20">
           {/* Floating Circles */}
-          <div className="absolute top-10 left-10 w-40 h-40 bg-coral/20 rounded-full animate-pulse blur-xl"></div>
-          <div className="absolute top-32 right-20 w-32 h-32 bg-white/10 rounded-full animate-float blur-lg"></div>
-          <div className="absolute bottom-20 left-20 w-36 h-36 bg-coral/15 rounded-full animate-pulse blur-xl"></div>
-          <div className="absolute bottom-40 right-32 w-28 h-28 bg-white/15 rounded-full animate-float blur-lg"></div>
+          <div className="absolute top-10 left-10 w-40 h-40 bg-coral/30 rounded-full animate-pulse blur-xl"></div>
+          <div className="absolute top-32 right-20 w-32 h-32 bg-white/20 rounded-full animate-float blur-lg"></div>
+          <div className="absolute bottom-20 left-20 w-36 h-36 bg-coral/20 rounded-full animate-pulse blur-xl"></div>
+          <div className="absolute bottom-40 right-32 w-28 h-28 bg-white/30 rounded-full animate-float blur-lg"></div>
           
           {/* Grid Pattern */}
-          <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0 opacity-10">
             <div className="grid grid-cols-8 grid-rows-8 h-full">
               {[...Array(64)].map((_, i) => (
                 <div key={i} className="border border-white/20"></div>
@@ -54,52 +54,52 @@ export default function Login() {
 
         <div className="flex flex-col justify-center items-center p-12 relative z-10 text-white">
           <div className="text-center max-w-lg">
-            <div className="w-24 h-24 bg-gradient-to-br from-coral to-orange-500 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-300">
+            <div className="w-24 h-24 bg-coral rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-300">
               <ChefHat className="w-12 h-12 text-white" />
             </div>
             
-            <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
+            <h1 className="text-5xl font-bold mb-6 text-white">
               Bem-vindo de volta!
             </h1>
             
-            <p className="text-xl text-blue-200 mb-12 leading-relaxed">
+            <p className="text-xl text-white/90 mb-12 leading-relaxed">
               Acesse seu painel de controle e continue gerenciando seu restaurante com eficiência profissional.
             </p>
 
             {/* Feature Highlights */}
             <div className="grid grid-cols-1 gap-6 text-left">
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 transform hover:scale-105 transition-all duration-300">
+              <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-6 transform hover:scale-105 transition-all duration-300 border border-white/20">
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-coral rounded-xl flex items-center justify-center">
                     <BarChart3 className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg">Dashboard Inteligente</h3>
-                    <p className="text-blue-200 text-sm">Acompanhe vendas e estatísticas em tempo real</p>
+                    <h3 className="font-bold text-lg text-white">Dashboard Inteligente</h3>
+                    <p className="text-white/80 text-sm">Acompanhe vendas e estatísticas em tempo real</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 transform hover:scale-105 transition-all duration-300">
+              <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-6 transform hover:scale-105 transition-all duration-300 border border-white/20">
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-coral rounded-xl flex items-center justify-center">
                     <Zap className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg">Gestão Rápida</h3>
-                    <p className="text-blue-200 text-sm">Controle pedidos e cardápio com agilidade</p>
+                    <h3 className="font-bold text-lg text-white">Gestão Rápida</h3>
+                    <p className="text-white/80 text-sm">Controle pedidos e cardápio com agilidade</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 transform hover:scale-105 transition-all duration-300">
+              <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-6 transform hover:scale-105 transition-all duration-300 border border-white/20">
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-coral rounded-xl flex items-center justify-center">
                     <Shield className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg">100% Seguro</h3>
-                    <p className="text-blue-200 text-sm">Seus dados protegidos com criptografia avançada</p>
+                    <h3 className="font-bold text-lg text-white">100% Seguro</h3>
+                    <p className="text-white/80 text-sm">Seus dados protegidos com criptografia avançada</p>
                   </div>
                 </div>
               </div>

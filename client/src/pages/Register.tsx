@@ -33,13 +33,13 @@ export default function Register() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex">
       {/* Left Side - Visual Effects */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-navy to-blue-900 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-navy to-blue-800 relative overflow-hidden">
         {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-32 h-32 bg-coral rounded-full animate-pulse"></div>
-          <div className="absolute top-40 right-32 w-24 h-24 bg-white rounded-full animate-float"></div>
-          <div className="absolute bottom-32 left-32 w-28 h-28 bg-coral/50 rounded-full animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-20 h-20 bg-white/70 rounded-full animate-float"></div>
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-20 left-20 w-32 h-32 bg-coral/30 rounded-full animate-pulse"></div>
+          <div className="absolute top-40 right-32 w-24 h-24 bg-white/20 rounded-full animate-float"></div>
+          <div className="absolute bottom-32 left-32 w-28 h-28 bg-coral/20 rounded-full animate-pulse"></div>
+          <div className="absolute bottom-20 right-20 w-20 h-20 bg-white/30 rounded-full animate-float"></div>
         </div>
 
         <div className="flex flex-col justify-center items-center p-12 relative z-10 text-white">
@@ -48,43 +48,43 @@ export default function Register() {
               <Store className="w-10 h-10 text-white" />
             </div>
             
-            <h1 className="text-4xl font-bold mb-6">
+            <h1 className="text-4xl font-bold mb-6 text-white">
               Transforme seu Restaurante
             </h1>
             
-            <p className="text-xl text-blue-200 mb-12 leading-relaxed">
+            <p className="text-xl text-white/90 mb-12 leading-relaxed">
               Junte-se a centenas de restaurantes que já modernizaram sua gestão com nosso sistema profissional.
             </p>
 
             {/* Benefits List */}
             <div className="space-y-6 text-left">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-coral/20 rounded-full flex items-center justify-center">
-                  <CheckCircle className="w-6 h-6 text-coral" />
+              <div className="flex items-center space-x-4 bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                <div className="w-12 h-12 bg-coral rounded-full flex items-center justify-center flex-shrink-0">
+                  <CheckCircle className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg">Gestão Completa</h3>
-                  <p className="text-blue-200 text-sm">Cardápio, pedidos e vendas em um só lugar</p>
+                  <h3 className="font-bold text-lg text-white">Gestão Completa</h3>
+                  <p className="text-white/80 text-sm">Cardápio, pedidos e vendas em um só lugar</p>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-coral/20 rounded-full flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-coral" />
+              <div className="flex items-center space-x-4 bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                <div className="w-12 h-12 bg-coral rounded-full flex items-center justify-center flex-shrink-0">
+                  <TrendingUp className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg">Aumento das Vendas</h3>
-                  <p className="text-blue-200 text-sm">Otimize operações e maximize receita</p>
+                  <h3 className="font-bold text-lg text-white">Aumento das Vendas</h3>
+                  <p className="text-white/80 text-sm">Otimize operações e maximize receita</p>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-coral/20 rounded-full flex items-center justify-center">
-                  <Users className="w-6 h-6 text-coral" />
+              <div className="flex items-center space-x-4 bg-white/10 backdrop-blur-sm rounded-xl p-4">
+                <div className="w-12 h-12 bg-coral rounded-full flex items-center justify-center flex-shrink-0">
+                  <Users className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg">Fácil de Usar</h3>
-                  <p className="text-blue-200 text-sm">Interface intuitiva para toda equipe</p>
+                  <h3 className="font-bold text-lg text-white">Fácil de Usar</h3>
+                  <p className="text-white/80 text-sm">Interface intuitiva para toda equipe</p>
                 </div>
               </div>
             </div>
