@@ -31,9 +31,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           user: {
             id: user.id,
             email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            restaurantName: user.restaurantName
+            firstName: (user as any).firstName || (user as any).first_name,
+            lastName: (user as any).lastName || (user as any).last_name,
+            restaurantName: (user as any).restaurantName || (user as any).restaurant_name
           }
         });
       } else {
@@ -74,7 +74,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.upsertUser(userData);
       
       // Store user session
-      req.session.userId = user.id;
+      (req.session as any).userId = user.id;
       
       res.status(201).json({ 
         user: {
