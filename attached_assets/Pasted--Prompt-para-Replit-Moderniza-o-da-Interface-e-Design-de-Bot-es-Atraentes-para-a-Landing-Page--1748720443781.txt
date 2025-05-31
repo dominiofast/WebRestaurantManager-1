@@ -1,0 +1,53 @@
+**Prompt para Replit: Modernização da Interface e Design de Botões Atraentes para a Landing Page**
+
+**Objetivo Principal:**
+Refinar e modernizar o design geral da interface do usuário (UI) da nossa **landing page existente**. O foco secundário, mas crucial, é redesenhar todos os botões da landing page para que sejam visualmente atraentes ("bonitos"), intuitivos, consistentes e otimizados para conversão, melhorando a experiência do usuário (UX) e o impacto visual da página. Todas as alterações devem respeitar e otimizar o uso da paleta de cores "Azul Marinho + Toque Quente" previamente definida.
+
+**Diretrizes Gerais para Modernização do Design da Landing Page:**
+
+1.  **Layout e Espaçamento (para a Landing Page):**
+    * Revisar a estrutura da landing page (seções como Hero, Features, Depoimentos, CTA principal, Rodapé) para garantir uma aparência mais "clean", moderna e com um fluxo narrativo claro.
+    * Otimizar o uso de espaços em branco (whitespace) para melhorar a legibilidade, destacar os CTAs e guiar o olhar do visitante.
+    * Assegurar alinhamento e espaçamento consistentes entre os elementos dentro de cada seção da landing page.
+
+2.  **Tipografia (para a Landing Page):**
+    * Avaliar a tipografia atual da landing page. Se necessário, sugerir ou implementar fontes mais modernas e com excelente legibilidade para títulos, subtítulos e corpo de texto que reforcem a mensagem da marca e a clareza da oferta.
+    * Estabelecer uma hierarquia tipográfica forte e clara em toda a landing page.
+
+3.  **Elementos Visuais (na Landing Page):**
+    * Suavizar cantos de containers, cards de funcionalidades ou blocos de depoimentos, se apropriado para um visual mais moderno (ex: `border-radius` sutis).
+    * Revisar o uso de sombras e bordas para que sejam sutis e contribuam para a profundidade e clareza dos diferentes blocos de informação da landing page.
+    * Garantir que ícones (se utilizados para ilustrar features ou benefícios) sejam modernos, consistentes em estilo e alinhados com a nova estética.
+    * Assegurar que imagens e outros elementos gráficos da landing page estejam em harmonia com o design modernizado.
+
+**Requisitos Específicos para o Design de Botões na Landing Page (Foco em Conversão):**
+
+1.  **Paleta de Cores (Estrita Observância na Landing Page):**
+    * **Botões de Ação Principal (CTAs Primários da Landing Page):** Devem usar ostensivamente as **Cores de Destaque Quentes** (Coral Vibrante, Amarelo Mostarda Vibrante ou Laranja Mais Suave – conforme a escolha principal definida anteriormente). Estes são os botões mais importantes da landing page, desenhados para capturar leads ou iniciar o processo de venda (ex: "Experimente Grátis", "Agende uma Demonstração", "Saiba Mais", "Peça um Orçamento").
+    * **Botões Secundários (na Landing Page):** Se houver ações secundárias (ex: "Ver todos os recursos", "Ler depoimento completo"), podem usar o **Azul Marinho** como cor de fundo com texto claro, ou serem "outline" (fundo transparente, borda em Azul Marinho ou na cor quente, e texto na mesma cor da borda). Devem ser claramente distintos dos CTAs primários.
+    * **Links de Navegação/Rodapé (que funcionam como botões):** Devem ser discretos, mas clicáveis, usando o Azul Marinho ou um cinza escuro para o texto, com um estado `hover` claro.
+
+2.  **Forma e Proporção (para Botões da Landing Page):**
+    * **Consistência de Estilo:** Todos os botões na landing page devem seguir um estilo visual coeso em termos de `border-radius` (cantos arredondados – considerar um arredondamento sutil e moderno, ex: 4px a 8px), altura e preenchimento interno (`padding`).
+    * **Padding Generoso:** Especialmente para os CTAs primários, garantir `padding` adequado para que o botão tenha uma boa "presença" e o texto respire.
+    * **Tamanho Estratégico:** CTAs primários podem ser maiores e mais proeminentes que botões secundários.
+
+3.  **Estados Visuais Claros e Convidativos (para Botões da Landing Page):**
+    * **Normal:** Estado padrão do botão, já atraente e chamativo para CTAs.
+    * **Hover (Mouse Sobre):** Uma transição suave e convidativa (ex: leve aumento de brilho/saturação na cor quente, sombra mais pronunciada, ou um leve movimento/escala) para incentivar o clique.
+    * **Active/Pressed (Pressionado):** Feedback visual imediato.
+    * **Disabled (Desabilitado, se aplicável na landing page):** Aparência clara de inatividade.
+
+4.  **Texto do Botão (na Landing Page):**
+    * **Clareza e Ação:** O texto dos CTAs deve ser conciso, direto e orientado à ação (ex: "Comece Agora", "Descubra as Vantagens").
+    * **Legibilidade:** Excelente contraste entre o texto e o fundo do botão.
+
+5.  **Opcional (Considerar para Botões de Alto Impacto na Landing Page):**
+    * **Sombras Sutis e Modernas:** Adicionar uma `box-shadow` bem trabalhada para dar aos CTAs primários uma aparência de elevação e destaque.
+    * **Microinterações/Animações Sutis:** No estado `hover`, considerar animações muito sutis (ex: um ícone que se move levemente, uma seta que aparece) para aumentar o engajamento, se isso se alinhar com a sofisticação desejada.
+
+**Aplicação das Mudanças:**
+As modificações de design e nos botões devem ser aplicadas aos arquivos CSS ou ao sistema de design/componentes que estilizam especificamente a **landing page**.
+
+**Resultado Esperado:**
+Arquivos CSS atualizados (ou modificações nos estilos da landing page) que resultem em uma landing page visivelmente modernizada, com um design mais limpo, profissional, e com botões altamente atraentes e otimizados para conversão, tudo dentro da paleta de cores "Azul Marinho + Toque Quente". A landing page deve se tornar mais eficaz em comunicar o valor da solução e em converter visitantes.

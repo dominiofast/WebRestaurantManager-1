@@ -114,10 +114,113 @@
 
   /* Button variants with coral accent */
   .btn-coral {
-    @apply bg-coral hover:bg-orange-600 text-white font-medium transition-colors;
+    @apply bg-coral hover:bg-orange-600 text-white font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105;
   }
   
   .btn-coral-outline {
-    @apply border border-coral text-coral hover:bg-coral hover:text-white font-medium transition-colors;
+    @apply border-2 border-coral text-coral hover:bg-coral hover:text-white font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105;
+  }
+
+  /* Enhanced primary CTA button */
+  .btn-primary-cta {
+    @apply text-white font-bold px-8 py-4 rounded-xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 relative overflow-hidden;
+    background: linear-gradient(135deg, #FF7F50 0%, #FF6347 50%, #FF4500 100%);
+  }
+
+  .btn-primary-cta:hover {
+    background: linear-gradient(135deg, #FF4500 0%, #FF6347 50%, #FF7F50 100%);
+  }
+
+  .btn-primary-cta::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  .btn-primary-cta:hover::before {
+    left: 100%;
+  }
+
+  /* Secondary button with navy theme */
+  .btn-secondary-outline {
+    @apply font-semibold px-6 py-3 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105;
+    border: 2px solid #001f3f;
+    color: #001f3f;
+  }
+
+  .btn-secondary-outline:hover {
+    background-color: #001f3f;
+    color: white;
+  }
+
+  /* Modern card styling */
+  .modern-card {
+    @apply bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100;
+  }
+
+  .modern-card:hover {
+    border-color: rgba(255, 127, 80, 0.2);
+  }
+
+  /* Gradient backgrounds */
+  .gradient-hero {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+  }
+
+  .gradient-cta {
+    background: linear-gradient(135deg, #001f3f 0%, #1e3a8a 50%, #003366 100%);
+  }
+
+  /* Enhanced typography */
+  .hero-title {
+    @apply text-5xl md:text-6xl lg:text-7xl font-bold leading-tight;
+    background: linear-gradient(135deg, #001f3f 0%, #1e40af 50%, #001f3f 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .section-title {
+    @apply text-3xl md:text-4xl lg:text-5xl font-bold text-navy leading-tight;
+  }
+
+  /* Icon containers with modern styling */
+  .icon-container {
+    @apply w-16 h-16 rounded-2xl flex items-center justify-center shadow-inner;
+    background: linear-gradient(135deg, rgba(255, 127, 80, 0.1) 0%, rgba(255, 165, 0, 0.1) 100%);
+  }
+
+  /* Benefits section styling */
+  .benefit-item {
+    @apply flex items-start space-x-4 p-4 rounded-xl hover:bg-gray-50 transition-colors duration-300;
+  }
+
+  /* Stats/testimonial card */
+  .stats-card {
+    @apply bg-white rounded-3xl shadow-2xl p-8 border border-gray-100 hover:border-coral/20 transition-all duration-300;
+  }
+
+  /* Smooth animations */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(255, 127, 80, 0.3); }
+    50% { box-shadow: 0 0 40px rgba(255, 127, 80, 0.6); }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
   }
 }
