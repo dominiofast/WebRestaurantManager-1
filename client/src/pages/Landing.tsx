@@ -10,7 +10,7 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className="bg-navy shadow-lg border-b border-coral/20">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-navy shadow-lg border-b border-coral/20">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -37,11 +37,6 @@ export default function Landing() {
 
             <div className="flex items-center space-x-3">
               <Button 
-                className="bg-coral/20 text-coral border border-coral hover:bg-coral hover:text-white transition-all duration-300 font-semibold"
-              >
-                Teste Grátis
-              </Button>
-              <Button 
                 onClick={handleLogin}
                 className="btn-coral font-semibold"
               >
@@ -53,7 +48,7 @@ export default function Landing() {
       </nav>
 
       {/* Hero Section */}
-      <section className="gradient-hero py-24 lg:py-32 relative overflow-hidden">
+      <section className="gradient-hero pt-32 pb-24 lg:pt-40 lg:pb-32 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent"></div>
         <div className="container mx-auto px-4 relative">
           <div className="max-w-5xl mx-auto text-center">
