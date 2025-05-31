@@ -35,11 +35,11 @@ export default function Register() {
       {/* Left Side - Visual Effects */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-navy to-blue-800 relative overflow-hidden">
         {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-20 left-20 w-32 h-32 bg-coral/30 rounded-full animate-pulse"></div>
-          <div className="absolute top-40 right-32 w-24 h-24 bg-white/20 rounded-full animate-float"></div>
-          <div className="absolute bottom-32 left-32 w-28 h-28 bg-coral/20 rounded-full animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-20 h-20 bg-white/30 rounded-full animate-float"></div>
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-20 w-32 h-32 bg-coral/20 rounded-full animate-pulse"></div>
+          <div className="absolute top-40 right-32 w-24 h-24 bg-white/10 rounded-full animate-float"></div>
+          <div className="absolute bottom-32 left-32 w-28 h-28 bg-coral/15 rounded-full animate-pulse"></div>
+          <div className="absolute bottom-20 right-20 w-20 h-20 bg-white/15 rounded-full animate-float"></div>
         </div>
 
         <div className="flex flex-col justify-center items-center p-12 relative z-10 text-white">
@@ -58,33 +58,33 @@ export default function Register() {
 
             {/* Benefits List */}
             <div className="space-y-6 text-left">
-              <div className="flex items-center space-x-4 bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                <div className="w-12 h-12 bg-coral rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="flex items-center space-x-4 bg-navy/40 backdrop-blur-sm rounded-xl p-5 border border-coral/30 shadow-lg">
+                <div className="w-12 h-12 bg-coral rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
                   <CheckCircle className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg text-white">Gestão Completa</h3>
-                  <p className="text-white/80 text-sm">Cardápio, pedidos e vendas em um só lugar</p>
+                  <h3 className="font-bold text-xl text-white drop-shadow-sm">Gestão Completa</h3>
+                  <p className="text-white/90 text-sm font-medium">Cardápio, pedidos e vendas em um só lugar</p>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4 bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                <div className="w-12 h-12 bg-coral rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="flex items-center space-x-4 bg-navy/40 backdrop-blur-sm rounded-xl p-5 border border-coral/30 shadow-lg">
+                <div className="w-12 h-12 bg-coral rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
                   <TrendingUp className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg text-white">Aumento das Vendas</h3>
-                  <p className="text-white/80 text-sm">Otimize operações e maximize receita</p>
+                  <h3 className="font-bold text-xl text-white drop-shadow-sm">Aumento das Vendas</h3>
+                  <p className="text-white/90 text-sm font-medium">Otimize operações e maximize receita</p>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4 bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                <div className="w-12 h-12 bg-coral rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="flex items-center space-x-4 bg-navy/40 backdrop-blur-sm rounded-xl p-5 border border-coral/30 shadow-lg">
+                <div className="w-12 h-12 bg-coral rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
                   <Users className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg text-white">Fácil de Usar</h3>
-                  <p className="text-white/80 text-sm">Interface intuitiva para toda equipe</p>
+                  <h3 className="font-bold text-xl text-white drop-shadow-sm">Fácil de Usar</h3>
+                  <p className="text-white/90 text-sm font-medium">Interface intuitiva para toda equipe</p>
                 </div>
               </div>
             </div>
@@ -95,21 +95,21 @@ export default function Register() {
       {/* Right Side - Registration Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
-          <Card className="shadow-2xl border-0">
+          <Card className="shadow-2xl border-0 bg-white">
             <CardHeader className="text-center pb-8">
               <div className="w-16 h-16 bg-gradient-to-br from-coral to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <ChefHat className="w-8 h-8 text-white" />
               </div>
               <CardTitle className="text-3xl font-bold text-navy">Cadastre seu Restaurante</CardTitle>
-              <p className="text-gray-600 mt-2">Comece a modernizar sua gestão hoje</p>
+              <p className="text-gray-700 mt-2 font-medium">Comece a modernizar sua gestão hoje</p>
             </CardHeader>
 
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="restaurantName" className="text-navy font-semibold">Nome do Restaurante</Label>
+                  <Label htmlFor="restaurantName" className="text-gray-800 font-bold text-sm">Nome do Restaurante</Label>
                   <div className="relative">
-                    <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                     <Input
                       id="restaurantName"
                       name="restaurantName"
@@ -117,16 +117,16 @@ export default function Register() {
                       placeholder="Ex: Restaurante do Chef"
                       value={formData.restaurantName}
                       onChange={handleInputChange}
-                      className="pl-10 h-12 border-2 focus:border-coral"
+                      className="pl-10 h-12 border-2 focus:border-coral text-gray-900 bg-white placeholder:text-gray-500"
                       required
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="ownerName" className="text-navy font-semibold">Nome do Proprietário</Label>
+                  <Label htmlFor="ownerName" className="text-gray-800 font-bold text-sm">Nome do Proprietário</Label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                     <Input
                       id="ownerName"
                       name="ownerName"
@@ -134,16 +134,16 @@ export default function Register() {
                       placeholder="Seu nome completo"
                       value={formData.ownerName}
                       onChange={handleInputChange}
-                      className="pl-10 h-12 border-2 focus:border-coral"
+                      className="pl-10 h-12 border-2 focus:border-coral text-gray-900 bg-white placeholder:text-gray-500"
                       required
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-navy font-semibold">E-mail</Label>
+                  <Label htmlFor="email" className="text-gray-800 font-bold text-sm">E-mail</Label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                     <Input
                       id="email"
                       name="email"
@@ -151,7 +151,7 @@ export default function Register() {
                       placeholder="seu@email.com"
                       value={formData.email}
                       onChange={handleInputChange}
-                      className="pl-10 h-12 border-2 focus:border-coral"
+                      className="pl-10 h-12 border-2 focus:border-coral text-gray-900 bg-white placeholder:text-gray-500"
                       required
                     />
                   </div>
@@ -159,9 +159,9 @@ export default function Register() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="password" className="text-navy font-semibold">Senha</Label>
+                    <Label htmlFor="password" className="text-gray-800 font-bold text-sm">Senha</Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                       <Input
                         id="password"
                         name="password"
@@ -169,16 +169,16 @@ export default function Register() {
                         placeholder="••••••••"
                         value={formData.password}
                         onChange={handleInputChange}
-                        className="pl-10 h-12 border-2 focus:border-coral"
+                        className="pl-10 h-12 border-2 focus:border-coral text-gray-900 bg-white placeholder:text-gray-500"
                         required
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="confirmPassword" className="text-navy font-semibold">Confirmar Senha</Label>
+                    <Label htmlFor="confirmPassword" className="text-gray-800 font-bold text-sm">Confirmar Senha</Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                       <Input
                         id="confirmPassword"
                         name="confirmPassword"
@@ -186,7 +186,7 @@ export default function Register() {
                         placeholder="••••••••"
                         value={formData.confirmPassword}
                         onChange={handleInputChange}
-                        className="pl-10 h-12 border-2 focus:border-coral"
+                        className="pl-10 h-12 border-2 focus:border-coral text-gray-900 bg-white placeholder:text-gray-500"
                         required
                       />
                     </div>

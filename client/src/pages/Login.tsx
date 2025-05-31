@@ -35,18 +35,18 @@ export default function Login() {
       {/* Left Side - Visual Effects */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-navy to-blue-800 relative overflow-hidden">
         {/* Animated Background Elements */}
-        <div className="absolute inset-0 opacity-20">
+        <div className="absolute inset-0 opacity-10">
           {/* Floating Circles */}
-          <div className="absolute top-10 left-10 w-40 h-40 bg-coral/30 rounded-full animate-pulse blur-xl"></div>
-          <div className="absolute top-32 right-20 w-32 h-32 bg-white/20 rounded-full animate-float blur-lg"></div>
-          <div className="absolute bottom-20 left-20 w-36 h-36 bg-coral/20 rounded-full animate-pulse blur-xl"></div>
-          <div className="absolute bottom-40 right-32 w-28 h-28 bg-white/30 rounded-full animate-float blur-lg"></div>
+          <div className="absolute top-10 left-10 w-40 h-40 bg-coral/20 rounded-full animate-pulse blur-xl"></div>
+          <div className="absolute top-32 right-20 w-32 h-32 bg-white/10 rounded-full animate-float blur-lg"></div>
+          <div className="absolute bottom-20 left-20 w-36 h-36 bg-coral/15 rounded-full animate-pulse blur-xl"></div>
+          <div className="absolute bottom-40 right-32 w-28 h-28 bg-white/15 rounded-full animate-float blur-lg"></div>
           
           {/* Grid Pattern */}
-          <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0 opacity-5">
             <div className="grid grid-cols-8 grid-rows-8 h-full">
               {[...Array(64)].map((_, i) => (
-                <div key={i} className="border border-white/20"></div>
+                <div key={i} className="border border-white/15"></div>
               ))}
             </div>
           </div>
@@ -68,38 +68,38 @@ export default function Login() {
 
             {/* Feature Highlights */}
             <div className="grid grid-cols-1 gap-6 text-left">
-              <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-6 transform hover:scale-105 transition-all duration-300 border border-white/20">
+              <div className="bg-navy/40 backdrop-blur-sm rounded-2xl p-6 transform hover:scale-105 transition-all duration-300 border border-coral/30 shadow-lg">
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-coral rounded-xl flex items-center justify-center">
+                  <div className="w-12 h-12 bg-coral rounded-xl flex items-center justify-center shadow-lg">
                     <BarChart3 className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg text-white">Dashboard Inteligente</h3>
-                    <p className="text-white/80 text-sm">Acompanhe vendas e estatísticas em tempo real</p>
+                    <h3 className="font-bold text-xl text-white drop-shadow-sm">Dashboard Inteligente</h3>
+                    <p className="text-white/90 text-sm font-medium">Acompanhe vendas e estatísticas em tempo real</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-6 transform hover:scale-105 transition-all duration-300 border border-white/20">
+              <div className="bg-navy/40 backdrop-blur-sm rounded-2xl p-6 transform hover:scale-105 transition-all duration-300 border border-coral/30 shadow-lg">
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-coral rounded-xl flex items-center justify-center">
+                  <div className="w-12 h-12 bg-coral rounded-xl flex items-center justify-center shadow-lg">
                     <Zap className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg text-white">Gestão Rápida</h3>
-                    <p className="text-white/80 text-sm">Controle pedidos e cardápio com agilidade</p>
+                    <h3 className="font-bold text-xl text-white drop-shadow-sm">Gestão Rápida</h3>
+                    <p className="text-white/90 text-sm font-medium">Controle pedidos e cardápio com agilidade</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-6 transform hover:scale-105 transition-all duration-300 border border-white/20">
+              <div className="bg-navy/40 backdrop-blur-sm rounded-2xl p-6 transform hover:scale-105 transition-all duration-300 border border-coral/30 shadow-lg">
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-coral rounded-xl flex items-center justify-center">
+                  <div className="w-12 h-12 bg-coral rounded-xl flex items-center justify-center shadow-lg">
                     <Shield className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg text-white">100% Seguro</h3>
-                    <p className="text-white/80 text-sm">Seus dados protegidos com criptografia avançada</p>
+                    <h3 className="font-bold text-xl text-white drop-shadow-sm">100% Seguro</h3>
+                    <p className="text-white/90 text-sm font-medium">Seus dados protegidos com criptografia avançada</p>
                   </div>
                 </div>
               </div>
