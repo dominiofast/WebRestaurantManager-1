@@ -105,7 +105,7 @@ export default function Register() {
             </CardHeader>
 
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="restaurantName" className="text-gray-800 font-bold text-sm">Nome do Restaurante</Label>
                   <div className="relative">
@@ -193,15 +193,15 @@ export default function Register() {
                   </div>
                 </div>
 
-                <Button
-                  type="submit"
-                  className="w-full btn-primary-cta text-base h-10 group"
+                <a
+                  href="/api/login"
+                  className="w-full btn-primary-cta text-base h-10 group inline-flex items-center justify-center rounded-lg font-semibold transition-all"
                 >
                   <span className="flex items-center justify-center">
                     Criar Conta
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </span>
-                </Button>
+                </a>
 
                 <div className="text-center pt-4">
                   <p className="text-gray-600">
@@ -219,7 +219,7 @@ export default function Register() {
                     <a href="#" className="text-coral hover:underline">Política de Privacidade</a>
                   </p>
                 </div>
-              </form>
+              </div>
             </CardContent>
           </Card>
 
