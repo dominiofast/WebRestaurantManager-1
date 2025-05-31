@@ -23,6 +23,7 @@ function AuthenticatedApp() {
         <main className="flex-1 overflow-x-hidden overflow-y-auto">
           <Switch>
             <Route path="/" component={Dashboard} />
+            <Route path="/dashboard" component={Dashboard} />
             <Route path="/menu" component={MenuManagement} />
             <Route path="/orders" component={OrderManagement} />
             <Route component={NotFound} />
