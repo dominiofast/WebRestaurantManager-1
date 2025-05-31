@@ -159,7 +159,7 @@ export default function Landing() {
               </div>
               <h3 className="text-navy text-xl font-bold mb-4">Gestão Inteligente</h3>
               <p className="text-gray-600 leading-relaxed">
-                Sistema completo para otimizar todas as operações do seu restaurante de forma profissional e integrada.
+                Previsão de demanda, otimização de cardápio e insights automáticos para maximizar lucros do seu restaurante.
               </p>
             </div>
           </div>
@@ -172,35 +172,35 @@ export default function Landing() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="section-title mb-8">
-                Por que escolher o RestaurantPRO?
+                Por que escolher o DomínioMenu.AI?
               </h2>
               <div className="space-y-6">
                 <div className="benefit-item">
                   <CheckCircle className="w-6 h-6 text-coral mt-1 flex-shrink-0" />
                   <div>
-                    <h3 className="text-xl font-bold text-navy mb-2">Fácil de usar</h3>
-                    <p className="text-gray-600 leading-relaxed">Interface intuitiva que sua equipe aprende rapidamente, sem necessidade de treinamento complexo.</p>
+                    <h3 className="text-xl font-bold text-navy mb-2">IA Especializada</h3>
+                    <p className="text-gray-600 leading-relaxed">Primeira IA do Brasil focada exclusivamente em restaurantes, com algoritmos otimizados para vendas.</p>
                   </div>
                 </div>
                 <div className="benefit-item">
                   <CheckCircle className="w-6 h-6 text-coral mt-1 flex-shrink-0" />
                   <div>
-                    <h3 className="text-xl font-bold text-navy mb-2">Aumento da eficiência</h3>
-                    <p className="text-gray-600 leading-relaxed">Reduza erros operacionais e otimize o tempo de atendimento com automação inteligente.</p>
+                    <h3 className="text-xl font-bold text-navy mb-2">WhatsApp Inteligente</h3>
+                    <p className="text-gray-600 leading-relaxed">Robô que vende 24/7 pelo WhatsApp, sugere combos e aumenta seu ticket médio automaticamente.</p>
                   </div>
                 </div>
                 <div className="benefit-item">
                   <CheckCircle className="w-6 h-6 text-coral mt-1 flex-shrink-0" />
                   <div>
-                    <h3 className="text-xl font-bold text-navy mb-2">Controle total</h3>
-                    <p className="text-gray-600 leading-relaxed">Tenha visibilidade completa do seu negócio com relatórios em tempo real e análises detalhadas.</p>
+                    <h3 className="text-xl font-bold text-navy mb-2">Aumento de 40% nas Vendas</h3>
+                    <p className="text-gray-600 leading-relaxed">Comprovado: restaurantes aumentam faturamento em até 40% com nossas estratégias de IA.</p>
                   </div>
                 </div>
                 <div className="benefit-item">
                   <CheckCircle className="w-6 h-6 text-coral mt-1 flex-shrink-0" />
                   <div>
-                    <h3 className="text-xl font-bold text-navy mb-2">Aumento das vendas</h3>
-                    <p className="text-gray-600 leading-relaxed">Maximize a receita com gestão inteligente de cardápio e otimização de processos.</p>
+                    <h3 className="text-xl font-bold text-navy mb-2">Setup em 5 Minutos</h3>
+                    <p className="text-gray-600 leading-relaxed">Conecta com seu WhatsApp em minutos. Sem complicação, sem instalação, sem dor de cabeça.</p>
                   </div>
                 </div>
               </div>
@@ -213,8 +213,8 @@ export default function Landing() {
                       <Star key={star} className="w-7 h-7 text-yellow-400 fill-current" />
                     ))}
                   </div>
-                  <h3 className="text-3xl font-bold text-navy mb-3">Sistema Completo</h3>
-                  <p className="text-gray-600 text-lg leading-relaxed">Tudo que você precisa para modernizar e otimizar seu restaurante</p>
+                  <h3 className="text-3xl font-bold text-navy mb-3">IA para Restaurantes</h3>
+                  <p className="text-gray-600 text-lg leading-relaxed">O primeiro assistente inteligente que realmente aumenta suas vendas</p>
                 </div>
                 <button 
                   onClick={handleLogin}
@@ -239,34 +239,145 @@ export default function Landing() {
         <div className="absolute inset-0 bg-gradient-to-r from-black/10 to-transparent"></div>
         <div className="container mx-auto px-4 text-center relative">
           <h2 className="text-4xl lg:text-5xl font-bold text-white mb-8">
-            Pronto para transformar seu restaurante?
+            Pronto para vender mais com IA?
           </h2>
           <p className="text-xl lg:text-2xl text-blue-200 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Acesse o sistema agora e comece a otimizar suas operações hoje mesmo. 
-            Junte-se a centenas de restaurantes que já modernizaram sua gestão.
+            Conecte seu WhatsApp agora e deixe nossa IA vender por você 24 horas por dia. 
+            Junte-se a centenas de restaurantes que já aumentaram suas vendas com IA.
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <button 
-              onClick={handleLogin}
-              className="btn-primary-cta text-xl group"
+              className="bg-coral text-white px-8 py-4 rounded-2xl text-xl font-bold hover:bg-coral/90 transform hover:scale-105 transition-all duration-300 shadow-xl group"
             >
               <span className="flex items-center">
-                Entrar no Sistema
+                <MessageSquare className="w-6 h-6 mr-3" />
+                Começar Teste Grátis
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </span>
             </button>
-            <div className="text-white/80 text-sm">
-              ⚡ Configuração rápida • 🔒 100% seguro • 📞 Suporte especializado
-            </div>
+            <button 
+              onClick={handleLogin}
+              className="bg-white/20 border border-white/30 text-white px-8 py-4 rounded-2xl text-xl font-bold hover:bg-white/30 transition-all duration-300 group"
+            >
+              <span className="flex items-center">
+                <Bot className="w-6 h-6 mr-3" />
+                Ver Como Funciona
+              </span>
+            </button>
+          </div>
+          <div className="mt-8 text-white/80 text-sm">
+            Setup em 5 minutos • Teste 7 dias grátis • Suporte WhatsApp
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8">
-        <div className="container mx-auto px-4 text-center">
-          <div className="text-xl font-bold mb-2">RestaurantPRO</div>
-          <p className="text-gray-400">Sistema completo de gestão para restaurantes</p>
+      <footer className="bg-gray-900 text-white py-16">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+            {/* Brand Section */}
+            <div className="lg:col-span-1">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 bg-coral rounded-xl flex items-center justify-center">
+                  <Bot className="w-6 h-6 text-white" />
+                </div>
+                <div className="text-2xl font-bold text-white">DomínioMenu<span className="text-coral">.AI</span></div>
+              </div>
+              <p className="text-gray-400 mb-6 leading-relaxed">
+                O primeiro assistente de IA do Brasil especializado em aumentar vendas de restaurantes pelo WhatsApp.
+              </p>
+              <div className="flex space-x-4">
+                <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-coral transition-colors cursor-pointer">
+                  <MessageSquare className="w-5 h-5" />
+                </div>
+                <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-coral transition-colors cursor-pointer">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-coral transition-colors cursor-pointer">
+                  <Phone className="w-5 h-5" />
+                </div>
+              </div>
+            </div>
+
+            {/* Features */}
+            <div>
+              <h4 className="text-lg font-bold text-white mb-4">Funcionalidades IA</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li className="flex items-center space-x-2 hover:text-white transition-colors">
+                  <Bot className="w-4 h-4 text-coral" />
+                  <span>Assistente WhatsApp</span>
+                </li>
+                <li className="flex items-center space-x-2 hover:text-white transition-colors">
+                  <Brain className="w-4 h-4 text-coral" />
+                  <span>Análise Inteligente</span>
+                </li>
+                <li className="flex items-center space-x-2 hover:text-white transition-colors">
+                  <TrendingUp className="w-4 h-4 text-coral" />
+                  <span>Vendas Automatizadas</span>
+                </li>
+                <li className="flex items-center space-x-2 hover:text-white transition-colors">
+                  <Target className="w-4 h-4 text-coral" />
+                  <span>Gestão Inteligente</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Support */}
+            <div>
+              <h4 className="text-lg font-bold text-white mb-4">Suporte</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li className="flex items-center space-x-2 hover:text-white transition-colors">
+                  <Clock className="w-4 h-4 text-coral" />
+                  <span>Atendimento 24/7</span>
+                </li>
+                <li className="flex items-center space-x-2 hover:text-white transition-colors">
+                  <MessageSquare className="w-4 h-4 text-coral" />
+                  <span>Suporte WhatsApp</span>
+                </li>
+                <li className="flex items-center space-x-2 hover:text-white transition-colors">
+                  <Zap className="w-4 h-4 text-coral" />
+                  <span>Setup em 5 minutos</span>
+                </li>
+                <li className="flex items-center space-x-2 hover:text-white transition-colors">
+                  <CheckCircle className="w-4 h-4 text-coral" />
+                  <span>Teste 7 dias grátis</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Contact */}
+            <div>
+              <h4 className="text-lg font-bold text-white mb-4">Contato</h4>
+              <div className="space-y-3 text-gray-400">
+                <div className="flex items-center space-x-2">
+                  <MessageSquare className="w-4 h-4 text-coral" />
+                  <span>WhatsApp: (11) 99999-9999</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Mail className="w-4 h-4 text-coral" />
+                  <span>contato@dominiomenu.ai</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <MapPin className="w-4 h-4 text-coral" />
+                  <span>São Paulo, Brasil</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Bar */}
+          <div className="border-t border-gray-800 pt-8">
+            <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+              <div className="text-gray-400 text-sm">
+                © 2024 DomínioMenu.AI. Todos os direitos reservados.
+              </div>
+              <div className="flex space-x-6 text-sm text-gray-400">
+                <span className="hover:text-white transition-colors cursor-pointer">Política de Privacidade</span>
+                <span className="hover:text-white transition-colors cursor-pointer">Termos de Uso</span>
+                <span className="hover:text-white transition-colors cursor-pointer">FAQ</span>
+              </div>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
