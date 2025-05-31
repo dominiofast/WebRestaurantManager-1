@@ -38,9 +38,14 @@ export default function Landing() {
             <div className="flex items-center space-x-3">
               <Button 
                 onClick={handleLogin}
-                className="btn-coral font-semibold"
+                className="bg-white/20 text-white border border-white/30 hover:bg-white/30 transition-all duration-300 font-semibold"
               >
                 Entrar no Sistema
+              </Button>
+              <Button 
+                className="bg-coral text-white border border-coral hover:bg-coral/90 transition-all duration-300 font-semibold"
+              >
+                Teste Grátis
               </Button>
             </div>
           </div>
