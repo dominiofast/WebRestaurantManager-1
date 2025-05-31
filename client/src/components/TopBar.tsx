@@ -26,7 +26,7 @@ export default function TopBar() {
       <div className="flex items-center justify-between px-6 py-4">
         <div>
           <h2 className="text-xl font-semibold text-foreground">
-            Bem-vindo, {user?.firstName || "Usuário"}!
+            Bem-vindo, {user?.ownerName || "Usuário"}!
           </h2>
           <p className="text-muted-foreground text-sm">
             Gerencie seu restaurante de forma eficiente

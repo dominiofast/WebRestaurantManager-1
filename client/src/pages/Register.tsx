@@ -26,8 +26,15 @@ export default function Register() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Redirect to Replit Auth for registration
-    window.location.href = '/api/login';
+    // Store user data in localStorage and redirect to dashboard
+    localStorage.setItem('restaurantUser', JSON.stringify({
+      id: Date.now().toString(),
+      restaurantName: formData.restaurantName,
+      ownerName: formData.ownerName,
+      email: formData.email,
+      isAuthenticated: true
+    }));
+    window.location.href = '/dashboard';
   };
 
   return (
@@ -193,15 +200,15 @@ export default function Register() {
                   </div>
                 </div>
 
-                <a
-                  href="/api/login"
-                  className="w-full btn-primary-cta text-base h-10 group inline-flex items-center justify-center rounded-lg font-semibold transition-all"
+                <Button
+                  type="submit"
+                  className="w-full btn-primary-cta text-base h-10 group"
                 >
                   <span className="flex items-center justify-center">
                     Criar Conta
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </span>
-                </a>
+                </Button>
 
                 <div className="text-center pt-4">
                   <p className="text-gray-600">

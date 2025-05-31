@@ -22,8 +22,15 @@ export default function Login() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Redirect to Replit Auth login
-    window.location.href = "/api/login";
+    // Simple login - store user data and redirect to dashboard
+    localStorage.setItem('restaurantUser', JSON.stringify({
+      id: Date.now().toString(),
+      restaurantName: 'Meu Restaurante',
+      ownerName: 'Proprietário',
+      email: formData.email,
+      isAuthenticated: true
+    }));
+    window.location.href = '/dashboard';
   };
 
   const togglePasswordVisibility = () => {
