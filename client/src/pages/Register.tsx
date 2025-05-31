@@ -26,8 +26,8 @@ export default function Register() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle registration logic here
-    console.log("Registration data:", formData);
+    // Redirect to Replit Auth for registration
+    window.location.href = '/api/login';
   };
 
   return (
