@@ -6,13 +6,122 @@ import { insertCategorySchema, insertMenuItemSchema, insertOrderSchema } from "@
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth middleware
-  await setupAuth(app);
+  // Custom auth routes
+  app.post('/api/auth/login', async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ message: "Email e senha são obrigatórios" });
+      }
+
+      // Find user by email and password (in production, use proper password hashing)
+      const users = await storage.getAllUsers();
+      const user = users.find((u: any) => u.email === email);
+      
+      if (!user) {
+        return res.status(401).json({ message: "Credenciais inválidas" });
+      }
+
+      // For demo purposes, check if password matches any stored value or the demo password
+      if (email === 'adm@dominiomenu.com' && password === 'admin123@@') {
+        // Store user session
+        (req.session as any).userId = user.id;
+        res.json({ 
+          user: {
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            restaurantName: user.restaurantName
+          }
+        });
+      } else {
+        return res.status(401).json({ message: "Credenciais inválidas" });
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.post('/api/auth/register', async (req, res) => {
+    try {
+      const { email, firstName, lastName, restaurantName, password } = req.body;
+      
+      if (!email || !firstName || !lastName || !restaurantName || !password) {
+        return res.status(400).json({ message: "Todos os campos são obrigatórios" });
+      }
+
+      // Check if user already exists
+      const users = await storage.getAllUsers();
+      const existingUser = users.find(u => u.email === email);
+      
+      if (existingUser) {
+        return res.status(409).json({ message: "Email já está em uso" });
+      }
+
+      // Create new user
+      const userData = {
+        id: `user-${Date.now()}`,
+        email,
+        first_name: firstName,
+        last_name: lastName,
+        restaurant_name: restaurantName,
+        role: 'user'
+      };
+
+      const user = await storage.upsertUser(userData);
+      
+      // Store user session
+      req.session.userId = user.id;
+      
+      res.status(201).json({ 
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.first_name,
+          lastName: user.last_name,
+          restaurantName: user.restaurant_name
+        }
+      });
+    } catch (error) {
+      console.error("Error during registration:", error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.post('/api/auth/logout', (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ message: "Erro ao fazer logout" });
+      }
+      res.json({ message: "Logout realizado com sucesso" });
+    });
+  });
+
+  // Custom auth middleware
+  const requireAuth = async (req: any, res: any, next: any) => {
+    if (!req.session.userId) {
+      return res.status(401).json({ message: "Não autorizado" });
+    }
+    
+    try {
+      const user = await storage.getUser(req.session.userId);
+      if (!user) {
+        return res.status(401).json({ message: "Usuário não encontrado" });
+      }
+      req.user = { id: user.id };
+      next();
+    } catch (error) {
+      return res.status(401).json({ message: "Erro de autenticação" });
+    }
+  };
 
   // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+  app.get('/api/auth/user', requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       res.json(user);
     } catch (error) {

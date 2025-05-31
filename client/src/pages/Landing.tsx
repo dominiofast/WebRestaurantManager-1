@@ -4,7 +4,7 @@ import { ChefHat, ClipboardList, BarChart3, Users, Star, CheckCircle, ArrowRight
 
 export default function Landing() {
   const handleLogin = () => {
-    window.location.href = "/api/login";
+    window.location.href = "/login";
   };
 
   return (

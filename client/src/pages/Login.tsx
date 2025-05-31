@@ -20,17 +20,41 @@ export default function Login() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simple login - store user data and redirect to dashboard
-    localStorage.setItem('restaurantUser', JSON.stringify({
-      id: Date.now().toString(),
-      restaurantName: 'Meu Restaurante',
-      ownerName: 'Proprietário',
-      email: formData.email,
-      isAuthenticated: true
-    }));
-    window.location.href = '/dashboard';
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Store user data and redirect to dashboard
+        localStorage.setItem('restaurantUser', JSON.stringify({
+          id: data.user.id,
+          restaurantName: data.user.restaurantName,
+          ownerName: `${data.user.firstName} ${data.user.lastName}`,
+          email: data.user.email,
+          isAuthenticated: true
+        }));
+        window.location.href = '/dashboard';
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Credenciais inválidas');
+      }
+    } catch (error) {
+      alert('Erro de conexão. Tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const togglePasswordVisibility = () => {
