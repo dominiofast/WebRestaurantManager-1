@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 240 10% 98%; /* #F0F2F5 */
+  --foreground: 212 30% 16%; /* #212529 */
+  --muted: 240 5% 96%; /* #F8F9FA */
+  --muted-foreground: 240 4% 45%; /* #6C757D */
+  --popover: 0 0% 100%;
+  --popover-foreground: 212 30% 16%;
+  --card: 0 0% 100%;
+  --card-foreground: 212 30% 16%;
+  --border: 240 6% 87%; /* #DEE2E6 */
+  --input: 240 6% 87%;
+  --primary: 210 100% 12%; /* #001f3f - Navy Blue */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 240 5% 96%;
+  --secondary-foreground: 212 30% 16%;
+  --accent: 16 100% 66%; /* #FF7F50 - Coral */
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 60 9% 98%;
+  --ring: 210 100% 12%;
+  --radius: 0.5rem;
+  
+  /* Sidebar specific colors */
+  --sidebar-background: 210 100% 12%; /* #001f3f - Navy Blue */
+  --sidebar-foreground: 0 0% 100%;
+  --sidebar-primary: 16 100% 66%; /* #FF7F50 - Coral */
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 210 100% 18%;
+  --sidebar-accent-foreground: 0 0% 100%;
+  --sidebar-border: 210 100% 18%;
+  --sidebar-ring: 16 100% 66%;
+}
+
+.dark {
+  --background: 212 30% 7%;
+  --foreground: 0 0% 98%;
+  --muted: 212 30% 12%;
+  --muted-foreground: 240 5% 65%;
+  --popover: 212 30% 7%;
+  --popover-foreground: 0 0% 98%;
+  --card: 212 30% 7%;
+  --card-foreground: 0 0% 98%;
+  --border: 212 30% 18%;
+  --input: 212 30% 18%;
+  --primary: 210 100% 12%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 212 30% 12%;
+  --secondary-foreground: 0 0% 98%;
+  --accent: 16 100% 66%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 63% 31%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 212 30% 83%;
+  
+  --sidebar-background: 212 30% 7%;
+  --sidebar-foreground: 0 0% 98%;
+  --sidebar-primary: 16 100% 66%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 212 30% 12%;
+  --sidebar-accent-foreground: 0 0% 98%;
+  --sidebar-border: 212 30% 18%;
+  --sidebar-ring: 16 100% 66%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+  
+  /* Custom navy and coral colors */
+  .bg-navy {
+    background-color: #001f3f;
+  }
+  
+  .text-navy {
+    color: #001f3f;
+  }
+  
+  .bg-coral {
+    background-color: #FF7F50;
+  }
+  
+  .text-coral {
+    color: #FF7F50;
+  }
+  
+  .border-coral {
+    border-color: #FF7F50;
+  }
+  
+  .hover\:bg-coral:hover {
+    background-color: #FF7F50;
+  }
+  
+  .hover\:text-coral:hover {
+    color: #FF7F50;
+  }
+  
+  .focus\:ring-coral:focus {
+    --tw-ring-color: #FF7F50;
+  }
+  
+  .focus\:border-coral:focus {
+    border-color: #FF7F50;
+  }
+
+  /* Button variants with coral accent */
+  .btn-coral {
+    @apply bg-coral hover:bg-orange-600 text-white font-medium transition-colors;
+  }
+  
+  .btn-coral-outline {
+    @apply border border-coral text-coral hover:bg-coral hover:text-white font-medium transition-colors;
+  }
+}

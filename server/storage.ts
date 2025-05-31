@@ -1,0 +1,357 @@
+import {
+  users,
+  categories,
+  menuItems,
+  orders,
+  orderItems,
+  type User,
+  type UpsertUser,
+  type Category,
+  type InsertCategory,
+  type MenuItem,
+  type InsertMenuItem,
+  type MenuItemWithCategory,
+  type Order,
+  type InsertOrder,
+  type OrderWithItems,
+  type OrderItem,
+  type InsertOrderItem,
+} from "@shared/schema";
+import { db } from "./db";
+import { eq, desc, and, sql } from "drizzle-orm";
+
+// Interface for storage operations
+export interface IStorage {
+  // User operations
+  getUser(id: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
+  
+  // Category operations
+  getCategories(userId: string): Promise<Category[]>;
+  createCategory(category: InsertCategory): Promise<Category>;
+  updateCategory(id: number, category: Partial<InsertCategory>): Promise<Category>;
+  deleteCategory(id: number, userId: string): Promise<void>;
+  
+  // Menu item operations
+  getMenuItems(userId: string, categoryId?: number): Promise<MenuItemWithCategory[]>;
+  createMenuItem(item: InsertMenuItem): Promise<MenuItem>;
+  updateMenuItem(id: number, item: Partial<InsertMenuItem>): Promise<MenuItem>;
+  deleteMenuItem(id: number, userId: string): Promise<void>;
+  
+  // Order operations
+  getOrders(userId: string, status?: string): Promise<OrderWithItems[]>;
+  createOrder(order: InsertOrder, items: InsertOrderItem[]): Promise<OrderWithItems>;
+  updateOrderStatus(id: number, status: string, userId: string): Promise<Order>;
+  getOrderById(id: number, userId: string): Promise<OrderWithItems | undefined>;
+  
+  // Dashboard stats
+  getDashboardStats(userId: string): Promise<{
+    todaySales: number;
+    todayOrders: number;
+    activeOrders: number;
+    avgOrderValue: number;
+  }>;
+}
+
+export class DatabaseStorage implements IStorage {
+  // User operations
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return user;
+  }
+
+  // Category operations
+  async getCategories(userId: string): Promise<Category[]> {
+    return await db
+      .select()
+      .from(categories)
+      .where(eq(categories.userId, userId))
+      .orderBy(categories.name);
+  }
+
+  async createCategory(category: InsertCategory): Promise<Category> {
+    const [newCategory] = await db
+      .insert(categories)
+      .values(category)
+      .returning();
+    return newCategory;
+  }
+
+  async updateCategory(id: number, category: Partial<InsertCategory>): Promise<Category> {
+    const [updatedCategory] = await db
+      .update(categories)
+      .set({ ...category, updatedAt: new Date() })
+      .where(eq(categories.id, id))
+      .returning();
+    return updatedCategory;
+  }
+
+  async deleteCategory(id: number, userId: string): Promise<void> {
+    await db
+      .delete(categories)
+      .where(and(eq(categories.id, id), eq(categories.userId, userId)));
+  }
+
+  // Menu item operations
+  async getMenuItems(userId: string, categoryId?: number): Promise<MenuItemWithCategory[]> {
+    const query = db
+      .select({
+        id: menuItems.id,
+        name: menuItems.name,
+        description: menuItems.description,
+        price: menuItems.price,
+        categoryId: menuItems.categoryId,
+        imageUrl: menuItems.imageUrl,
+        available: menuItems.available,
+        userId: menuItems.userId,
+        createdAt: menuItems.createdAt,
+        updatedAt: menuItems.updatedAt,
+        category: {
+          id: categories.id,
+          name: categories.name,
+          description: categories.description,
+          userId: categories.userId,
+          createdAt: categories.createdAt,
+          updatedAt: categories.updatedAt,
+        },
+      })
+      .from(menuItems)
+      .leftJoin(categories, eq(menuItems.categoryId, categories.id))
+      .where(eq(menuItems.userId, userId));
+
+    if (categoryId) {
+      query.where(and(eq(menuItems.userId, userId), eq(menuItems.categoryId, categoryId)));
+    }
+
+    return await query.orderBy(menuItems.name);
+  }
+
+  async createMenuItem(item: InsertMenuItem): Promise<MenuItem> {
+    const [newItem] = await db
+      .insert(menuItems)
+      .values(item)
+      .returning();
+    return newItem;
+  }
+
+  async updateMenuItem(id: number, item: Partial<InsertMenuItem>): Promise<MenuItem> {
+    const [updatedItem] = await db
+      .update(menuItems)
+      .set({ ...item, updatedAt: new Date() })
+      .where(eq(menuItems.id, id))
+      .returning();
+    return updatedItem;
+  }
+
+  async deleteMenuItem(id: number, userId: string): Promise<void> {
+    await db
+      .delete(menuItems)
+      .where(and(eq(menuItems.id, id), eq(menuItems.userId, userId)));
+  }
+
+  // Order operations
+  async getOrders(userId: string, status?: string): Promise<OrderWithItems[]> {
+    let query = db
+      .select({
+        id: orders.id,
+        tableNumber: orders.tableNumber,
+        status: orders.status,
+        totalAmount: orders.totalAmount,
+        observations: orders.observations,
+        userId: orders.userId,
+        createdAt: orders.createdAt,
+        updatedAt: orders.updatedAt,
+      })
+      .from(orders)
+      .where(eq(orders.userId, userId));
+
+    if (status && status !== "all") {
+      query = query.where(and(eq(orders.userId, userId), eq(orders.status, status)));
+    }
+
+    const ordersResult = await query.orderBy(desc(orders.createdAt));
+
+    // Get order items for each order
+    const ordersWithItems = await Promise.all(
+      ordersResult.map(async (order) => {
+        const items = await db
+          .select({
+            id: orderItems.id,
+            orderId: orderItems.orderId,
+            menuItemId: orderItems.menuItemId,
+            quantity: orderItems.quantity,
+            unitPrice: orderItems.unitPrice,
+            subtotal: orderItems.subtotal,
+            menuItem: {
+              id: menuItems.id,
+              name: menuItems.name,
+              description: menuItems.description,
+              price: menuItems.price,
+              categoryId: menuItems.categoryId,
+              imageUrl: menuItems.imageUrl,
+              available: menuItems.available,
+              userId: menuItems.userId,
+              createdAt: menuItems.createdAt,
+              updatedAt: menuItems.updatedAt,
+            },
+          })
+          .from(orderItems)
+          .leftJoin(menuItems, eq(orderItems.menuItemId, menuItems.id))
+          .where(eq(orderItems.orderId, order.id));
+
+        return {
+          ...order,
+          items,
+        };
+      })
+    );
+
+    return ordersWithItems;
+  }
+
+  async createOrder(order: InsertOrder, items: InsertOrderItem[]): Promise<OrderWithItems> {
+    const [newOrder] = await db.insert(orders).values(order).returning();
+
+    const orderItemsWithOrderId = items.map((item) => ({
+      ...item,
+      orderId: newOrder.id,
+    }));
+
+    const createdItems = await db
+      .insert(orderItems)
+      .values(orderItemsWithOrderId)
+      .returning();
+
+    // Get menu items for response
+    const itemsWithMenuItems = await Promise.all(
+      createdItems.map(async (item) => {
+        const [menuItem] = await db
+          .select()
+          .from(menuItems)
+          .where(eq(menuItems.id, item.menuItemId));
+        return {
+          ...item,
+          menuItem,
+        };
+      })
+    );
+
+    return {
+      ...newOrder,
+      items: itemsWithMenuItems,
+    };
+  }
+
+  async updateOrderStatus(id: number, status: string, userId: string): Promise<Order> {
+    const [updatedOrder] = await db
+      .update(orders)
+      .set({ status, updatedAt: new Date() })
+      .where(and(eq(orders.id, id), eq(orders.userId, userId)))
+      .returning();
+    return updatedOrder;
+  }
+
+  async getOrderById(id: number, userId: string): Promise<OrderWithItems | undefined> {
+    const [order] = await db
+      .select()
+      .from(orders)
+      .where(and(eq(orders.id, id), eq(orders.userId, userId)));
+
+    if (!order) return undefined;
+
+    const items = await db
+      .select({
+        id: orderItems.id,
+        orderId: orderItems.orderId,
+        menuItemId: orderItems.menuItemId,
+        quantity: orderItems.quantity,
+        unitPrice: orderItems.unitPrice,
+        subtotal: orderItems.subtotal,
+        menuItem: {
+          id: menuItems.id,
+          name: menuItems.name,
+          description: menuItems.description,
+          price: menuItems.price,
+          categoryId: menuItems.categoryId,
+          imageUrl: menuItems.imageUrl,
+          available: menuItems.available,
+          userId: menuItems.userId,
+          createdAt: menuItems.createdAt,
+          updatedAt: menuItems.updatedAt,
+        },
+      })
+      .from(orderItems)
+      .leftJoin(menuItems, eq(orderItems.menuItemId, menuItems.id))
+      .where(eq(orderItems.orderId, order.id));
+
+    return {
+      ...order,
+      items,
+    };
+  }
+
+  async getDashboardStats(userId: string): Promise<{
+    todaySales: number;
+    todayOrders: number;
+    activeOrders: number;
+    avgOrderValue: number;
+  }> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    // Today's sales and orders
+    const [todayStats] = await db
+      .select({
+        totalSales: sql<number>`COALESCE(SUM(${orders.totalAmount}), 0)`,
+        totalOrders: sql<number>`COUNT(*)`,
+        avgOrderValue: sql<number>`COALESCE(AVG(${orders.totalAmount}), 0)`,
+      })
+      .from(orders)
+      .where(
+        and(
+          eq(orders.userId, userId),
+          sql`${orders.createdAt} >= ${today}`,
+          sql`${orders.createdAt} < ${tomorrow}`
+        )
+      );
+
+    // Active orders (not delivered)
+    const [activeOrdersResult] = await db
+      .select({
+        count: sql<number>`COUNT(*)`,
+      })
+      .from(orders)
+      .where(
+        and(
+          eq(orders.userId, userId),
+          sql`${orders.status} != 'delivered'`
+        )
+      );
+
+    return {
+      todaySales: Number(todayStats.totalSales) || 0,
+      todayOrders: Number(todayStats.totalOrders) || 0,
+      activeOrders: Number(activeOrdersResult.count) || 0,
+      avgOrderValue: Number(todayStats.avgOrderValue) || 0,
+    };
+  }
+}
+
+export const storage = new DatabaseStorage();
