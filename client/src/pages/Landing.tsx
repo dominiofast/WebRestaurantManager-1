@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChefHat, ClipboardList, BarChart3, Users, Star, CheckCircle, ArrowRight, Sparkles } from "lucide-react";
+import { ChefHat, ClipboardList, BarChart3, Users, Star, CheckCircle, ArrowRight, Sparkles, Bot, MessageSquare, Brain, Zap, Phone, Mail, MapPin, TrendingUp, Target, Clock } from "lucide-react";
 
 export default function Landing() {
   const handleLogin = () => {
@@ -10,16 +10,44 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className="bg-navy shadow-sm">
+      <nav className="bg-navy shadow-lg border-b border-coral/20">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="text-2xl font-bold text-white">RestaurantPRO</div>
-            <Button 
-              onClick={handleLogin}
-              className="btn-coral"
-            >
-              Entrar no Sistema
-            </Button>
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-coral rounded-xl flex items-center justify-center">
+                <Bot className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-2xl font-bold text-white">DomínioMenu<span className="text-coral">.AI</span></div>
+            </div>
+            
+            <div className="hidden md:flex items-center space-x-6">
+              <div className="flex items-center space-x-2 text-white/80 hover:text-white transition-colors">
+                <MessageSquare className="w-4 h-4" />
+                <span className="text-sm font-medium">WhatsApp IA</span>
+              </div>
+              <div className="flex items-center space-x-2 text-white/80 hover:text-white transition-colors">
+                <Brain className="w-4 h-4" />
+                <span className="text-sm font-medium">Análise Inteligente</span>
+              </div>
+              <div className="flex items-center space-x-2 text-white/80 hover:text-white transition-colors">
+                <TrendingUp className="w-4 h-4" />
+                <span className="text-sm font-medium">Vendas IA</span>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-3">
+              <Button 
+                className="bg-coral/20 text-coral border border-coral hover:bg-coral hover:text-white transition-all duration-300 font-semibold"
+              >
+                Teste Grátis
+              </Button>
+              <Button 
+                onClick={handleLogin}
+                className="btn-coral font-semibold"
+              >
+                Entrar no Sistema
+              </Button>
+            </div>
           </div>
         </div>
       </nav>
@@ -31,39 +59,52 @@ export default function Landing() {
           <div className="max-w-5xl mx-auto text-center">
             <div className="mb-6">
               <span className="inline-flex items-center px-4 py-2 rounded-full bg-coral/10 text-coral font-semibold text-sm border border-coral/20">
-                <Sparkles className="w-4 h-4 mr-2" />
-                Sistema Profissional de Gestão
+                <Bot className="w-4 h-4 mr-2" />
+                Inteligência Artificial para Restaurantes
               </span>
             </div>
             <h1 className="hero-title mb-8">
-              Gestão Completa para seu
-              <span className="text-coral"> Restaurante</span>
+              Venda Mais com 
+              <span className="text-coral"> Inteligência Artificial</span>
             </h1>
             <p className="text-xl lg:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed font-medium">
-              Sistema profissional que otimiza todas as operações do seu restaurante. 
-              Gerencie cardápio, pedidos e vendas de forma inteligente e eficiente.
+              O primeiro assistente de IA do Brasil especializado em restaurantes. 
+              Automatize vendas pelo WhatsApp e aumente seu faturamento em até 40%.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
               <button 
-                onClick={handleLogin}
-                className="btn-primary-cta text-xl animate-pulse-glow group"
+                className="bg-coral text-white px-8 py-4 rounded-2xl text-xl font-bold hover:bg-coral/90 transform hover:scale-105 transition-all duration-300 shadow-xl animate-pulse-glow group"
               >
                 <span className="flex items-center">
-                  Começar Agora
+                  <MessageSquare className="w-6 h-6 mr-3" />
+                  Teste Grátis 7 Dias
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </span>
               </button>
               <button 
-                className="btn-secondary-outline text-lg group"
+                onClick={handleLogin}
+                className="bg-white border-2 border-coral text-coral px-8 py-4 rounded-2xl text-xl font-bold hover:bg-coral hover:text-white transition-all duration-300 shadow-lg group"
               >
                 <span className="flex items-center">
-                  Ver Demonstração
+                  <Bot className="w-6 h-6 mr-3" />
+                  Ver Demo IA
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </span>
               </button>
             </div>
-            <div className="mt-12 text-sm text-gray-500">
-              ⚡ Comece gratuitamente • 🚀 Sem compromisso • 💪 Suporte completo
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-8 text-gray-600">
+              <div className="flex items-center space-x-2">
+                <CheckCircle className="w-5 h-5 text-green-500" />
+                <span className="font-medium">Setup em 5 minutos</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <CheckCircle className="w-5 h-5 text-green-500" />
+                <span className="font-medium">Suporte WhatsApp</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <CheckCircle className="w-5 h-5 text-green-500" />
+                <span className="font-medium">Cancel quando quiser</span>
+              </div>
             </div>
           </div>
         </div>
@@ -74,49 +115,49 @@ export default function Landing() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-20">
             <h2 className="section-title mb-6">
-              Tudo que você precisa em um só lugar
+              Inteligência Artificial que Vende Mais
             </h2>
             <p className="text-xl lg:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Funcionalidades completas para modernizar a gestão do seu restaurante
+              Revolucione seu restaurante com IA especializada em aumentar vendas e automatizar operações
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="modern-card p-8 text-center group animate-float">
               <div className="icon-container mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <ChefHat className="w-8 h-8 text-coral" />
+                <MessageSquare className="w-8 h-8 text-coral" />
               </div>
-              <h3 className="text-navy text-xl font-bold mb-4">Gestão de Cardápio</h3>
+              <h3 className="text-navy text-xl font-bold mb-4">Assistente WhatsApp IA</h3>
               <p className="text-gray-600 leading-relaxed">
-                Organize categorias e itens do seu cardápio com facilidade. Adicione fotos, preços e controle disponibilidade em tempo real.
+                Robô inteligente que atende clientes 24/7, faz vendas automáticas e sugere combos personalizados pelo WhatsApp.
               </p>
             </div>
 
             <div className="modern-card p-8 text-center group animate-float" style={{animationDelay: '0.2s'}}>
               <div className="icon-container mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <ClipboardList className="w-8 h-8 text-coral" />
+                <Brain className="w-8 h-8 text-coral" />
               </div>
-              <h3 className="text-navy text-xl font-bold mb-4">Controle de Pedidos</h3>
+              <h3 className="text-navy text-xl font-bold mb-4">Análise Inteligente</h3>
               <p className="text-gray-600 leading-relaxed">
-                Acompanhe pedidos em tempo real com status de preparo e entrega. Organize a cozinha de forma eficiente e produtiva.
+                IA analisa padrões de compra, identifica oportunidades de venda e sugere estratégias para aumentar o ticket médio.
               </p>
             </div>
 
             <div className="modern-card p-8 text-center group animate-float" style={{animationDelay: '0.4s'}}>
               <div className="icon-container mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <BarChart3 className="w-8 h-8 text-coral" />
+                <TrendingUp className="w-8 h-8 text-coral" />
               </div>
-              <h3 className="text-navy text-xl font-bold mb-4">Dashboard Inteligente</h3>
+              <h3 className="text-navy text-xl font-bold mb-4">Vendas Automatizadas</h3>
               <p className="text-gray-600 leading-relaxed">
-                Visualize vendas, estatísticas e relatórios em tempo real. Tome decisões estratégicas baseadas em dados precisos.
+                Sistema que identifica o melhor momento para fazer upselling, cross-selling e campanhas personalizadas.
               </p>
             </div>
 
             <div className="modern-card p-8 text-center group animate-float" style={{animationDelay: '0.6s'}}>
               <div className="icon-container mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Users className="w-8 h-8 text-coral" />
+                <Target className="w-8 h-8 text-coral" />
               </div>
-              <h3 className="text-navy text-xl font-bold mb-4">Gestão Completa</h3>
+              <h3 className="text-navy text-xl font-bold mb-4">Gestão Inteligente</h3>
               <p className="text-gray-600 leading-relaxed">
                 Sistema completo para otimizar todas as operações do seu restaurante de forma profissional e integrada.
               </p>
