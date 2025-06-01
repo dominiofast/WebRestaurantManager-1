@@ -5,27 +5,57 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Store, TrendingUp, Users, DollarSign } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Store, TrendingUp, Users, DollarSign, Building2, Edit, Trash2, Phone, Mail, MapPin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import StatsCard from "@/components/StatsCard";
 
 export default function SuperAdmin() {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [newRestaurant, setNewRestaurant] = useState({
+  const [isCompanyDialogOpen, setIsCompanyDialogOpen] = useState(false);
+  const [isStoreDialogOpen, setIsStoreDialogOpen] = useState(false);
+  const [editingCompany, setEditingCompany] = useState<any>(null);
+  const [editingStore, setEditingStore] = useState<any>(null);
+  
+  const [newCompany, setNewCompany] = useState({
+    name: "",
+    description: "",
     email: "",
-    firstName: "",
-    lastName: "",
-    restaurantName: ""
+    phone: "",
+    address: "",
+    status: "active"
   });
+
+  const [newStore, setNewStore] = useState({
+    name: "",
+    companyId: "",
+    address: "",
+    phone: "",
+    email: "",
+    status: "active"
+  });
+
   const { toast } = useToast();
 
-  // Buscar todos os restaurantes
-  const { data: restaurants = [], isLoading: restaurantsLoading } = useQuery({
-    queryKey: ['/api/admin/restaurants'],
+  // Buscar todas as empresas
+  const { data: companies = [], isLoading: companiesLoading } = useQuery({
+    queryKey: ['/api/admin/companies'],
     queryFn: async () => {
-      const res = await fetch('/api/admin/restaurants');
-      if (!res.ok) throw new Error('Erro ao buscar restaurantes');
+      const res = await fetch('/api/admin/companies');
+      if (!res.ok) throw new Error('Erro ao buscar empresas');
+      return res.json();
+    }
+  });
+
+  // Buscar todas as lojas
+  const { data: stores = [], isLoading: storesLoading } = useQuery({
+    queryKey: ['/api/admin/stores'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/stores');
+      if (!res.ok) throw new Error('Erro ao buscar lojas');
       return res.json();
     }
   });

@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertCategorySchema, insertMenuItemSchema, insertOrderSchema } from "@shared/schema";
+import { insertCategorySchema, insertMenuItemSchema, insertOrderSchema, insertCompanySchema, insertStoreSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -203,6 +203,168 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       res.status(500).json({ message: "Erro ao buscar estatísticas globais" });
+    }
+  });
+
+  // Companies management routes (Super Admin only)
+  app.get('/api/admin/companies', requireAuth, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.id);
+      if (!user || user.role !== 'super_admin') {
+        return res.status(403).json({ message: "Acesso negado" });
+      }
+
+      const companies = await storage.getCompanies();
+      res.json(companies);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar empresas" });
+    }
+  });
+
+  app.post('/api/admin/companies', requireAuth, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.id);
+      if (!user || user.role !== 'super_admin') {
+        return res.status(403).json({ message: "Acesso negado" });
+      }
+
+      const companyData = insertCompanySchema.parse(req.body);
+      const company = await storage.createCompany(companyData);
+      res.status(201).json(company);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao criar empresa" });
+    }
+  });
+
+  app.get('/api/admin/companies/:id', requireAuth, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.id);
+      if (!user || user.role !== 'super_admin') {
+        return res.status(403).json({ message: "Acesso negado" });
+      }
+
+      const id = parseInt(req.params.id);
+      const company = await storage.getCompanyById(id);
+      
+      if (!company) {
+        return res.status(404).json({ message: "Empresa não encontrada" });
+      }
+
+      res.json(company);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar empresa" });
+    }
+  });
+
+  app.put('/api/admin/companies/:id', requireAuth, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.id);
+      if (!user || user.role !== 'super_admin') {
+        return res.status(403).json({ message: "Acesso negado" });
+      }
+
+      const id = parseInt(req.params.id);
+      const companyData = insertCompanySchema.partial().parse(req.body);
+      const company = await storage.updateCompany(id, companyData);
+      res.json(company);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao atualizar empresa" });
+    }
+  });
+
+  app.delete('/api/admin/companies/:id', requireAuth, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.id);
+      if (!user || user.role !== 'super_admin') {
+        return res.status(403).json({ message: "Acesso negado" });
+      }
+
+      const id = parseInt(req.params.id);
+      await storage.deleteCompany(id);
+      res.json({ message: "Empresa deletada com sucesso" });
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao deletar empresa" });
+    }
+  });
+
+  // Stores management routes (Super Admin only)
+  app.get('/api/admin/stores', requireAuth, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.id);
+      if (!user || user.role !== 'super_admin') {
+        return res.status(403).json({ message: "Acesso negado" });
+      }
+
+      const stores = await storage.getStores();
+      res.json(stores);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar lojas" });
+    }
+  });
+
+  app.post('/api/admin/stores', requireAuth, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.id);
+      if (!user || user.role !== 'super_admin') {
+        return res.status(403).json({ message: "Acesso negado" });
+      }
+
+      const storeData = insertStoreSchema.parse(req.body);
+      const store = await storage.createStore(storeData);
+      res.status(201).json(store);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao criar loja" });
+    }
+  });
+
+  app.get('/api/admin/stores/:id', requireAuth, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.id);
+      if (!user || user.role !== 'super_admin') {
+        return res.status(403).json({ message: "Acesso negado" });
+      }
+
+      const id = parseInt(req.params.id);
+      const store = await storage.getStoreById(id);
+      
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      res.json(store);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar loja" });
+    }
+  });
+
+  app.put('/api/admin/stores/:id', requireAuth, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.id);
+      if (!user || user.role !== 'super_admin') {
+        return res.status(403).json({ message: "Acesso negado" });
+      }
+
+      const id = parseInt(req.params.id);
+      const storeData = insertStoreSchema.partial().parse(req.body);
+      const store = await storage.updateStore(id, storeData);
+      res.json(store);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao atualizar loja" });
+    }
+  });
+
+  app.delete('/api/admin/stores/:id', requireAuth, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.id);
+      if (!user || user.role !== 'super_admin') {
+        return res.status(403).json({ message: "Acesso negado" });
+      }
+
+      const id = parseInt(req.params.id);
+      await storage.deleteStore(id);
+      res.json({ message: "Loja deletada com sucesso" });
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao deletar loja" });
     }
   });
 

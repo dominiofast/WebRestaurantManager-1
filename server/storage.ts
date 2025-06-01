@@ -380,6 +380,105 @@ export class DatabaseStorage implements IStorage {
       avgOrderValue: Number(todayStats.avgOrderValue) || 0,
     };
   }
+
+  // Company operations
+  async getCompanies(): Promise<Company[]> {
+    return await db.select().from(companies).orderBy(desc(companies.createdAt));
+  }
+
+  async getCompanyById(id: number): Promise<CompanyWithStores | undefined> {
+    const [company] = await db.select().from(companies).where(eq(companies.id, id));
+    if (!company) return undefined;
+
+    const companyStores = await db.select().from(stores).where(eq(stores.companyId, id));
+    const owner = company.ownerId ? await this.getUser(company.ownerId) : undefined;
+
+    return {
+      ...company,
+      stores: companyStores,
+      owner,
+    };
+  }
+
+  async createCompany(company: InsertCompany): Promise<Company> {
+    const [newCompany] = await db.insert(companies).values(company).returning();
+    return newCompany;
+  }
+
+  async updateCompany(id: number, company: Partial<InsertCompany>): Promise<Company> {
+    const [updatedCompany] = await db.update(companies)
+      .set({ ...company, updatedAt: new Date() })
+      .where(eq(companies.id, id))
+      .returning();
+    return updatedCompany;
+  }
+
+  async deleteCompany(id: number): Promise<void> {
+    // First delete all stores of this company
+    await db.delete(stores).where(eq(stores.companyId, id));
+    // Then delete the company
+    await db.delete(companies).where(eq(companies.id, id));
+  }
+
+  // Store operations
+  async getStores(): Promise<StoreWithCompany[]> {
+    const result = await db
+      .select({
+        store: stores,
+        company: companies,
+      })
+      .from(stores)
+      .leftJoin(companies, eq(stores.companyId, companies.id))
+      .orderBy(desc(stores.createdAt));
+
+    return result.map(row => ({
+      ...row.store,
+      company: row.company!,
+    }));
+  }
+
+  async getStoresByCompany(companyId: number): Promise<Store[]> {
+    return await db.select().from(stores).where(eq(stores.companyId, companyId));
+  }
+
+  async getStoreById(id: number): Promise<StoreWithCompany | undefined> {
+    const result = await db
+      .select({
+        store: stores,
+        company: companies,
+        manager: users,
+      })
+      .from(stores)
+      .leftJoin(companies, eq(stores.companyId, companies.id))
+      .leftJoin(users, eq(stores.managerId, users.id))
+      .where(eq(stores.id, id));
+
+    if (result.length === 0) return undefined;
+
+    const row = result[0];
+    return {
+      ...row.store,
+      company: row.company!,
+      manager: row.manager || undefined,
+    };
+  }
+
+  async createStore(store: InsertStore): Promise<Store> {
+    const [newStore] = await db.insert(stores).values(store).returning();
+    return newStore;
+  }
+
+  async updateStore(id: number, store: Partial<InsertStore>): Promise<Store> {
+    const [updatedStore] = await db.update(stores)
+      .set({ ...store, updatedAt: new Date() })
+      .where(eq(stores.id, id))
+      .returning();
+    return updatedStore;
+  }
+
+  async deleteStore(id: number): Promise<void> {
+    await db.delete(stores).where(eq(stores.id, id));
+  }
 }
 
 export const storage = new DatabaseStorage();
