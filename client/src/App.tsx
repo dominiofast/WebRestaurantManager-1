@@ -12,6 +12,8 @@ import MenuManagement from "@/pages/MenuManagement";
 import OrderManagement from "@/pages/OrderManagement";
 import SuperAdmin from "@/pages/SuperAdmin";
 import StoreManagement from "@/pages/StoreManagement";
+import DigitalMenu from "@/pages/DigitalMenu";
+import MenuIndex from "@/pages/MenuIndex";
 import Sidebar from "@/components/Sidebar";
 import TopBar from "@/components/TopBar";
 import NotFound from "@/pages/not-found";
@@ -51,6 +53,10 @@ function Router() {
 
   return (
     <Switch>
+      {/* Rotas públicas do cardápio digital */}
+      <Route path="/cardapios" component={MenuIndex} />
+      <Route path="/menu/:storeSlug" component={DigitalMenu} />
+      
       {!isAuthenticated ? (
         <>
           <Route path="/" component={Landing} />
