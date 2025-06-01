@@ -566,7 +566,8 @@ export default function StoreManagement() {
                             onClick={() => window.location.href = `/store/${store.id}/dashboard`}
                             className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200"
                           >
-                            <Settings className="h-4 w-4" />
+                            <Edit className="h-4 w-4 mr-1" />
+                            Administrar
                           </Button>
                           <Button
                             variant="outline"
