@@ -6,6 +6,12 @@ import {
   orderItems,
   companies,
   stores,
+  menuSections,
+  menuProducts,
+  addonGroups,
+  addons,
+  cartItems,
+  digitalOrders,
   type User,
   type UpsertUser,
   type Category,
@@ -24,6 +30,23 @@ import {
   type InsertStore,
   type StoreWithCompany,
   type CompanyWithStores,
+  type MenuSection,
+  type InsertMenuSection,
+  type MenuProduct,
+  type InsertMenuProduct,
+  type AddonGroup,
+  type InsertAddonGroup,
+  type Addon,
+  type InsertAddon,
+  type CartItem,
+  type InsertCartItem,
+  type DigitalOrder,
+  type InsertDigitalOrder,
+  type MenuProductWithSection,
+  type AddonGroupWithAddons,
+  type MenuSectionWithProducts,
+  type StoreWithMenu,
+  type DigitalOrderWithItems,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql } from "drizzle-orm";
@@ -75,6 +98,38 @@ export interface IStorage {
   createStore(store: InsertStore): Promise<Store>;
   updateStore(id: number, store: Partial<InsertStore>): Promise<Store>;
   deleteStore(id: number): Promise<void>;
+
+  // Digital menu operations
+  getStoreBySlug(slug: string): Promise<StoreWithMenu | undefined>;
+  getMenuSections(storeId: number): Promise<MenuSection[]>;
+  getMenuProducts(storeId: number, sectionId?: number): Promise<MenuProductWithSection[]>;
+  createMenuSection(section: InsertMenuSection): Promise<MenuSection>;
+  createMenuProduct(product: InsertMenuProduct): Promise<MenuProduct>;
+  updateMenuSection(id: number, section: Partial<InsertMenuSection>): Promise<MenuSection>;
+  updateMenuProduct(id: number, product: Partial<InsertMenuProduct>): Promise<MenuProduct>;
+  deleteMenuSection(id: number): Promise<void>;
+  deleteMenuProduct(id: number): Promise<void>;
+  
+  // Addon operations
+  getAddonGroups(productId: number): Promise<AddonGroupWithAddons[]>;
+  createAddonGroup(group: InsertAddonGroup): Promise<AddonGroup>;
+  createAddon(addon: InsertAddon): Promise<Addon>;
+  updateAddonGroup(id: number, group: Partial<InsertAddonGroup>): Promise<AddonGroup>;
+  updateAddon(id: number, addon: Partial<InsertAddon>): Promise<Addon>;
+  deleteAddonGroup(id: number): Promise<void>;
+  deleteAddon(id: number): Promise<void>;
+
+  // Cart operations
+  getCartItems(sessionId: string, storeId: number): Promise<CartItem[]>;
+  addToCart(item: InsertCartItem): Promise<CartItem>;
+  updateCartItem(id: number, quantity: number): Promise<CartItem>;
+  removeFromCart(id: number): Promise<void>;
+  clearCart(sessionId: string, storeId: number): Promise<void>;
+
+  // Digital order operations
+  createDigitalOrder(order: InsertDigitalOrder): Promise<DigitalOrder>;
+  getDigitalOrders(storeId: number, status?: string): Promise<DigitalOrderWithItems[]>;
+  updateDigitalOrderStatus(id: number, status: string): Promise<DigitalOrder>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -478,6 +533,240 @@ export class DatabaseStorage implements IStorage {
 
   async deleteStore(id: number): Promise<void> {
     await db.delete(stores).where(eq(stores.id, id));
+  }
+
+  // Digital menu operations
+  async getStoreBySlug(slug: string): Promise<StoreWithMenu | undefined> {
+    const result = await db
+      .select()
+      .from(stores)
+      .leftJoin(companies, eq(stores.companyId, companies.id))
+      .where(eq(stores.slug, slug))
+      .limit(1);
+
+    if (!result.length) return undefined;
+
+    const store = result[0].stores;
+    const company = result[0].companies;
+
+    const sections = await db
+      .select()
+      .from(menuSections)
+      .where(eq(menuSections.storeId, store.id))
+      .orderBy(menuSections.displayOrder);
+
+    const sectionsWithProducts = await Promise.all(
+      sections.map(async (section) => {
+        const products = await db
+          .select()
+          .from(menuProducts)
+          .where(eq(menuProducts.sectionId, section.id))
+          .orderBy(menuProducts.displayOrder);
+
+        return { ...section, products };
+      })
+    );
+
+    return {
+      ...store,
+      company: company!,
+      sections: sectionsWithProducts,
+    };
+  }
+
+  async getMenuSections(storeId: number): Promise<MenuSection[]> {
+    return await db
+      .select()
+      .from(menuSections)
+      .where(eq(menuSections.storeId, storeId))
+      .orderBy(menuSections.displayOrder);
+  }
+
+  async getMenuProducts(storeId: number, sectionId?: number): Promise<MenuProductWithSection[]> {
+    let query = db
+      .select()
+      .from(menuProducts)
+      .leftJoin(menuSections, eq(menuProducts.sectionId, menuSections.id))
+      .where(eq(menuProducts.storeId, storeId));
+
+    if (sectionId) {
+      query = query.where(eq(menuProducts.sectionId, sectionId));
+    }
+
+    const results = await query.orderBy(menuProducts.displayOrder);
+
+    return results.map(result => ({
+      ...result.menu_products,
+      section: result.menu_sections!,
+    }));
+  }
+
+  async createMenuSection(section: InsertMenuSection): Promise<MenuSection> {
+    const [created] = await db.insert(menuSections).values(section).returning();
+    return created;
+  }
+
+  async createMenuProduct(product: InsertMenuProduct): Promise<MenuProduct> {
+    const [created] = await db.insert(menuProducts).values(product).returning();
+    return created;
+  }
+
+  async updateMenuSection(id: number, section: Partial<InsertMenuSection>): Promise<MenuSection> {
+    const [updated] = await db
+      .update(menuSections)
+      .set({ ...section, updatedAt: new Date() })
+      .where(eq(menuSections.id, id))
+      .returning();
+    return updated;
+  }
+
+  async updateMenuProduct(id: number, product: Partial<InsertMenuProduct>): Promise<MenuProduct> {
+    const [updated] = await db
+      .update(menuProducts)
+      .set({ ...product, updatedAt: new Date() })
+      .where(eq(menuProducts.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteMenuSection(id: number): Promise<void> {
+    await db.delete(menuSections).where(eq(menuSections.id, id));
+  }
+
+  async deleteMenuProduct(id: number): Promise<void> {
+    await db.delete(menuProducts).where(eq(menuProducts.id, id));
+  }
+
+  // Addon operations
+  async getAddonGroups(productId: number): Promise<AddonGroupWithAddons[]> {
+    const groups = await db
+      .select()
+      .from(addonGroups)
+      .where(eq(addonGroups.productId, productId))
+      .orderBy(addonGroups.displayOrder);
+
+    const groupsWithAddons = await Promise.all(
+      groups.map(async (group) => {
+        const allAddons = await db
+          .select()
+          .from(addons)
+          .where(eq(addons.groupId, group.id))
+          .orderBy(addons.displayOrder);
+
+        return { ...group, addons: allAddons };
+      })
+    );
+
+    return groupsWithAddons;
+  }
+
+  async createAddonGroup(group: InsertAddonGroup): Promise<AddonGroup> {
+    const [created] = await db.insert(addonGroups).values(group).returning();
+    return created;
+  }
+
+  async createAddon(addon: InsertAddon): Promise<Addon> {
+    const [created] = await db.insert(addons).values(addon).returning();
+    return created;
+  }
+
+  async updateAddonGroup(id: number, group: Partial<InsertAddonGroup>): Promise<AddonGroup> {
+    const [updated] = await db
+      .update(addonGroups)
+      .set({ ...group, updatedAt: new Date() })
+      .where(eq(addonGroups.id, id))
+      .returning();
+    return updated;
+  }
+
+  async updateAddon(id: number, addon: Partial<InsertAddon>): Promise<Addon> {
+    const [updated] = await db
+      .update(addons)
+      .set({ ...addon, updatedAt: new Date() })
+      .where(eq(addons.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteAddonGroup(id: number): Promise<void> {
+    await db.delete(addonGroups).where(eq(addonGroups.id, id));
+  }
+
+  async deleteAddon(id: number): Promise<void> {
+    await db.delete(addons).where(eq(addons.id, id));
+  }
+
+  // Cart operations
+  async getCartItems(sessionId: string, storeId: number): Promise<CartItem[]> {
+    return await db
+      .select()
+      .from(cartItems)
+      .where(and(
+        eq(cartItems.sessionId, sessionId),
+        eq(cartItems.storeId, storeId)
+      ));
+  }
+
+  async addToCart(item: InsertCartItem): Promise<CartItem> {
+    const [created] = await db.insert(cartItems).values(item).returning();
+    return created;
+  }
+
+  async updateCartItem(id: number, quantity: number): Promise<CartItem> {
+    const [updated] = await db
+      .update(cartItems)
+      .set({ quantity, updatedAt: new Date() })
+      .where(eq(cartItems.id, id))
+      .returning();
+    return updated;
+  }
+
+  async removeFromCart(id: number): Promise<void> {
+    await db.delete(cartItems).where(eq(cartItems.id, id));
+  }
+
+  async clearCart(sessionId: string, storeId: number): Promise<void> {
+    await db
+      .delete(cartItems)
+      .where(and(
+        eq(cartItems.sessionId, sessionId),
+        eq(cartItems.storeId, storeId)
+      ));
+  }
+
+  // Digital order operations
+  async createDigitalOrder(order: InsertDigitalOrder): Promise<DigitalOrder> {
+    const [created] = await db.insert(digitalOrders).values(order).returning();
+    return created;
+  }
+
+  async getDigitalOrders(storeId: number, status?: string): Promise<DigitalOrderWithItems[]> {
+    let query = db
+      .select()
+      .from(digitalOrders)
+      .leftJoin(stores, eq(digitalOrders.storeId, stores.id))
+      .where(eq(digitalOrders.storeId, storeId));
+
+    if (status) {
+      query = query.where(eq(digitalOrders.status, status));
+    }
+
+    const results = await query.orderBy(desc(digitalOrders.createdAt));
+
+    return results.map(result => ({
+      ...result.digital_orders,
+      store: result.stores!,
+      parsedItems: JSON.parse(result.digital_orders.items),
+    }));
+  }
+
+  async updateDigitalOrderStatus(id: number, status: string): Promise<DigitalOrder> {
+    const [updated] = await db
+      .update(digitalOrders)
+      .set({ status, updatedAt: new Date() })
+      .where(eq(digitalOrders.id, id))
+      .returning();
+    return updated;
   }
 }
 
