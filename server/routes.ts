@@ -262,6 +262,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/admin/companies', requireAuth, requireOwnerOrSuperAdmin, async (req: any, res) => {
     try {
       const user = await storage.getUser(req.user.id);
+      if (!user) {
+        return res.status(401).json({ message: "Usuário não encontrado" });
+      }
       const companies = await getUserAccessibleCompanies(req.user.id, user.role);
       res.json(companies);
     } catch (error) {
