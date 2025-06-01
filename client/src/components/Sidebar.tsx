@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
-import { Home, UtensilsCrossed, ClipboardList, LogOut } from "lucide-react";
+import { Home, UtensilsCrossed, ClipboardList, LogOut, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
@@ -25,7 +25,7 @@ const navigationItems = [
 
 export default function Sidebar() {
   const [location] = useLocation();
-  const { user } = useAuth();
+  const { user, isSuperAdmin } = useAuth();
 
   const handleLogout = () => {
     window.location.href = "/api/logout";
@@ -35,9 +35,9 @@ export default function Sidebar() {
     <div className="bg-navy text-white w-64 flex-shrink-0 hidden lg:flex flex-col">
       {/* Header */}
       <div className="p-6 border-b border-white/10">
-        <h1 className="text-xl font-semibold">RestaurantPRO</h1>
+        <h1 className="text-xl font-semibold">DomínioMenu.AI</h1>
         <p className="text-white/70 text-sm mt-1">
-          {user?.restaurantName || "Sistema de Gestão"}
+          {isSuperAdmin ? "Super Administração" : (user?.restaurantName || "Sistema de Gestão")}
         </p>
       </div>
 
@@ -64,6 +64,23 @@ export default function Sidebar() {
               </Link>
             );
           })}
+          
+          {/* Super Admin Navigation */}
+          {isSuperAdmin && (
+            <Link href="/admin">
+              <div
+                className={cn(
+                  "flex items-center space-x-3 px-3 py-3 rounded-lg transition-colors cursor-pointer",
+                  location === "/admin"
+                    ? "bg-coral text-white"
+                    : "text-white/80 hover:bg-white/10 hover:text-white"
+                )}
+              >
+                <Shield className="w-5 h-5" />
+                <span className="font-medium">Administração</span>
+              </div>
+            </Link>
+          )}
         </div>
       </nav>
 

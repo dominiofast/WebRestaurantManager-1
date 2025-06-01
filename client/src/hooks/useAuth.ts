@@ -24,5 +24,6 @@ export function useAuth() {
     user,
     isLoading,
     isAuthenticated: !!user,
+    isSuperAdmin: user?.role === 'super_admin',
   };
 }

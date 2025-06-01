@@ -10,6 +10,7 @@ import Register from "@/pages/Register";
 import Dashboard from "@/pages/Dashboard";
 import MenuManagement from "@/pages/MenuManagement";
 import OrderManagement from "@/pages/OrderManagement";
+import SuperAdmin from "@/pages/SuperAdmin";
 import Sidebar from "@/components/Sidebar";
 import TopBar from "@/components/TopBar";
 import NotFound from "@/pages/not-found";
@@ -26,6 +27,7 @@ function AuthenticatedApp() {
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/menu" component={MenuManagement} />
             <Route path="/orders" component={OrderManagement} />
+            <Route path="/admin" component={SuperAdmin} />
             <Route component={NotFound} />
           </Switch>
         </main>

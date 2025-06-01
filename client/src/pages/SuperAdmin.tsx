@@ -43,10 +43,17 @@ export default function SuperAdmin() {
   // Mutação para criar novo restaurante
   const createRestaurantMutation = useMutation({
     mutationFn: async (data: typeof newRestaurant) => {
-      return apiRequest('/api/admin/restaurants', {
+      const response = await fetch('/api/admin/restaurants', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(data)
       });
+      if (!response.ok) {
+        throw new Error('Erro ao criar restaurante');
+      }
+      return response.json();
     },
     onSuccess: () => {
       toast({
