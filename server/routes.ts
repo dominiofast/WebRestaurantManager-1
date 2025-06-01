@@ -24,7 +24,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // For demo purposes, check if password matches any stored value or the demo password
       if ((email === 'adm@dominiomenu.com' && password === 'admin123@@') || 
-          (email === 'admin@dominiomenu.com' && password === 'superadmin2024@@')) {
+          (email === 'admin@dominiomenu.com' && password === 'superadmin2024@@') ||
+          (email === 'admin@hamburgeria.com' && password === 'admin123@@')) {
         // Store user session
         (req.session as any).userId = user.id;
         res.json({ 
