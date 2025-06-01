@@ -33,12 +33,12 @@ export default function MenuManager() {
   });
 
   // Buscar itens do cardápio
-  const { data: menuItems = [], isLoading } = useQuery({
+  const { data: menuItems = [], isLoading } = useQuery<any[]>({
     queryKey: ["/api/menu-items"],
   });
 
   // Buscar categorias
-  const { data: categories = [] } = useQuery({
+  const { data: categories = [] } = useQuery<any[]>({
     queryKey: ["/api/categories"],
   });
 

@@ -1,7 +1,18 @@
 import { useState, useEffect } from "react";
 
+interface User {
+  id: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  restaurantName?: string;
+  ownerName?: string;
+  role: string;
+  isAuthenticated: boolean;
+}
+
 export function useAuth() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
