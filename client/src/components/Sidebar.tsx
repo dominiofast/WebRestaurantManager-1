@@ -27,8 +27,16 @@ export default function Sidebar() {
   const [location] = useLocation();
   const { user, isSuperAdmin } = useAuth();
 
-  const handleLogout = () => {
-    window.location.href = "/api/logout";
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      localStorage.removeItem('restaurantUser');
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+      localStorage.removeItem('restaurantUser');
+      window.location.href = '/';
+    }
   };
 
   return (
