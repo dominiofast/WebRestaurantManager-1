@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Store, Building2, Edit, Trash2, Phone, Mail, MapPin, Users, ExternalLink, Globe } from "lucide-react";
+import { Plus, Store, Building2, Edit, Trash2, Phone, Mail, MapPin, Users, ExternalLink, Globe, Settings } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
 
@@ -560,6 +560,14 @@ export default function StoreManagement() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => window.location.href = `/store/${store.id}/dashboard`}
+                            className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200"
+                          >
+                            <Settings className="h-4 w-4" />
+                          </Button>
                           <Button
                             variant="outline"
                             size="sm"
