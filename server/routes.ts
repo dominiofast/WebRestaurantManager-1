@@ -6,6 +6,25 @@ import { z } from "zod";
 import bcrypt from "bcrypt";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Check current session
+  app.get('/api/auth/me', async (req: any, res) => {
+    try {
+      if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Não autenticado" });
+      }
+      
+      const user = await storage.getUser(req.session.userId);
+      if (!user) {
+        return res.status(401).json({ message: "Usuário não encontrado" });
+      }
+      
+      const { password: _, ...userWithoutPassword } = user;
+      res.json({ user: userWithoutPassword });
+    } catch (error) {
+      res.status(401).json({ message: "Erro de autenticação" });
+    }
+  });
+
   // Custom auth routes
   app.post('/api/auth/login', async (req, res) => {
     try {
