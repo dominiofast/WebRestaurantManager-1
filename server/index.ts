@@ -16,7 +16,7 @@ const PostgresStore = connectPg(session);
 app.use(session({
   store: new PostgresStore({
     pool: pool,
-    createTableIfMissing: true,
+    createTableIfMissing: false,
     tableName: 'session'
   }),
   secret: 'dominio-menu-ai-secret-key-2024',
