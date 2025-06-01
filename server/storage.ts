@@ -4,6 +4,8 @@ import {
   menuItems,
   orders,
   orderItems,
+  companies,
+  stores,
   type User,
   type UpsertUser,
   type Category,
@@ -16,6 +18,12 @@ import {
   type OrderWithItems,
   type OrderItem,
   type InsertOrderItem,
+  type Company,
+  type InsertCompany,
+  type Store,
+  type InsertStore,
+  type StoreWithCompany,
+  type CompanyWithStores,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql } from "drizzle-orm";
@@ -52,6 +60,21 @@ export interface IStorage {
     activeOrders: number;
     avgOrderValue: number;
   }>;
+
+  // Company operations
+  getCompanies(): Promise<Company[]>;
+  getCompanyById(id: number): Promise<CompanyWithStores | undefined>;
+  createCompany(company: InsertCompany): Promise<Company>;
+  updateCompany(id: number, company: Partial<InsertCompany>): Promise<Company>;
+  deleteCompany(id: number): Promise<void>;
+
+  // Store operations
+  getStores(): Promise<StoreWithCompany[]>;
+  getStoresByCompany(companyId: number): Promise<Store[]>;
+  getStoreById(id: number): Promise<StoreWithCompany | undefined>;
+  createStore(store: InsertStore): Promise<Store>;
+  updateStore(id: number, store: Partial<InsertStore>): Promise<Store>;
+  deleteStore(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {

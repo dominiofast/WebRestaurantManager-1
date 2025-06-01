@@ -81,6 +81,34 @@ export const orderItems = pgTable("order_items", {
   subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
 });
 
+// Companies table
+export const companies = pgTable("companies", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  email: varchar("email"),
+  phone: varchar("phone"),
+  address: text("address"),
+  status: varchar("status").default("active"),
+  ownerId: varchar("owner_id").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Stores table
+export const stores = pgTable("stores", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  companyId: integer("company_id").references(() => companies.id).notNull(),
+  address: text("address"),
+  phone: varchar("phone"),
+  email: varchar("email"),
+  status: varchar("status").default("active"),
+  managerId: varchar("manager_id").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   createdAt: true,
@@ -109,6 +137,18 @@ export const insertOrderItemSchema = createInsertSchema(orderItems).omit({
   id: true,
 });
 
+export const insertCompanySchema = createInsertSchema(companies).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertStoreSchema = createInsertSchema(stores).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -120,6 +160,10 @@ export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type Order = typeof orders.$inferSelect;
 export type InsertOrderItem = z.infer<typeof insertOrderItemSchema>;
 export type OrderItem = typeof orderItems.$inferSelect;
+export type InsertCompany = z.infer<typeof insertCompanySchema>;
+export type Company = typeof companies.$inferSelect;
+export type InsertStore = z.infer<typeof insertStoreSchema>;
+export type Store = typeof stores.$inferSelect;
 
 // Extended types for API responses
 export type MenuItemWithCategory = MenuItem & {
@@ -130,4 +174,14 @@ export type OrderWithItems = Order & {
   items: (OrderItem & {
     menuItem: MenuItem;
   })[];
+};
+
+export type StoreWithCompany = Store & {
+  company: Company;
+  manager?: User;
+};
+
+export type CompanyWithStores = Company & {
+  stores: Store[];
+  owner?: User;
 };
