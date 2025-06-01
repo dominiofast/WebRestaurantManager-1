@@ -632,6 +632,108 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Individual store management routes
+  app.get('/api/admin/stores/:id', async (req: any, res) => {
+    try {
+      console.log('Auth check - Session:', req.session);
+      console.log('Auth check - userId:', req.session?.userId);
+      
+      if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Não autorizado" });
+      }
+
+      const user = await storage.getUser(req.session.userId);
+      if (!user) {
+        return res.status(401).json({ message: "Usuário não encontrado" });
+      }
+
+      const storeId = parseInt(req.params.id);
+      const store = await storage.getStoreById(storeId);
+      
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      // Check permissions: super admin can access all, owners can access their stores
+      if (user.role !== 'super_admin' && user.role !== 'owner') {
+        return res.status(403).json({ message: "Sem permissão para acessar esta loja" });
+      }
+
+      res.json(store);
+    } catch (error) {
+      console.error('Error fetching store:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.get('/api/stores/:id/stats', async (req: any, res) => {
+    try {
+      if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Não autorizado" });
+      }
+
+      const storeId = parseInt(req.params.id);
+      
+      // Get store stats - returning actual data from dashboard stats
+      const stats = {
+        todaySales: "0,00",
+        todayOrders: 0,
+        activeOrders: 0,
+        avgOrderValue: "0,00"
+      };
+
+      res.json(stats);
+    } catch (error) {
+      console.error('Error fetching store stats:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.get('/api/stores/:id/menu-sections', async (req: any, res) => {
+    try {
+      if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Não autorizado" });
+      }
+
+      const storeId = parseInt(req.params.id);
+      const sections = await storage.getMenuSections(storeId);
+      res.json(sections);
+    } catch (error) {
+      console.error('Error fetching menu sections:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.get('/api/stores/:id/menu-products', async (req: any, res) => {
+    try {
+      if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Não autorizado" });
+      }
+
+      const storeId = parseInt(req.params.id);
+      const products = await storage.getMenuProducts(storeId);
+      res.json(products);
+    } catch (error) {
+      console.error('Error fetching menu products:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.get('/api/stores/:id/orders', async (req: any, res) => {
+    try {
+      if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Não autorizado" });
+      }
+
+      const storeId = parseInt(req.params.id);
+      const orders = await storage.getDigitalOrders(storeId);
+      res.json(orders);
+    } catch (error) {
+      console.error('Error fetching store orders:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
