@@ -43,6 +43,7 @@ export default function Login() {
           restaurantName: data.user.restaurantName,
           ownerName: `${data.user.firstName} ${data.user.lastName}`,
           email: data.user.email,
+          role: data.user.role,
           isAuthenticated: true
         }));
         window.location.href = '/dashboard';
