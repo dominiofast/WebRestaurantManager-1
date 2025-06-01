@@ -31,7 +31,7 @@ function AuthenticatedApp() {
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/menu" component={MenuManagement} />
             <Route path="/orders" component={OrderManagement} />
-            <Route path="/digital-menu" component={DigitalMenuManagement} />
+            <Route path="/menu-manager" component={MenuManager} />
             <Route path="/admin" component={SuperAdmin} />
             <Route path="/stores" component={StoreManagement} />
             <Route component={NotFound} />
