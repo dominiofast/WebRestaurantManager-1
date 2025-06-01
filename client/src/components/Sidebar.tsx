@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
-import { Home, UtensilsCrossed, ClipboardList, LogOut, Shield, Store } from "lucide-react";
+import { Home, UtensilsCrossed, ClipboardList, LogOut, Shield, Store, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
@@ -20,6 +20,11 @@ const navigationItems = [
     href: "/orders",
     icon: ClipboardList,
     label: "Pedidos",
+  },
+  {
+    href: "/digital-menu",
+    icon: Globe,
+    label: "Cardápio Digital",
   },
 ];
 

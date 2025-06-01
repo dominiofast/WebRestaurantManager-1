@@ -13,6 +13,7 @@ import OrderManagement from "@/pages/OrderManagement";
 import SuperAdmin from "@/pages/SuperAdmin";
 import StoreManagement from "@/pages/StoreManagement";
 import DigitalMenu from "@/pages/DigitalMenu";
+import DigitalMenuManagement from "@/pages/DigitalMenuManagement";
 import MenuIndex from "@/pages/MenuIndex";
 import Sidebar from "@/components/Sidebar";
 import TopBar from "@/components/TopBar";
@@ -30,6 +31,7 @@ function AuthenticatedApp() {
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/menu" component={MenuManagement} />
             <Route path="/orders" component={OrderManagement} />
+            <Route path="/digital-menu" component={DigitalMenuManagement} />
             <Route path="/admin" component={SuperAdmin} />
             <Route path="/stores" component={StoreManagement} />
             <Route component={NotFound} />

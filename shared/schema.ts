@@ -57,6 +57,7 @@ export const menuItems = pgTable("menu_items", {
   categoryId: integer("category_id").notNull().references(() => categories.id),
   imageUrl: varchar("image_url"),
   available: boolean("available").default(true),
+  availableOnDigitalMenu: boolean("available_on_digital_menu").default(true),
   userId: varchar("user_id").notNull().references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
