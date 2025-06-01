@@ -267,24 +267,26 @@ export default function DigitalMenu() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto flex gap-6 p-4">
-        {/* Navegação das seções */}
-        <div className="w-64 space-y-2">
-          <div className="bg-white rounded-lg p-4 sticky top-4">
+      <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-6 p-4">
+        {/* Navegação das seções - responsiva */}
+        <div className="w-full lg:w-64 space-y-2">
+          <div className="bg-white rounded-lg p-4 lg:sticky lg:top-4">
             <h3 className="font-semibold mb-3">Categorias</h3>
-            {storeData.sections.map((section) => (
-              <button
-                key={section.id}
-                onClick={() => setActiveSection(section.id)}
-                className={`w-full text-left p-2 rounded-lg transition-colors ${
-                  activeSection === section.id
-                    ? "bg-orange-100 text-orange-700 font-medium"
-                    : "hover:bg-gray-100"
-                }`}
-              >
-                {section.name}
-              </button>
-            ))}
+            <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible">
+              {storeData.sections.map((section) => (
+                <button
+                  key={section.id}
+                  onClick={() => setActiveSection(section.id)}
+                  className={`flex-shrink-0 lg:w-full text-left p-2 rounded-lg transition-colors whitespace-nowrap ${
+                    activeSection === section.id
+                      ? "bg-orange-100 text-orange-700 font-medium"
+                      : "hover:bg-gray-100"
+                  }`}
+                >
+                  {section.name}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -297,62 +299,70 @@ export default function DigitalMenu() {
                 <p className="text-gray-600">{section.description}</p>
               </div>
               
-              <div className="grid gap-4">
+              <div className="grid gap-3 lg:gap-4">
                 {section.products.map((product) => (
-                  <Card key={product.id} className="overflow-hidden hover:shadow-md transition-shadow">
-                    <div className="flex">
-                      <div className="flex-1 p-4">
-                        <CardHeader className="p-0 mb-2">
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <CardTitle className="text-lg">{product.name}</CardTitle>
-                              {product.tags && (
-                                <div className="flex gap-1 mt-1">
-                                  {product.tags.map((tag: string) => (
-                                    <Badge key={tag} variant="secondary" className="text-xs">
-                                      {tag}
-                                    </Badge>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                            <div className="text-right">
-                              <div className="text-xl font-bold text-green-600">
-                                R$ {product.price}
+                  <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-white">
+                    <div className="flex flex-col lg:flex-row">
+                      {/* Conteúdo do produto */}
+                      <div className="flex-1 p-4 lg:p-6">
+                        {/* Cabeçalho do produto */}
+                        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-3">
+                          <div className="flex-1">
+                            <h3 className="text-lg lg:text-xl font-semibold text-gray-800 mb-1">
+                              {product.name}
+                            </h3>
+                            {product.tags && (
+                              <div className="flex gap-1 mb-2">
+                                {product.tags.map((tag: string) => (
+                                  <Badge key={tag} variant="outline" className="text-xs bg-orange-50 text-orange-600 border-orange-200">
+                                    {tag}
+                                  </Badge>
+                                ))}
                               </div>
+                            )}
+                          </div>
+                          <div className="lg:ml-4 lg:text-right">
+                            <div className="text-xl lg:text-2xl font-bold text-gray-900">
+                              A partir de R$ {product.price.replace('.', ',')}
+                            </div>
+                            <div className="text-sm text-gray-500 line-through">
+                              R$ {(parseFloat(product.price) * 1.2).toFixed(2).replace('.', ',')}
                             </div>
                           </div>
-                        </CardHeader>
+                        </div>
                         
-                        <CardContent className="p-0">
-                          <p className="text-gray-600 text-sm mb-2">{product.description}</p>
-                          <div className="flex items-center gap-4 text-xs text-gray-500">
-                            <span className="flex items-center gap-1">
-                              <Clock className="w-3 h-3" />
-                              {product.preparationTime}
-                            </span>
-                            <span>{product.calories} cal</span>
-                          </div>
-                        </CardContent>
+                        {/* Descrição */}
+                        <p className="text-gray-600 text-sm lg:text-base mb-4 leading-relaxed">
+                          {product.description}
+                        </p>
                         
-                        <CardFooter className="p-0 mt-3">
-                          <Button 
-                            onClick={() => addToCart(product)}
-                            className="w-full bg-orange-600 hover:bg-orange-700"
-                            disabled={!product.isAvailable}
-                          >
-                            <Plus className="w-4 h-4 mr-2" />
-                            Adicionar
-                          </Button>
-                        </CardFooter>
+                        {/* Informações extras */}
+                        <div className="flex items-center gap-4 text-xs lg:text-sm text-gray-500 mb-4">
+                          <span className="flex items-center gap-1">
+                            <Clock className="w-3 h-3 lg:w-4 lg:h-4" />
+                            {product.preparationTime}
+                          </span>
+                          <span>{product.calories} cal</span>
+                        </div>
+                        
+                        {/* Botão de adicionar */}
+                        <Button 
+                          onClick={() => addToCart(product)}
+                          className="w-full lg:w-auto bg-orange-600 hover:bg-orange-700 text-white font-medium px-6 py-2.5 rounded-lg transition-colors"
+                          disabled={!product.isAvailable}
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          Adicionar ao Pedido
+                        </Button>
                       </div>
                       
+                      {/* Imagem do produto */}
                       {product.imageUrl && (
-                        <div className="w-32 h-32 bg-gray-200 flex-shrink-0 overflow-hidden rounded-lg">
+                        <div className="w-full h-48 lg:w-40 lg:h-40 xl:w-48 xl:h-48 bg-gray-100 flex-shrink-0 overflow-hidden lg:rounded-r-lg">
                           <img 
                             src={product.imageUrl} 
                             alt={product.name}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
                               target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00OCA0OEw4MCA4MEw0OCA4MFY0OFoiIGZpbGw9IiM5Q0EzQUYiLz4KPGNpcmNsZSBjeD0iNTYiIGN5PSI1NiIgcj0iNCIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
