@@ -338,15 +338,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Stores management routes (Super Admin only)
-  app.get('/api/admin/stores', requireAuth, async (req: any, res) => {
+  // Stores management routes - Multi-tenant aware
+  app.get('/api/admin/stores', requireAuth, requireOwnerOrSuperAdmin, async (req: any, res) => {
     try {
       const user = await storage.getUser(req.user.id);
-      if (!user || user.role !== 'super_admin') {
-        return res.status(403).json({ message: "Acesso negado" });
+      if (!user) {
+        return res.status(401).json({ message: "Usuário não encontrado" });
       }
 
-      const stores = await storage.getStores();
+      const stores = await getUserAccessibleStores(req.user.id, user.role);
       console.log('Stores found:', stores.length);
       res.json(stores);
     } catch (error) {
