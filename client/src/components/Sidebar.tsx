@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
-import { Home, UtensilsCrossed, ClipboardList, LogOut, Shield } from "lucide-react";
+import { Home, UtensilsCrossed, ClipboardList, LogOut, Shield, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
@@ -29,13 +29,12 @@ export default function Sidebar() {
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' });
       localStorage.removeItem('restaurantUser');
-      window.location.href = '/';
+      window.location.href = '/login';
     } catch (error) {
       console.error('Erro ao fazer logout:', error);
       localStorage.removeItem('restaurantUser');
-      window.location.href = '/';
+      window.location.href = '/login';
     }
   };
 
