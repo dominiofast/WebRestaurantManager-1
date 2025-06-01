@@ -23,7 +23,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // For demo purposes, check if password matches any stored value or the demo password
-      if (email === 'adm@dominiomenu.com' && password === 'admin123@@') {
+      if ((email === 'adm@dominiomenu.com' && password === 'admin123@@') || 
+          (email === 'admin@dominiomenu.com' && password === 'superadmin2024@@')) {
         // Store user session
         (req.session as any).userId = user.id;
         res.json({ 
@@ -32,7 +33,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             email: user.email,
             firstName: (user as any).firstName || (user as any).first_name,
             lastName: (user as any).lastName || (user as any).last_name,
-            restaurantName: (user as any).restaurantName || (user as any).restaurant_name
+            restaurantName: (user as any).restaurantName || (user as any).restaurant_name,
+            role: user.role
           }
         });
       } else {
@@ -116,6 +118,93 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(401).json({ message: "Erro de autenticação" });
     }
   };
+
+  // Super Admin middleware
+  const requireSuperAdmin = (req: any, res: any, next: any) => {
+    if (!req.user || req.user.role !== 'super_admin') {
+      return res.status(403).json({ message: "Acesso negado - Super Admin necessário" });
+    }
+    next();
+  };
+
+  // Super Admin Routes - Gerenciar todos os restaurantes
+  app.get('/api/admin/restaurants', requireAuth, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.id);
+      if (!user || user.role !== 'super_admin') {
+        return res.status(403).json({ message: "Acesso negado" });
+      }
+      
+      const restaurants = await storage.getAllUsers();
+      res.json(restaurants.filter(u => u.role !== 'super_admin'));
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar restaurantes" });
+    }
+  });
+
+  // Criar novo restaurante
+  app.post('/api/admin/restaurants', requireAuth, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.id);
+      if (!user || user.role !== 'super_admin') {
+        return res.status(403).json({ message: "Acesso negado" });
+      }
+
+      const { email, firstName, lastName, restaurantName } = req.body;
+      
+      const restaurantId = `rest-${Date.now()}`;
+      
+      const newRestaurant = await storage.upsertUser({
+        id: restaurantId,
+        email,
+        firstName,
+        lastName,
+        restaurantName,
+        role: 'admin'
+      });
+
+      res.status(201).json(newRestaurant);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao criar restaurante" });
+    }
+  });
+
+  // Estatísticas globais para super admin
+  app.get('/api/admin/global-stats', requireAuth, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.id);
+      if (!user || user.role !== 'super_admin') {
+        return res.status(403).json({ message: "Acesso negado" });
+      }
+
+      const restaurants = await storage.getAllUsers();
+      const totalRestaurants = restaurants.filter(u => u.role !== 'super_admin').length;
+      
+      let totalSales = 0;
+      let totalOrders = 0;
+      
+      for (const restaurant of restaurants) {
+        if (restaurant.role !== 'super_admin') {
+          try {
+            const stats = await storage.getDashboardStats(restaurant.id);
+            totalSales += stats.todaySales;
+            totalOrders += stats.todayOrders;
+          } catch (e) {
+            // Continue if restaurant has no data
+          }
+        }
+      }
+
+      res.json({
+        totalRestaurants,
+        totalSales,
+        totalOrders,
+        avgSalesPerRestaurant: totalRestaurants > 0 ? totalSales / totalRestaurants : 0
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar estatísticas globais" });
+    }
+  });
 
   // Auth routes
   app.get('/api/auth/user', requireAuth, async (req: any, res) => {
