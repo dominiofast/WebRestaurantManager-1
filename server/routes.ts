@@ -127,12 +127,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   };
 
-  // Super Admin middleware
+  // Role-based middleware
   const requireSuperAdmin = (req: any, res: any, next: any) => {
     if (!req.user || req.user.role !== 'super_admin') {
       return res.status(403).json({ message: "Acesso negado - Super Admin necessário" });
     }
     next();
+  };
+
+  const requireOwnerOrSuperAdmin = (req: any, res: any, next: any) => {
+    if (!['super_admin', 'owner'].includes(req.user?.role)) {
+      return res.status(403).json({ message: "Acesso negado" });
+    }
+    next();
+  };
+
+  const requireManagerOrAbove = (req: any, res: any, next: any) => {
+    if (!['super_admin', 'owner', 'manager'].includes(req.user?.role)) {
+      return res.status(403).json({ message: "Acesso negado" });
+    }
+    next();
+  };
+
+  // Helper function to get user's accessible companies
+  const getUserAccessibleCompanies = async (userId: string, userRole: string) => {
+    if (userRole === 'super_admin') {
+      return await storage.getCompanies(); // Super admin sees all
+    } else if (userRole === 'owner') {
+      return await storage.getCompanies().then(companies => 
+        companies.filter(c => c.ownerId === userId)
+      );
+    }
+    return []; // Managers don't access company level
+  };
+
+  // Helper function to get user's accessible stores
+  const getUserAccessibleStores = async (userId: string, userRole: string) => {
+    if (userRole === 'super_admin') {
+      return await storage.getStores(); // Super admin sees all
+    } else if (userRole === 'owner') {
+      const companies = await storage.getCompanies();
+      const userCompanies = companies.filter(c => c.ownerId === userId);
+      const allStores = await storage.getStores();
+      return allStores.filter(store => 
+        userCompanies.some(company => company.id === store.companyId)
+      );
+    } else if (userRole === 'manager') {
+      // Manager sees only their assigned store (implement store assignment later)
+      return await storage.getStores();
+    }
+    return [];
   };
 
   // Super Admin Routes - Gerenciar todos os restaurantes
@@ -214,15 +258,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Companies management routes (Super Admin only)
-  app.get('/api/admin/companies', requireAuth, async (req: any, res) => {
+  // Companies management routes - Multi-tenant aware
+  app.get('/api/admin/companies', requireAuth, requireOwnerOrSuperAdmin, async (req: any, res) => {
     try {
       const user = await storage.getUser(req.user.id);
-      if (!user || user.role !== 'super_admin') {
-        return res.status(403).json({ message: "Acesso negado" });
-      }
-
-      const companies = await storage.getCompanies();
+      const companies = await getUserAccessibleCompanies(req.user.id, user.role);
       res.json(companies);
     } catch (error) {
       res.status(500).json({ message: "Erro ao buscar empresas" });
