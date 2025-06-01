@@ -299,66 +299,58 @@ export default function DigitalMenu() {
                 <p className="text-gray-600">{section.description}</p>
               </div>
               
-              <div className="grid gap-3 lg:gap-4">
+              <div className="space-y-4">
                 {section.products.map((product) => (
-                  <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-all duration-300 border-0 shadow-sm bg-white">
-                    <div className="flex flex-col lg:flex-row">
+                  <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-100 bg-white">
+                    <div className="flex flex-col sm:flex-row">
                       {/* Conteúdo do produto */}
-                      <div className="flex-1 p-4 lg:p-6">
-                        {/* Cabeçalho do produto */}
-                        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-3">
-                          <div className="flex-1">
-                            <h3 className="text-lg lg:text-xl font-semibold text-gray-800 mb-1">
-                              {product.name}
-                            </h3>
-                            {product.tags && (
-                              <div className="flex gap-1 mb-2">
-                                {product.tags.map((tag: string) => (
-                                  <Badge key={tag} variant="outline" className="text-xs bg-orange-50 text-orange-600 border-orange-200">
-                                    {tag}
-                                  </Badge>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                          <div className="lg:ml-4 lg:text-right">
-                            <div className="text-xl lg:text-2xl font-bold text-gray-900">
+                      <div className="flex-1 p-6">
+                        {/* Nome e tags */}
+                        <div className="mb-3">
+                          <h3 className="text-xl font-bold text-gray-900 mb-2">
+                            {product.name}
+                          </h3>
+                          {product.tags && (
+                            <div className="flex flex-wrap gap-2 mb-3">
+                              {product.tags.map((tag: string) => (
+                                <Badge key={tag} variant="outline" className="text-xs bg-orange-50 text-orange-600 border-orange-200 px-2 py-1">
+                                  {tag}
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Descrição */}
+                        <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                          {product.description}
+                        </p>
+                        
+                        {/* Preço e botão */}
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                          <div className="flex flex-col">
+                            <div className="text-2xl font-bold text-gray-900">
                               A partir de R$ {product.price.replace('.', ',')}
                             </div>
                             <div className="text-sm text-gray-500 line-through">
                               R$ {(parseFloat(product.price) * 1.2).toFixed(2).replace('.', ',')}
                             </div>
                           </div>
+                          
+                          <Button 
+                            onClick={() => addToCart(product)}
+                            className="bg-orange-600 hover:bg-orange-700 text-white font-medium px-6 py-3 rounded-lg transition-colors sm:w-auto w-full"
+                            disabled={!product.isAvailable}
+                          >
+                            <Plus className="w-4 h-4 mr-2" />
+                            Adicionar
+                          </Button>
                         </div>
-                        
-                        {/* Descrição */}
-                        <p className="text-gray-600 text-sm lg:text-base mb-4 leading-relaxed">
-                          {product.description}
-                        </p>
-                        
-                        {/* Informações extras */}
-                        <div className="flex items-center gap-4 text-xs lg:text-sm text-gray-500 mb-4">
-                          <span className="flex items-center gap-1">
-                            <Clock className="w-3 h-3 lg:w-4 lg:h-4" />
-                            {product.preparationTime}
-                          </span>
-                          <span>{product.calories} cal</span>
-                        </div>
-                        
-                        {/* Botão de adicionar */}
-                        <Button 
-                          onClick={() => addToCart(product)}
-                          className="w-full lg:w-auto bg-orange-600 hover:bg-orange-700 text-white font-medium px-6 py-2.5 rounded-lg transition-colors"
-                          disabled={!product.isAvailable}
-                        >
-                          <Plus className="w-4 h-4 mr-2" />
-                          Adicionar ao Pedido
-                        </Button>
                       </div>
                       
                       {/* Imagem do produto */}
                       {product.imageUrl && (
-                        <div className="w-full h-48 lg:w-40 lg:h-40 xl:w-48 xl:h-48 bg-gray-100 flex-shrink-0 overflow-hidden lg:rounded-r-lg">
+                        <div className="w-full h-48 sm:w-48 sm:h-48 bg-gray-100 flex-shrink-0 overflow-hidden">
                           <img 
                             src={product.imageUrl} 
                             alt={product.name}
