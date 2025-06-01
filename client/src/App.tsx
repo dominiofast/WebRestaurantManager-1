@@ -13,7 +13,7 @@ import OrderManagement from "@/pages/OrderManagement";
 import SuperAdmin from "@/pages/SuperAdmin";
 import StoreManagement from "@/pages/StoreManagement";
 import DigitalMenu from "@/pages/DigitalMenu";
-import DigitalMenuManagement from "@/pages/DigitalMenuManagement";
+import MenuManager from "@/pages/MenuManager";
 import MenuIndex from "@/pages/MenuIndex";
 import Sidebar from "@/components/Sidebar";
 import TopBar from "@/components/TopBar";

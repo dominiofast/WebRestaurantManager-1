@@ -298,8 +298,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const stores = await storage.getStores();
+      console.log('Stores found:', stores.length);
       res.json(stores);
     } catch (error) {
+      console.error('Error fetching stores:', error);
       res.status(500).json({ message: "Erro ao buscar lojas" });
     }
   });

@@ -22,9 +22,9 @@ const navigationItems = [
     label: "Pedidos",
   },
   {
-    href: "/digital-menu",
+    href: "/menu-manager",
     icon: Globe,
-    label: "Cardápio Digital",
+    label: "Gestor de Cardápio",
   },
 ];
 
