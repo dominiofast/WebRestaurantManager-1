@@ -1,0 +1,40 @@
+Crie um modelo de cardápio digital completo para restaurantes e lojas, com as seguintes características e funcionalidades, inspirado na experiência do iFood:
+
+1.  **Estrutura de Cardápio por Loja:**
+    * Cada loja ou restaurante deve ter seu próprio cardápio digital, acessível por uma URL única ou identificador.
+    * O sistema deve ser capaz de gerenciar múltiplos cardápios, um para cada entidade (loja/restaurante).
+
+2.  **Seções e Categorias:**
+    * Organize o cardápio em seções ou categorias (ex: "Entradas", "Pratos Principais", "Bebidas", "Sobremesas", "Promoções").
+    * Permita que o administrador da loja defina e personalize essas categorias.
+
+3.  **Gestão de Produtos:**
+    * Para cada produto, inclua:
+        * Nome do Produto.
+        * Descrição detalhada.
+        * Preço.
+        * Imagem do produto (com um placeholder ou sugestão de URL para upload).
+        * Status de Disponibilidade (Disponível/Indisponível).
+    * Implemente funcionalidades para adicionar, editar e remover produtos.
+
+4.  **Adicionais (Opcionais/Obrigatórios):**
+    * Permita a configuração de adicionais para produtos (ex: para um hambúrguer, opções de queijo extra, bacon, molhos).
+    * Os adicionais podem ter preços próprios.
+    * Defina se um adicional é opcional (o cliente pode escolher nenhum, um ou vários) ou obrigatório (o cliente deve escolher pelo menos um ou um número específico).
+
+5.  **Observações do Cliente:**
+    * Inclua um campo de texto livre para que o cliente possa adicionar observações específicas ao pedido de um produto (ex: "sem cebola", "ponto da carne", "molho à parte").
+
+6.  **Interface do Usuário (UI):**
+    * Design limpo e intuitivo, otimizado para dispositivos móveis (responsivo).
+    * Navegação fácil entre categorias.
+    * Visualização clara dos produtos, preços e opções de personalização.
+    * Um "carrinho de compras" simples onde o cliente pode ver os itens adicionados e o total.
+    * Botão para finalizar pedido (sem a necessidade de um sistema de pagamento complexo, apenas para simular a adição ao carrinho).
+
+7.  **Tecnologias (Sugestão):**
+    * **Backend:** Python com Flask ou Django para gerenciar os dados do cardápio e das lojas.
+    * **Frontend:** HTML, CSS (com Tailwind CSS ou Bootstrap para um design responsivo e moderno) e JavaScript puro para a interatividade da interface do cardápio.
+    * **Banco de Dados:** Sugira uma estrutura de banco de dados (ex: SQLite para simplicidade no Replit, ou PostgreSQL/MongoDB para escalabilidade) que relacione produtos e adicionais às lojas.
+
+O código deve ser modular, bem comentado e pronto para ser executado e implantado em um ambiente Replit, demonstrando a funcionalidade de um cardápio digital para uma loja de exemplo.
