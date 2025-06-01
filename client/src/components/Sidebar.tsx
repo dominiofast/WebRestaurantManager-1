@@ -79,34 +79,36 @@ export default function Sidebar() {
           
           {/* Super Admin Navigation */}
           {isSuperAdmin && (
-            <>
-              <Link href="/admin">
-                <div
-                  className={cn(
-                    "flex items-center space-x-3 px-3 py-3 rounded-lg transition-colors cursor-pointer",
-                    location === "/admin"
-                      ? "bg-coral text-white"
-                      : "text-white/80 hover:bg-white/10 hover:text-white"
-                  )}
-                >
-                  <Shield className="w-5 h-5" />
-                  <span className="font-medium">Administração</span>
-                </div>
-              </Link>
-              <Link href="/stores">
-                <div
-                  className={cn(
-                    "flex items-center space-x-3 px-3 py-3 rounded-lg transition-colors cursor-pointer",
-                    location === "/stores"
-                      ? "bg-coral text-white"
-                      : "text-white/80 hover:bg-white/10 hover:text-white"
-                  )}
-                >
-                  <Store className="w-5 h-5" />
-                  <span className="font-medium">Gestão de Lojas</span>
-                </div>
-              </Link>
-            </>
+            <Link href="/admin">
+              <div
+                className={cn(
+                  "flex items-center space-x-3 px-3 py-3 rounded-lg transition-colors cursor-pointer",
+                  location === "/admin"
+                    ? "bg-coral text-white"
+                    : "text-white/80 hover:bg-white/10 hover:text-white"
+                )}
+              >
+                <Shield className="w-5 h-5" />
+                <span className="font-medium">Administração</span>
+              </div>
+            </Link>
+          )}
+          
+          {/* Store Management - Available for super admin and owners */}
+          {(isSuperAdmin || user?.role === 'owner') && (
+            <Link href="/stores">
+              <div
+                className={cn(
+                  "flex items-center space-x-3 px-3 py-3 rounded-lg transition-colors cursor-pointer",
+                  location === "/stores"
+                    ? "bg-coral text-white"
+                    : "text-white/80 hover:bg-white/10 hover:text-white"
+                )}
+              >
+                <Store className="w-5 h-5" />
+                <span className="font-medium">Gestão de Lojas</span>
+              </div>
+            </Link>
           )}
         </div>
       </nav>
