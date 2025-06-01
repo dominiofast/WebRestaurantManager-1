@@ -55,6 +55,20 @@ const availableStores = [
     category: "Cafeteria",
     isOpen: true,
     company: "Cafeteria Premium Group"
+  },
+  {
+    id: 10,
+    name: "Hamburgueria Premium - Augusta",
+    slug: "hamburgueria-premium-augusta",
+    description: "Hambúrguers gourmet artesanais com ingredientes premium",
+    address: "Rua Augusta, 1234 - Consolação, São Paulo - SP",
+    estimatedDeliveryTime: "20-30 min",
+    deliveryFee: "R$ 6,90",
+    minimumOrder: "R$ 30,00",
+    rating: 4.9,
+    category: "Hamburgueria Gourmet",
+    isOpen: true,
+    company: "Hamburgueria Premium"
   }
 ];
 

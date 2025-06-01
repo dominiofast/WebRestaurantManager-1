@@ -18,106 +18,137 @@ import {
   Share2
 } from "lucide-react";
 
-// Dados mockados para demonstração
-const storeData = {
-  id: 1,
-  name: "FastFood Shopping Morumbi",
-  description: "Os melhores hambúrguers artesanais da região",
-  address: "Shopping Morumbi, Piso L3, Loja 312",
-  phone: "(11) 3025-4890",
-  deliveryFee: "R$ 5,90",
-  minimumOrder: "R$ 25,00",
-  estimatedDeliveryTime: "25-35 min",
-  rating: 4.8,
+// Dados da Hamburgueria Premium - Augusta criada no banco
+const hamburgueriaData = {
+  id: 10,
+  name: "Hamburgueria Premium - Augusta",
+  description: "Hambúrguers gourmet artesanais com ingredientes premium",
+  address: "Rua Augusta, 1234 - Consolação, São Paulo - SP",
+  phone: "(11) 99887-7766",
+  deliveryFee: "R$ 6,90",
+  minimumOrder: "R$ 30,00",
+  estimatedDeliveryTime: "20-30 min",
+  rating: 4.9,
   bannerUrl: "/api/placeholder/store-banner.jpg",
   logoUrl: "/api/placeholder/store-logo.jpg",
   sections: [
     {
-      id: 1,
-      name: "Hambúrguers",
-      description: "Nossos hambúrguers artesanais",
+      id: 13,
+      name: "Hambúrguers Gourmet",
+      description: "Nossos hambúrguers artesanais com ingredientes premium",
       products: [
         {
-          id: 1,
-          name: "Big Burger Clássico",
-          description: "Hambúrguer de 150g, queijo, alface, tomate, cebola e molho especial",
-          price: "24.90",
-          imageUrl: "/api/placeholder/burger-classic.jpg",
-          preparationTime: "15-20 min",
+          id: 19,
+          name: "Prime Burger",
+          description: "Hambúrguer de carne Angus 180g, queijo gruyère, cogumelos shiitake, rúcula e molho trufado",
+          price: "38.90",
+          imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400",
+          preparationTime: "25-30 min",
           isAvailable: true,
-          calories: 650,
-          tags: ["Mais Vendido"]
+          calories: 750,
+          tags: ["Premium", "Mais Vendido"]
         },
         {
-          id: 2,
-          name: "Cheese Bacon Burger",
-          description: "Hambúrguer de 150g, queijo cheddar, bacon crocante, alface e molho barbecue",
-          price: "28.90",
-          imageUrl: "/api/placeholder/cheese-bacon.jpg",
-          preparationTime: "15-20 min",
+          id: 20,
+          name: "Truffle Deluxe",
+          description: "Blend de carnes nobres 200g, queijo brie, bacon artesanal, cebola caramelizada e molho de trufa negra",
+          price: "45.90",
+          imageUrl: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=400",
+          preparationTime: "30-35 min",
           isAvailable: true,
-          calories: 780
+          calories: 890,
+          tags: ["Especial"]
         },
         {
-          id: 3,
-          name: "Veggie Burger",
-          description: "Hambúrguer vegetal, queijo vegano, alface, tomate, cebola roxa e molho de ervas",
-          price: "22.90",
-          imageUrl: "/api/placeholder/veggie-burger.jpg",
+          id: 21,
+          name: "Smokehouse BBQ",
+          description: "Carne defumada 180g, queijo cheddar aged, onion rings, pickles e molho BBQ artesanal",
+          price: "34.90",
+          imageUrl: "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400",
+          preparationTime: "25-30 min",
+          isAvailable: true,
+          calories: 820
+        },
+        {
+          id: 22,
+          name: "Mediterranean Lamb",
+          description: "Hambúrguer de cordeiro 160g, queijo feta, tomate seco, azeitonas e molho tzatziki",
+          price: "42.90",
+          imageUrl: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=400",
+          preparationTime: "25-30 min",
+          isAvailable: true,
+          calories: 680
+        }
+      ]
+    },
+    {
+      id: 14,
+      name: "Acompanhamentos",
+      description: "Batatas especiais e aperitivos",
+      products: [
+        {
+          id: 23,
+          name: "Batata Rústica Trufada",
+          description: "Batatas rústicas com molho de trufa branca e queijo parmesão",
+          price: "18.90",
+          imageUrl: "https://images.unsplash.com/photo-1518013431117-eb1465fa5752?w=400",
+          preparationTime: "15-20 min",
+          isAvailable: true,
+          calories: 420
+        },
+        {
+          id: 24,
+          name: "Onion Rings Premium",
+          description: "Anéis de cebola empanados artesanalmente com molho chipotle",
+          price: "16.90",
+          imageUrl: "https://images.unsplash.com/photo-1639024471283-03518883512d?w=400",
           preparationTime: "12-15 min",
           isAvailable: true,
-          calories: 420,
-          tags: ["Vegetariano"]
+          calories: 380
         }
       ]
     },
     {
-      id: 2,
-      name: "Batatas",
-      description: "Acompanhamentos crocantes",
+      id: 15,
+      name: "Bebidas",
+      description: "Refrigerantes, sucos e drinks",
       products: [
         {
-          id: 4,
-          name: "Batata Frita Tradicional",
-          description: "Porção individual de batatas fritas crocantes",
+          id: 27,
+          name: "Suco Natural Detox",
+          description: "Suco de couve, maçã verde, limão e gengibre",
           price: "12.90",
+          imageUrl: "https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=400",
+          preparationTime: "5-8 min",
+          isAvailable: true,
+          calories: 80
+        },
+        {
+          id: 29,
+          name: "Cerveja Artesanal IPA",
+          description: "Cerveja artesanal local 350ml",
+          price: "14.90",
+          imageUrl: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=400",
+          preparationTime: "2-3 min",
+          isAvailable: true,
+          calories: 180
+        }
+      ]
+    },
+    {
+      id: 16,
+      name: "Sobremesas",
+      description: "Doces e sorvetes artesanais",
+      products: [
+        {
+          id: 31,
+          name: "Brownie com Sorvete",
+          description: "Brownie de chocolate belga com sorvete de baunilha e calda quente",
+          price: "16.90",
+          imageUrl: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=400",
           preparationTime: "8-10 min",
           isAvailable: true,
-          calories: 350
-        },
-        {
-          id: 5,
-          name: "Batata com Cheddar e Bacon",
-          description: "Batatas fritas cobertas com molho cheddar e bacon",
-          price: "18.90",
-          preparationTime: "10-12 min",
-          isAvailable: true,
           calories: 520
-        }
-      ]
-    },
-    {
-      id: 3,
-      name: "Bebidas",
-      description: "Refrigerantes e sucos naturais",
-      products: [
-        {
-          id: 6,
-          name: "Refrigerante Lata",
-          description: "Coca-Cola, Pepsi, Guaraná ou Sprite",
-          price: "4.90",
-          preparationTime: "1-2 min",
-          isAvailable: true,
-          calories: 140
-        },
-        {
-          id: 7,
-          name: "Suco Natural Laranja",
-          description: "Suco de laranja espremido na hora",
-          price: "8.90",
-          preparationTime: "3-5 min",
-          isAvailable: true,
-          calories: 110
         }
       ]
     }
@@ -134,9 +165,10 @@ interface CartItem {
 
 export default function DigitalMenu() {
   const [match, params] = useRoute("/menu/:storeSlug");
-  const [activeSection, setActiveSection] = useState(1);
+  const [activeSection, setActiveSection] = useState(13);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [storeData, setStoreData] = useState(hamburgueriaData);
 
   const addToCart = (product: any) => {
     const existingItem = cart.find(item => item.productId === product.id);
@@ -178,12 +210,12 @@ export default function DigitalMenu() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header com banner da loja */}
-      <div className="relative h-48 bg-gradient-to-r from-orange-500 to-red-600">
+      <div className="relative h-48 bg-gradient-to-r from-orange-600 to-red-700">
         <div className="absolute inset-0 bg-black/30" />
         <div className="relative h-full flex items-end p-4">
           <div className="flex items-end gap-4 text-white">
             <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center">
-              <span className="text-2xl font-bold text-orange-600">FB</span>
+              <span className="text-2xl font-bold text-orange-600">HP</span>
             </div>
             <div>
               <h1 className="text-2xl font-bold">{storeData.name}</h1>
@@ -276,7 +308,7 @@ export default function DigitalMenu() {
                               <CardTitle className="text-lg">{product.name}</CardTitle>
                               {product.tags && (
                                 <div className="flex gap-1 mt-1">
-                                  {product.tags.map((tag) => (
+                                  {product.tags.map((tag: string) => (
                                     <Badge key={tag} variant="secondary" className="text-xs">
                                       {tag}
                                     </Badge>
@@ -316,10 +348,16 @@ export default function DigitalMenu() {
                       </div>
                       
                       {product.imageUrl && (
-                        <div className="w-32 h-32 bg-gray-200 flex-shrink-0">
-                          <div className="w-full h-full bg-gradient-to-br from-orange-200 to-orange-300 flex items-center justify-center text-orange-600 font-semibold text-xs">
-                            Imagem
-                          </div>
+                        <div className="w-32 h-32 bg-gray-200 flex-shrink-0 overflow-hidden rounded-lg">
+                          <img 
+                            src={product.imageUrl} 
+                            alt={product.name}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00OCA0OEw4MCA4MEw0OCA4MFY0OFoiIGZpbGw9IiM5Q0EzQUYiLz4KPGNpcmNsZSBjeD0iNTYiIGN5PSI1NiIgcj0iNCIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
+                            }}
+                          />
                         </div>
                       )}
                     </div>
@@ -390,7 +428,7 @@ export default function DigitalMenu() {
                 <Separator />
                 <div className="flex justify-between font-bold">
                   <span>Total</span>
-                  <span>R$ {(cartTotal + 5.90).toFixed(2)}</span>
+                  <span>R$ {(cartTotal + 6.90).toFixed(2)}</span>
                 </div>
                 <Button className="w-full bg-green-600 hover:bg-green-700">
                   Finalizar Pedido
