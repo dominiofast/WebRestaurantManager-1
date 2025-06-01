@@ -68,9 +68,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userData = {
         id: `user-${Date.now()}`,
         email,
-        first_name: firstName,
-        last_name: lastName,
-        restaurant_name: restaurantName,
+        firstName: firstName,
+        lastName: lastName,
+        restaurantName: restaurantName,
         role: 'user'
       };
 
@@ -83,9 +83,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         user: {
           id: user.id,
           email: user.email,
-          firstName: user.first_name,
-          lastName: user.last_name,
-          restaurantName: user.restaurant_name
+          firstName: user.firstName,
+          lastName: user.lastName,
+          restaurantName: user.restaurantName
         }
       });
     } catch (error) {
@@ -105,18 +105,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Custom auth middleware
   const requireAuth = async (req: any, res: any, next: any) => {
-    if (!req.session.userId) {
+    console.log('Auth check - Session:', req.session);
+    console.log('Auth check - userId:', req.session?.userId);
+    
+    if (!req.session || !req.session.userId) {
       return res.status(401).json({ message: "Não autorizado" });
     }
     
     try {
       const user = await storage.getUser(req.session.userId);
+      console.log('Auth check - User found:', user?.email, user?.role);
+      
       if (!user) {
         return res.status(401).json({ message: "Usuário não encontrado" });
       }
-      req.user = { id: user.id };
+      req.user = { id: user.id, role: user.role };
       next();
     } catch (error) {
+      console.error('Auth error:', error);
       return res.status(401).json({ message: "Erro de autenticação" });
     }
   };
