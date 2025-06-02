@@ -222,7 +222,7 @@ export default function ModernDigitalMenu() {
           {/* Nome e informações */}
           <h1 className="text-2xl font-bold text-center mb-2">{storeData.name}</h1>
           {storeData.description && (
-            <p className="text-white/90 text-center text-sm mb-3 max-w-sm line-clamp-2">{storeData.description}</p>
+            <p className="text-white/90 text-center mb-3 max-w-sm line-clamp-2 text-[12px] pl-[0px] pr-[0px] ml-[8px] mr-[8px]">{storeData.description}</p>
           )}
           
           {/* Badges informativos - mais compactos */}
