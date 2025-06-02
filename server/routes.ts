@@ -113,13 +113,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/auth/logout', (req, res) => {
-    req.session.destroy((err) => {
-      if (err) {
-        return res.status(500).json({ message: "Erro ao fazer logout" });
+  app.post('/api/auth/logout', (req: any, res) => {
+    try {
+      if (req.session) {
+        req.session.destroy((err: any) => {
+          if (err) {
+            console.error('Session destroy error:', err);
+            return res.status(500).json({ message: "Erro ao fazer logout" });
+          }
+          res.clearCookie('connect.sid');
+          res.json({ message: "Logout realizado com sucesso" });
+        });
+      } else {
+        res.clearCookie('connect.sid');
+        res.json({ message: "Logout realizado com sucesso" });
       }
+    } catch (error) {
+      console.error('Error during logout:', error);
+      res.clearCookie('connect.sid');
       res.json({ message: "Logout realizado com sucesso" });
-    });
+    }
   });
 
   // Custom auth middleware
