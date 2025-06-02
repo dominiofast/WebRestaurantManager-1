@@ -470,10 +470,10 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
               {product.name}
             </h3>
             
-            {/* Descrição sempre visível se existir */}
+            {/* Descrição limitada a 2 linhas */}
             <div className="flex-1 mb-3">
               {product.description ? (
-                <p className="text-gray-500 text-sm leading-relaxed">
+                <p className="text-gray-500 text-sm leading-relaxed line-clamp-2">
                   {product.description}
                 </p>
               ) : (
