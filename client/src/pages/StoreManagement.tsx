@@ -268,11 +268,194 @@ export default function StoreManagement() {
         </Card>
       </div>
 
+      {/* Seção de Lojas */}
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl font-semibold">Suas Lojas</h2>
+          <Dialog open={isStoreDialogOpen} onOpenChange={setIsStoreDialogOpen}>
+            <DialogTrigger asChild>
+              <Button disabled={companies.length === 0}>
+                <Plus className="mr-2 h-4 w-4" />
+                Nova Loja
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>
+                  {editingStore ? "Editar Loja" : "Nova Loja"}
+                </DialogTitle>
+                <DialogDescription>
+                  {editingStore ? "Edite os dados da loja" : "Cadastre uma nova loja"}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="store-company">Empresa *</Label>
+                  <Select value={storeForm.companyId} onValueChange={(value) => setStoreForm(prev => ({ ...prev, companyId: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione uma empresa" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {companies.map((company: any) => (
+                        <SelectItem key={company.id} value={company.id.toString()}>
+                          {company.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="store-name">Nome da Loja *</Label>
+                  <Input
+                    id="store-name"
+                    value={storeForm.name}
+                    onChange={(e) => setStoreForm(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="Ex: Loja Shopping Center"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="store-address">Endereço</Label>
+                  <Textarea
+                    id="store-address"
+                    value={storeForm.address}
+                    onChange={(e) => setStoreForm(prev => ({ ...prev, address: e.target.value }))}
+                    placeholder="Endereço completo da loja"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="store-phone">Telefone</Label>
+                  <Input
+                    id="store-phone"
+                    value={storeForm.phone}
+                    onChange={(e) => setStoreForm(prev => ({ ...prev, phone: e.target.value }))}
+                    placeholder="(11) 99999-9999"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="store-email">Email</Label>
+                  <Input
+                    id="store-email"
+                    type="email"
+                    value={storeForm.email}
+                    onChange={(e) => setStoreForm(prev => ({ ...prev, email: e.target.value }))}
+                    placeholder="loja@empresa.com"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="store-status">Status</Label>
+                  <Select value={storeForm.status} onValueChange={(value) => setStoreForm(prev => ({ ...prev, status: value }))}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Ativo</SelectItem>
+                      <SelectItem value="inactive">Inativo</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setIsStoreDialogOpen(false)}>
+                  Cancelar
+                </Button>
+                <Button onClick={handleSaveStore} disabled={storeMutation.isPending}>
+                  {storeMutation.isPending ? "Salvando..." : "Salvar"}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        <Card>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nome</TableHead>
+                  <TableHead>Empresa</TableHead>
+                  <TableHead>Endereço</TableHead>
+                  <TableHead>Telefone</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {stores.map((store: any) => (
+                  <TableRow key={store.id}>
+                    <TableCell className="font-medium">{store.name}</TableCell>
+                    <TableCell>{store.company?.name || '-'}</TableCell>
+                    <TableCell className="max-w-xs truncate">{store.address || '-'}</TableCell>
+                    <TableCell>{store.phone || '-'}</TableCell>
+                    <TableCell>
+                      <Badge variant={store.status === 'active' ? 'default' : 'secondary'}>
+                        {store.status === 'active' ? 'Ativo' : 'Inativo'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => window.location.href = `/store/${store.id}/dashboard`}
+                          className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200"
+                        >
+                          <Edit className="h-4 w-4 mr-1" />
+                          Administrar
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => window.open(`/menu/${store.slug}`, '_blank')}
+                          className="bg-green-50 hover:bg-green-100 text-green-700 border-green-200"
+                        >
+                          <Globe className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditStore(store)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            if (confirm('Tem certeza que deseja deletar esta loja?')) {
+                              deleteStoreMutation.mutate(store.id);
+                            }
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            {stores.length === 0 && (
+              <div className="text-center py-8">
+                <Store className="mx-auto h-12 w-12 text-gray-400" />
+                <h3 className="mt-2 text-sm font-semibold text-gray-900">
+                  Nenhuma loja cadastrada
+                </h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  {companies.length === 0 
+                    ? "Cadastre uma empresa primeiro para adicionar lojas."
+                    : "Comece criando a primeira loja."
+                  }
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Tabs para Empresas e Lojas */}
-      <Tabs defaultValue="stores" className="space-y-4">
+      <Tabs defaultValue="companies" className="space-y-4">
         <TabsList>
           <TabsTrigger value="companies">Empresas</TabsTrigger>
-          <TabsTrigger value="stores">Lojas</TabsTrigger>
         </TabsList>
 
         {/* Tab de Empresas */}
