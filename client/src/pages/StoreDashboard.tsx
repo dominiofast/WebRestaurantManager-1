@@ -46,11 +46,11 @@ interface StoreInfo {
   };
 }
 
-export default function StoreDashboard() {
+export default function StoreDashboard({ storeId: propStoreId }: { storeId?: number }) {
   const params = useParams();
   const { user } = useAuth();
-  // For managers, use store ID 1 (Centro), for others use URL parameter
-  const storeId = user?.role === 'manager' ? '1' : params.id;
+  // Use prop storeId if provided, otherwise use URL parameter or default for managers
+  const storeId = propStoreId?.toString() || params.id || '11';
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("overview");
   const [storeSettings, setStoreSettings] = useState({

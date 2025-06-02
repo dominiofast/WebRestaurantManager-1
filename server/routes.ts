@@ -172,26 +172,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Custom auth middleware
   const requireAuth = async (req: any, res: any, next: any) => {
-    console.log('Auth check - Session:', req.session);
-    console.log('Auth check - userId:', req.session?.userId);
-    
-    if (!req.session || !req.session.userId) {
-      return res.status(401).json({ message: "Não autorizado" });
+    // Check if user is authenticated via Replit Auth
+    if (req.isAuthenticated && req.isAuthenticated() && req.user) {
+      return next();
     }
     
-    try {
-      const user = await storage.getUser(req.session.userId);
-      console.log('Auth check - User found:', user?.email, user?.role);
-      
-      if (!user) {
-        return res.status(401).json({ message: "Usuário não encontrado" });
+    // Check if user is authenticated via session (custom login)
+    if (req.session && req.session.userId) {
+      try {
+        const user = await storage.getUser(req.session.userId);
+        if (!user) {
+          return res.status(401).json({ message: "Usuário não encontrado" });
+        }
+        req.user = { id: user.id, role: user.role };
+        return next();
+      } catch (error) {
+        console.error('Auth error:', error);
+        return res.status(401).json({ message: "Erro de autenticação" });
       }
-      req.user = { id: user.id, role: user.role };
-      next();
-    } catch (error) {
-      console.error('Auth error:', error);
-      return res.status(401).json({ message: "Erro de autenticação" });
     }
+    
+    return res.status(401).json({ message: "Não autenticado" });
   };
 
   // Role-based middleware
