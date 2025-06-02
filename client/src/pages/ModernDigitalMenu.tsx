@@ -239,7 +239,6 @@ export default function ModernDigitalMenu() {
           </div>
         </div>
       </div>
-
       {/* Header de busca */}
       <div className="bg-gray-50 px-4 py-4">
         <div className="max-w-4xl mx-auto">
@@ -291,11 +290,7 @@ export default function ModernDigitalMenu() {
                           block: 'start'
                         });
                       }}
-                      className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all duration-200 border ${
-                        activeSection === section.id
-                          ? "bg-orange-600 text-white border-orange-600"
-                          : "bg-white text-gray-600 border-gray-300 hover:border-orange-400 hover:text-orange-600"
-                      }`}
+                      className="flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all duration-200 border border-orange-600 text-[#000000] bg-[#ea580c00]"
                     >
                       {section.name}
                     </button>
