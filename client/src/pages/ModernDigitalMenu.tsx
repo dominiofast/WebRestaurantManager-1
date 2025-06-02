@@ -680,43 +680,6 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
 
           {/* Rodapé fixo com preços e botão */}
           <div className="flex-shrink-0 border-t bg-white p-6">
-            {/* Preços originais e promocionais */}
-            <div className="mb-4">
-              {product.originalPrice && (
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-sm text-gray-500">Preço original:</span>
-                  <span className="text-sm text-gray-400 line-through">
-                    R$ {parseFloat(product.originalPrice).toFixed(2).replace('.', ',')}
-                  </span>
-                </div>
-              )}
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-sm text-gray-700">Preço unitário:</span>
-                <span className="font-semibold text-gray-900">
-                  R$ {parseFloat(product.price).toFixed(2).replace('.', ',')}
-                </span>
-              </div>
-              {selectedAddons.length > 0 && (
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-sm text-gray-700">Adicionais:</span>
-                  <span className="font-semibold text-green-600">
-                    +R$ {selectedAddons.reduce((sum, addon) => sum + parseFloat(addon.price || "0"), 0).toFixed(2).replace('.', ',')}
-                  </span>
-                </div>
-              )}
-            </div>
-            
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-lg font-semibold">Total:</span>
-              <span className="text-xl font-bold text-orange-600">
-                R$ {(
-                  (parseFloat(product.price) + 
-                   selectedAddons.reduce((sum, addon) => sum + parseFloat(addon.price || "0"), 0)) * 
-                  quantity
-                ).toFixed(2).replace('.', ',')}
-              </span>
-            </div>
-            
             <Button 
               onClick={(e) => {
                 e.stopPropagation();
@@ -749,9 +712,16 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
                 setSpecialInstructions("");
               }}
               disabled={!product.isAvailable}
-              className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3"
+              className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 flex items-center justify-between"
             >
-              Adicionar ao carrinho
+              <span>Adicionar ao carrinho</span>
+              <span className="font-bold">
+                R$ {(
+                  (parseFloat(product.price) + 
+                   selectedAddons.reduce((sum, addon) => sum + parseFloat(addon.price || "0"), 0)) * 
+                  quantity
+                ).toFixed(2).replace('.', ',')}
+              </span>
             </Button>
           </div>
         </DialogContent>
