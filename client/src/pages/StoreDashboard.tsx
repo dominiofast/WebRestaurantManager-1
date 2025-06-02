@@ -152,6 +152,61 @@ export default function StoreDashboard({ storeId: propStoreId }: { storeId?: num
     },
   });
 
+  // Delete product mutation
+  const deleteProductMutation = useMutation({
+    mutationFn: async (productId: number) => {
+      const response = await fetch(`/api/stores/${storeId}/menu-products/${productId}`, {
+        method: 'DELETE',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erro ao deletar produto');
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/stores/${storeId}/menu-products`] });
+      toast({
+        title: "Sucesso",
+        description: "Produto excluído com sucesso!",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Erro",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Delete section mutation
+  const deleteSectionMutation = useMutation({
+    mutationFn: async (sectionId: number) => {
+      const response = await fetch(`/api/stores/${storeId}/menu-sections/${sectionId}`, {
+        method: 'DELETE',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erro ao deletar seção');
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/stores/${storeId}/menu-sections`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/stores/${storeId}/menu-products`] });
+      toast({
+        title: "Sucesso",
+        description: "Seção excluída com sucesso!",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Erro",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   // Fetch store orders
   const { data: orders = [] } = useQuery({
     queryKey: [`/api/stores/${storeId}/orders`],
@@ -228,6 +283,44 @@ export default function StoreDashboard({ storeId: propStoreId }: { storeId?: num
 
   const handleSaveSettings = () => {
     updateStoreMutation.mutate(storeSettings);
+  };
+
+  // Modal handlers
+  const handleCreateProduct = () => {
+    setSelectedProduct(null);
+    setProductModalOpen(true);
+  };
+
+  const handleEditProduct = (product: any) => {
+    setSelectedProduct(product);
+    setProductModalOpen(true);
+  };
+
+  const handleDeleteProduct = (productId: number) => {
+    if (confirm('Tem certeza que deseja excluir este produto?')) {
+      deleteProductMutation.mutate(productId);
+    }
+  };
+
+  const handleCreateSection = () => {
+    setSelectedSection(null);
+    setSectionModalOpen(true);
+  };
+
+  const handleEditSection = (section: any) => {
+    setSelectedSection(section);
+    setSectionModalOpen(true);
+  };
+
+  const handleDeleteSection = (sectionId: number) => {
+    if (confirm('Tem certeza que deseja excluir esta seção? Todos os produtos da seção serão removidos.')) {
+      deleteSectionMutation.mutate(sectionId);
+    }
+  };
+
+  const handleManageAddons = (product: any) => {
+    setSelectedProduct(product);
+    setAddonsModalOpen(true);
   };
 
   if (storeLoading) {
@@ -401,11 +494,11 @@ export default function StoreDashboard({ storeId: propStoreId }: { storeId?: num
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold">Gerenciar Cardápio</h2>
               <div className="space-x-2">
-                <Button variant="outline">
+                <Button variant="outline" onClick={handleCreateSection}>
                   <Plus className="mr-2 h-4 w-4" />
                   Nova Seção
                 </Button>
-                <Button>
+                <Button onClick={handleCreateProduct}>
                   <Plus className="mr-2 h-4 w-4" />
                   Novo Produto
                 </Button>
@@ -444,8 +537,16 @@ export default function StoreDashboard({ storeId: propStoreId }: { storeId?: num
                             <Badge variant="outline">
                               {sectionProducts.length} {sectionProducts.length === 1 ? 'produto' : 'produtos'}
                             </Badge>
-                            <Button variant="outline" size="sm">
+                            <Button variant="outline" size="sm" onClick={() => handleEditSection(section)}>
                               <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => handleDeleteSection(section.id)}
+                              disabled={deleteSectionMutation.isPending}
+                            >
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         </div>
@@ -507,10 +608,27 @@ export default function StoreDashboard({ storeId: propStoreId }: { storeId?: num
                                   </TableCell>
                                   <TableCell className="text-right">
                                     <div className="flex justify-end gap-2">
-                                      <Button variant="outline" size="sm">
+                                      <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        onClick={() => handleManageAddons(product)}
+                                        title="Gerenciar Adicionais"
+                                      >
+                                        <Sliders className="h-4 w-4" />
+                                      </Button>
+                                      <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        onClick={() => handleEditProduct(product)}
+                                      >
                                         <Edit className="h-4 w-4" />
                                       </Button>
-                                      <Button variant="outline" size="sm">
+                                      <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        onClick={() => handleDeleteProduct(product.id)}
+                                        disabled={deleteProductMutation.isPending}
+                                      >
                                         <Trash2 className="h-4 w-4" />
                                       </Button>
                                     </div>
@@ -592,10 +710,27 @@ export default function StoreDashboard({ storeId: propStoreId }: { storeId?: num
                                 </TableCell>
                                 <TableCell className="text-right">
                                   <div className="flex justify-end gap-2">
-                                    <Button variant="outline" size="sm">
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm"
+                                      onClick={() => handleManageAddons(product)}
+                                      title="Gerenciar Adicionais"
+                                    >
+                                      <Sliders className="h-4 w-4" />
+                                    </Button>
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm"
+                                      onClick={() => handleEditProduct(product)}
+                                    >
                                       <Edit className="h-4 w-4" />
                                     </Button>
-                                    <Button variant="outline" size="sm">
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm"
+                                      onClick={() => handleDeleteProduct(product.id)}
+                                      disabled={deleteProductMutation.isPending}
+                                    >
                                       <Trash2 className="h-4 w-4" />
                                     </Button>
                                   </div>
@@ -971,6 +1106,28 @@ export default function StoreDashboard({ storeId: propStoreId }: { storeId?: num
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Modals */}
+      <ProductModal
+        isOpen={productModalOpen}
+        onClose={() => setProductModalOpen(false)}
+        product={selectedProduct}
+        storeId={storeId}
+      />
+
+      <SectionModal
+        isOpen={sectionModalOpen}
+        onClose={() => setSectionModalOpen(false)}
+        section={selectedSection}
+        storeId={storeId}
+      />
+
+      <AddonsModal
+        isOpen={addonsModalOpen}
+        onClose={() => setAddonsModalOpen(false)}
+        productId={selectedProduct?.id}
+        productName={selectedProduct?.name || ''}
+      />
     </div>
   );
 }
