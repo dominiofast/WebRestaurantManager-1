@@ -784,6 +784,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Rota para upload de imagens
+  app.post("/api/upload", async (req, res) => {
+    try {
+      // Simular upload - Em produção seria integrado com serviços como AWS S3, Cloudinary, etc
+      const { file, type } = req.body;
+      
+      if (!file) {
+        return res.status(400).json({ message: "Nenhum arquivo fornecido" });
+      }
+
+      // Gerar URL simulada baseada no tipo
+      const timestamp = Date.now();
+      const imageUrl = `https://images.unsplash.com/photo-${timestamp}?w=400&h=300&fit=crop`;
+      
+      res.json({ imageUrl });
+    } catch (error) {
+      console.error("Erro no upload:", error);
+      res.status(500).json({ message: "Erro no upload da imagem" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
