@@ -177,13 +177,29 @@ export default function ModernDigitalMenu() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Banner - Moderno e atrativo */}
-      <div className="relative h-64 bg-gradient-to-br from-orange-600 via-red-600 to-orange-800 overflow-hidden">
-        {/* Pattern de fundo */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-64 h-64 bg-white rounded-full -translate-x-32 -translate-y-32"></div>
-          <div className="absolute top-16 right-0 w-48 h-48 bg-white rounded-full translate-x-24 -translate-y-24"></div>
-          <div className="absolute bottom-0 left-1/3 w-32 h-32 bg-white rounded-full translate-y-16"></div>
-        </div>
+      <div className="relative h-64 overflow-hidden">
+        {/* Banner de fundo ou gradiente */}
+        {storeData.bannerUrl ? (
+          <img 
+            src={storeData.bannerUrl} 
+            alt="Banner da loja"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-orange-600 via-red-600 to-orange-800" />
+        )}
+        
+        {/* Overlay escuro para contraste */}
+        <div className="absolute inset-0 bg-black/40" />
+        
+        {/* Pattern de fundo quando não há banner */}
+        {!storeData.bannerUrl && (
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 left-0 w-64 h-64 bg-white rounded-full -translate-x-32 -translate-y-32"></div>
+            <div className="absolute top-16 right-0 w-48 h-48 bg-white rounded-full translate-x-24 -translate-y-24"></div>
+            <div className="absolute bottom-0 left-1/3 w-32 h-32 bg-white rounded-full translate-y-16"></div>
+          </div>
+        )}
         
         {/* Conteúdo do banner */}
         <div className="relative h-full flex flex-col justify-center items-center text-white px-4">
@@ -241,6 +257,12 @@ export default function ModernDigitalMenu() {
               <div className="flex items-center gap-1">
                 <Phone className="w-4 h-4" />
                 <span>{storeData.phone}</span>
+              </div>
+            )}
+            {storeData.company?.name && (
+              <div className="flex items-center gap-1">
+                <Store className="w-4 h-4" />
+                <span>{storeData.company.name}</span>
               </div>
             )}
           </div>
