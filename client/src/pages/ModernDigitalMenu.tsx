@@ -301,10 +301,10 @@ export default function ModernDigitalMenu() {
                 .map((section) => (
                   <div key={section.id} id={`section-${section.id}`}>
                     {/* Header da seção */}
-                    <div className="text-center mb-10">
-                      <h2 className="text-4xl font-bold text-gray-900 mb-3">{section.name}</h2>
+                    <div className="text-left mb-8">
+                      <h2 className="text-3xl font-bold text-gray-900 mb-2">{section.name}</h2>
                       {section.description && (
-                        <p className="text-gray-500 text-lg max-w-2xl mx-auto leading-relaxed">{section.description}</p>
+                        <p className="text-gray-500 text-base leading-relaxed">{section.description}</p>
                       )}
                     </div>
                     
