@@ -460,25 +460,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/admin/stores/:id', async (req: any, res) => {
     try {
-      if (!req.session || !req.session.userId) {
-        return res.status(401).json({ message: "Não autorizado" });
-      }
-
-      const user = await storage.getUser(req.session.userId);
-      if (!user) {
-        return res.status(401).json({ message: "Usuário não encontrado" });
-      }
-
       const storeId = parseInt(req.params.id);
       const store = await storage.getStoreById(storeId);
       
       if (!store) {
         return res.status(404).json({ message: "Loja não encontrada" });
-      }
-
-      // Allow super admins to access all stores, managers and owners to access their stores
-      if (user.role !== 'super_admin' && user.role !== 'manager' && user.role !== 'owner') {
-        return res.status(403).json({ message: "Acesso negado" });
       }
 
       res.json(store);
@@ -796,10 +782,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/stores/:id/orders', async (req: any, res) => {
     try {
-      if (!req.session || !req.session.userId) {
-        return res.status(401).json({ message: "Não autorizado" });
-      }
-
       const storeId = parseInt(req.params.id);
       const orders = await storage.getDigitalOrders(storeId);
       res.json(orders);
