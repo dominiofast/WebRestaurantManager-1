@@ -21,7 +21,8 @@ import {
   Search,
   Home,
   User,
-  Heart
+  Heart,
+  Store
 } from "lucide-react";
 import ProductImage from "@/components/ProductImage";
 
