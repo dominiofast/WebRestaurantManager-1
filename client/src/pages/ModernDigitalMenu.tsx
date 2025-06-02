@@ -295,21 +295,21 @@ export default function ModernDigitalMenu() {
             </div>
 
             {/* Produtos por seção */}
-            <div className="py-8 space-y-12">
+            <div className="py-8 space-y-16">
               {storeData.sections
                 .sort((a, b) => a.displayOrder - b.displayOrder)
                 .map((section) => (
                   <div key={section.id} id={`section-${section.id}`}>
                     {/* Header da seção */}
-                    <div className="text-center mb-8">
-                      <h2 className="text-3xl font-bold text-gray-900 mb-2">{section.name}</h2>
+                    <div className="text-center mb-10">
+                      <h2 className="text-4xl font-bold text-gray-900 mb-3">{section.name}</h2>
                       {section.description && (
-                        <p className="text-gray-600 text-lg max-w-2xl mx-auto">{section.description}</p>
+                        <p className="text-gray-500 text-lg max-w-2xl mx-auto leading-relaxed">{section.description}</p>
                       )}
                     </div>
                     
                     {/* Grid de produtos */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       {section.products
                         .sort((a, b) => a.displayOrder - b.displayOrder)
                         .map((product) => (
@@ -409,28 +409,28 @@ export default function ModernDigitalMenu() {
   );
 }
 
-// Componente moderno para produtos - Layout como na referência
+// Componente moderno para produtos - Layout clean como na referência
 function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart: (product: any) => void }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-      <div className="flex h-32">
+    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-300">
+      <div className="flex min-h-[140px]">
         {/* Conteúdo do produto */}
         <div className="flex-1 p-6 flex flex-col justify-between">
-          <div>
-            <h3 className="font-bold text-lg text-gray-900 mb-2 leading-tight">
+          <div className="flex-1">
+            <h3 className="font-bold text-xl text-gray-900 mb-3 leading-tight">
               {product.name}
             </h3>
             {product.description && (
-              <p className="text-gray-600 text-sm line-clamp-2 mb-3">
+              <p className="text-gray-600 text-sm leading-relaxed mb-4">
                 {product.description}
               </p>
             )}
           </div>
           
-          {/* Preço e ação */}
-          <div className="flex items-center justify-between">
-            <div className="flex flex-col">
-              <span className="text-lg font-bold text-gray-900">
+          {/* Preço - sempre visível */}
+          <div className="mt-auto">
+            <div className="mb-4">
+              <span className="text-xl font-bold text-gray-900 block">
                 A partir de R$ {parseFloat(product.price).toFixed(2).replace('.', ',')}
               </span>
               {product.originalPrice && (
@@ -440,11 +440,11 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
               )}
             </div>
             
+            {/* Botão adicionar */}
             <Button 
               onClick={() => onAddToCart(product)}
               disabled={!product.isAvailable}
-              className="bg-orange-600 hover:bg-orange-700 text-white font-semibold px-6 py-2 rounded-xl transition-colors shadow-md hover:shadow-lg"
-              size="sm"
+              className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2.5 rounded-lg transition-colors"
             >
               Adicionar
             </Button>
@@ -452,7 +452,7 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
         </div>
         
         {/* Imagem do produto */}
-        <div className="w-32 h-32 bg-gray-50 flex-shrink-0 relative overflow-hidden">
+        <div className="w-36 min-h-[140px] bg-gray-50 flex-shrink-0 relative">
           {product.imageUrl ? (
             <img 
               src={product.imageUrl} 
@@ -460,12 +460,27 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
               className="w-full h-full object-cover"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
-                target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00OCA0OEw4MCA4MEw0OCA4MFY0OFoiIGZpbGw9IiM5Q0EzQUYiLz4KPGNpcmNsZSBjeD0iNTYiIGN5PSI1NiIgcj0iNCIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
+                target.style.display = 'none';
+                const parent = target.parentElement;
+                if (parent) {
+                  parent.innerHTML = `
+                    <div class="w-full h-full bg-gray-100 flex items-center justify-center">
+                      <div class="text-center p-4">
+                        <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-2">
+                          <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                        <span class="text-xs text-gray-400">Sem foto</span>
+                      </div>
+                    </div>
+                  `;
+                }
               }}
             />
           ) : (
             <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-              <div className="text-center">
+              <div className="text-center p-4">
                 <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-2">
                   <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -476,22 +491,21 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
             </div>
           )}
           
-          {/* Badges */}
-          {product.isPromotion && (
-            <div className="absolute top-2 right-2">
-              <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
-                Oferta
-              </Badge>
-            </div>
-          )}
-          
-          {product.tags && (
-            <div className="absolute bottom-2 left-2">
-              {product.tags.split(',').slice(0, 1).map((tag: string) => (
-                <Badge key={tag.trim()} variant="secondary" className="text-xs bg-white/90 text-gray-700">
-                  {tag.trim()}
+          {/* Badges de promoção/tags */}
+          {(product.isPromotion || product.tags) && (
+            <div className="absolute top-2 right-2 space-y-1">
+              {product.isPromotion && (
+                <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1 block">
+                  Oferta
                 </Badge>
-              ))}
+              )}
+              {product.tags && (
+                product.tags.split(',').slice(0, 1).map((tag: string) => (
+                  <Badge key={tag.trim()} className="bg-green-500 text-white text-xs px-2 py-1 block">
+                    {tag.trim()}
+                  </Badge>
+                ))
+              )}
             </div>
           )}
         </div>
