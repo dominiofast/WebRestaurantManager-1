@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
+import ImageUpload from "@/components/ImageUpload";
 
 interface StoreInfo {
   id: number;
@@ -510,6 +511,34 @@ export default function StoreDashboard() {
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Logo e Banner da Loja */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-orange-600">Logo e Banner</CardTitle>
+                  <p className="text-sm text-gray-600">Configure as imagens que aparecerão no cardápio digital</p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="logo">Logo da Loja</Label>
+                    <ImageUpload
+                      currentImage={storeSettings.logoUrl}
+                      onImageChange={(logoUrl) => setStoreSettings({...storeSettings, logoUrl})}
+                      className="h-32"
+                    />
+                    <p className="text-xs text-gray-500">Recomendado: 200x200px, formato quadrado</p>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="banner">Banner da Loja</Label>
+                    <ImageUpload
+                      currentImage={storeSettings.bannerUrl}
+                      onImageChange={(bannerUrl) => setStoreSettings({...storeSettings, bannerUrl})}
+                      className="h-24"
+                    />
+                    <p className="text-xs text-gray-500">Recomendado: 1200x400px, formato retangular</p>
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* Informações da Loja */}
               <Card>
                 <CardHeader>

@@ -508,15 +508,15 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
         </div>
       </div>
 
-      {/* Modal de detalhes do produto */}
+      {/* Modal de detalhes do produto - Layout fixo */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-md mx-auto max-h-[90vh] flex flex-col">
-          <DialogHeader className="flex-shrink-0">
+        <DialogContent className="max-w-md mx-auto h-[90vh] flex flex-col p-0">
+          <DialogHeader className="flex-shrink-0 p-6 pb-0">
             <DialogTitle className="text-xl font-bold">{product.name}</DialogTitle>
           </DialogHeader>
           
           {/* Conteúdo scrollável */}
-          <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+          <div className="flex-1 overflow-y-auto px-6">
             {/* Imagem do produto */}
             {product.imageUrl && (
               <div className="w-full h-48 bg-gray-100 rounded-lg overflow-hidden">
@@ -547,84 +547,46 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
               </span>
             </div>
             
-            {/* Adicionais - Com scroll independente */}
+            {/* Adicionais */}
             {addonGroups && addonGroups.length > 0 && (
-              <div className="border-t pt-4 space-y-4">
+              <div className="space-y-4 mb-4">
                 <h4 className="font-semibold text-lg">Personalize seu pedido</h4>
                 
-                <div className="space-y-4 max-h-60 overflow-y-auto pr-2">
-                  {addonGroups.map((group: any) => (
-                    <div key={group.id} className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <h5 className="font-medium text-base">{group.name}</h5>
-                        {group.isRequired && (
-                          <Badge variant="destructive" className="text-xs">Obrigatório</Badge>
-                        )}
-                      </div>
-                      
-                      {group.description && (
-                        <p className="text-sm text-gray-600">{group.description}</p>
+                {addonGroups.map((group: any) => (
+                  <div key={group.id} className="space-y-3 border rounded-lg p-4 bg-gray-50">
+                    <div className="flex items-center justify-between">
+                      <h5 className="font-medium text-base">{group.name}</h5>
+                      {group.isRequired && (
+                        <Badge variant="destructive" className="text-xs">Obrigatório</Badge>
                       )}
-                      
-                      {group.maxSelections === 1 ? (
-                        // Radio buttons para seleção única
-                        <RadioGroup 
-                          value={selectedAddons.find(a => a.groupId === group.id)?.id?.toString() || ""}
-                          onValueChange={(value) => {
-                            if (value) {
-                              const addon = group.addons.find((a: any) => a.id.toString() === value);
-                              if (addon) {
-                                setSelectedAddons(prev => [
-                                  ...prev.filter(a => a.groupId !== group.id),
-                                  { ...addon, groupId: group.id }
-                                ]);
-                              }
-                            } else {
-                              setSelectedAddons(prev => prev.filter(a => a.groupId !== group.id));
+                    </div>
+                    
+                    {group.description && (
+                      <p className="text-sm text-gray-600">{group.description}</p>
+                    )}
+                    
+                    {group.maxSelections === 1 ? (
+                      // Radio buttons para seleção única
+                      <RadioGroup 
+                        value={selectedAddons.find(a => a.groupId === group.id)?.id?.toString() || ""}
+                        onValueChange={(value) => {
+                          if (value) {
+                            const addon = group.addons.find((a: any) => a.id.toString() === value);
+                            if (addon) {
+                              setSelectedAddons(prev => [
+                                ...prev.filter(a => a.groupId !== group.id),
+                                { ...addon, groupId: group.id }
+                              ]);
                             }
-                          }}
-                        >
-                          <div className="space-y-2">
-                            {group.addons.map((addon: any) => (
-                              <div key={addon.id} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50">
-                                <RadioGroupItem value={addon.id.toString()} id={`addon-${addon.id}`} />
-                                <Label 
-                                  htmlFor={`addon-${addon.id}`} 
-                                  className="flex-1 flex justify-between items-center cursor-pointer"
-                                >
-                                  <div>
-                                    <span className="font-medium">{addon.name}</span>
-                                    {addon.description && (
-                                      <p className="text-sm text-gray-500">{addon.description}</p>
-                                    )}
-                                  </div>
-                                  <span className="font-semibold text-green-600">
-                                    +R$ {parseFloat(addon.price).toFixed(2).replace('.', ',')}
-                                  </span>
-                                </Label>
-                              </div>
-                            ))}
-                          </div>
-                        </RadioGroup>
-                      ) : (
-                        // Checkboxes para seleção múltipla
+                          } else {
+                            setSelectedAddons(prev => prev.filter(a => a.groupId !== group.id));
+                          }
+                        }}
+                      >
                         <div className="space-y-2">
                           {group.addons.map((addon: any) => (
-                            <div key={addon.id} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50">
-                              <Checkbox
-                                id={`addon-${addon.id}`}
-                                checked={selectedAddons.some(a => a.id === addon.id)}
-                                onCheckedChange={(checked) => {
-                                  if (checked) {
-                                    const groupSelections = selectedAddons.filter(a => a.groupId === group.id);
-                                    if (groupSelections.length < group.maxSelections) {
-                                      setSelectedAddons(prev => [...prev, { ...addon, groupId: group.id }]);
-                                    }
-                                  } else {
-                                    setSelectedAddons(prev => prev.filter(a => a.id !== addon.id));
-                                  }
-                                }}
-                              />
+                            <div key={addon.id} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-white bg-white border">
+                              <RadioGroupItem value={addon.id.toString()} id={`addon-${addon.id}`} />
                               <Label 
                                 htmlFor={`addon-${addon.id}`} 
                                 className="flex-1 flex justify-between items-center cursor-pointer"
@@ -642,15 +604,51 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
                             </div>
                           ))}
                         </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
+                      </RadioGroup>
+                    ) : (
+                      // Checkboxes para seleção múltipla
+                      <div className="space-y-2">
+                        {group.addons.map((addon: any) => (
+                          <div key={addon.id} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-white bg-white border">
+                            <Checkbox
+                              id={`addon-${addon.id}`}
+                              checked={selectedAddons.some(a => a.id === addon.id)}
+                              onCheckedChange={(checked) => {
+                                if (checked) {
+                                  const groupSelections = selectedAddons.filter(a => a.groupId === group.id);
+                                  if (groupSelections.length < group.maxSelections) {
+                                    setSelectedAddons(prev => [...prev, { ...addon, groupId: group.id }]);
+                                  }
+                                } else {
+                                  setSelectedAddons(prev => prev.filter(a => a.id !== addon.id));
+                                }
+                              }}
+                            />
+                            <Label 
+                              htmlFor={`addon-${addon.id}`} 
+                              className="flex-1 flex justify-between items-center cursor-pointer"
+                            >
+                              <div>
+                                <span className="font-medium">{addon.name}</span>
+                                {addon.description && (
+                                  <p className="text-sm text-gray-500">{addon.description}</p>
+                                )}
+                              </div>
+                              <span className="font-semibold text-green-600">
+                                +R$ {parseFloat(addon.price).toFixed(2).replace('.', ',')}
+                              </span>
+                            </Label>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
             )}
 
             {/* Observações especiais */}
-            <div className="border-t pt-4">
+            <div className="mb-4">
               <Label htmlFor="instructions" className="text-sm font-medium">
                 Observações especiais (opcional)
               </Label>
@@ -664,77 +662,107 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
               />
             </div>
 
-            {/* Quantidade e botão */}
-            <div className="border-t pt-4 space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="font-medium">Quantidade</span>
-                <div className="flex items-center space-x-3">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    disabled={quantity <= 1}
-                  >
-                    <Minus className="w-4 h-4" />
-                  </Button>
-                  <span className="w-8 text-center font-semibold">{quantity}</span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setQuantity(quantity + 1)}
-                  >
-                    <Plus className="w-4 h-4" />
-                  </Button>
-                </div>
+            {/* Controle de quantidade */}
+            <div className="mb-6">
+              <Label className="text-sm font-medium">Quantidade</Label>
+              <div className="flex items-center gap-3 mt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  disabled={quantity <= 1}
+                >
+                  <Minus className="w-4 h-4" />
+                </Button>
+                <span className="font-bold text-lg min-w-[2rem] text-center">{quantity}</span>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setQuantity(quantity + 1)}
+                >
+                  <Plus className="w-4 h-4" />
+                </Button>
               </div>
+            </div>
+          </div>
 
-              {/* Preço total */}
-              <div className="flex justify-between items-center text-lg font-bold">
-                <span>Total:</span>
-                <span>R$ {(
+          {/* Rodapé fixo com preços e botão */}
+          <div className="flex-shrink-0 border-t bg-white p-6">
+            {/* Preços originais e promocionais */}
+            <div className="mb-4">
+              {product.originalPrice && (
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm text-gray-500">Preço original:</span>
+                  <span className="text-sm text-gray-400 line-through">
+                    R$ {parseFloat(product.originalPrice).toFixed(2).replace('.', ',')}
+                  </span>
+                </div>
+              )}
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-sm text-gray-700">Preço unitário:</span>
+                <span className="font-semibold text-gray-900">
+                  R$ {parseFloat(product.price).toFixed(2).replace('.', ',')}
+                </span>
+              </div>
+              {selectedAddons.length > 0 && (
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm text-gray-700">Adicionais:</span>
+                  <span className="font-semibold text-green-600">
+                    +R$ {selectedAddons.reduce((sum, addon) => sum + parseFloat(addon.price || "0"), 0).toFixed(2).replace('.', ',')}
+                  </span>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-lg font-semibold">Total:</span>
+              <span className="text-xl font-bold text-orange-600">
+                R$ {(
                   (parseFloat(product.price) + 
                    selectedAddons.reduce((sum, addon) => sum + parseFloat(addon.price || "0"), 0)) * 
                   quantity
-                ).toFixed(2).replace('.', ',')}</span>
-              </div>
-
-              <Button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  // Verificar se grupos obrigatórios foram selecionados
-                  const requiredGroups = addonGroups?.filter((g: any) => g.isRequired) || [];
-                  const missingRequired = requiredGroups.filter((g: any) => 
-                    !selectedAddons.some(a => a.groupId === g.id)
-                  );
-                  
-                  if (missingRequired.length > 0) {
-                    alert(`Por favor, selecione: ${missingRequired.map((g: any) => g.name).join(', ')}`);
-                    return;
-                  }
-                  
-                  const cartItem = {
-                    productId: product.id,
-                    name: product.name,
-                    price: parseFloat(product.price) + selectedAddons.reduce((sum, addon) => sum + parseFloat(addon.price || "0"), 0),
-                    quantity,
-                    selectedAddons,
-                    specialInstructions
-                  };
-                  
-                  onAddToCart(cartItem);
-                  setIsModalOpen(false);
-                  
-                  // Reset form
-                  setSelectedAddons([]);
-                  setQuantity(1);
-                  setSpecialInstructions("");
-                }}
-                disabled={!product.isAvailable}
-                className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3"
-              >
-                Adicionar ao carrinho
-              </Button>
+                ).toFixed(2).replace('.', ',')}
+              </span>
             </div>
+            
+            <Button 
+              onClick={(e) => {
+                e.stopPropagation();
+                // Verificar se grupos obrigatórios foram selecionados
+                const requiredGroups = addonGroups?.filter((g: any) => g.isRequired) || [];
+                const missingRequired = requiredGroups.filter((g: any) => 
+                  !selectedAddons.some(a => a.groupId === g.id)
+                );
+                
+                if (missingRequired.length > 0) {
+                  alert(`Por favor, selecione: ${missingRequired.map((g: any) => g.name).join(', ')}`);
+                  return;
+                }
+                
+                const cartItem = {
+                  productId: product.id,
+                  name: product.name,
+                  price: parseFloat(product.price) + selectedAddons.reduce((sum, addon) => sum + parseFloat(addon.price || "0"), 0),
+                  quantity,
+                  selectedAddons,
+                  specialInstructions
+                };
+                
+                onAddToCart(cartItem);
+                setIsModalOpen(false);
+                
+                // Reset form
+                setSelectedAddons([]);
+                setQuantity(1);
+                setSpecialInstructions("");
+              }}
+              disabled={!product.isAvailable}
+              className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3"
+            >
+              Adicionar ao carrinho
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
