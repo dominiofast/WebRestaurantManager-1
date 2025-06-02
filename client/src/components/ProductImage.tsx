@@ -13,7 +13,7 @@ export default function ProductImage({
   className = '',
   showPromoBadge = false 
 }: ProductImageProps) {
-  // Tamanhos responsivos padronizados
+  // Tamanhos responsivos padronizados - FORÇANDO QUADRADO
   const sizeClasses = {
     sm: 'w-16 h-16',
     md: 'w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28',
@@ -21,13 +21,24 @@ export default function ProductImage({
   };
 
   return (
-    <div className={`${sizeClasses[size]} bg-gray-50 flex-shrink-0 relative overflow-hidden rounded-lg ${className}`}>
+    <div 
+      className={`${sizeClasses[size]} bg-gray-50 flex-shrink-0 relative overflow-hidden ${className}`}
+      style={{ 
+        aspectRatio: '1 / 1',
+        minWidth: size === 'sm' ? '4rem' : size === 'md' ? '5rem' : '8rem',
+        minHeight: size === 'sm' ? '4rem' : size === 'md' ? '5rem' : '8rem'
+      }}
+    >
       {src ? (
         <img 
           src={src} 
           alt={alt}
           className="w-full h-full object-cover"
-          style={{ aspectRatio: '1 / 1' }}
+          style={{ 
+            aspectRatio: '1 / 1',
+            width: '100%',
+            height: '100%'
+          }}
         />
       ) : (
         <div className="w-full h-full bg-gray-100 flex items-center justify-center">
@@ -39,7 +50,7 @@ export default function ProductImage({
       
       {/* Badge de promoção */}
       {showPromoBadge && (
-        <div className="absolute -top-1 -right-1">
+        <div className="absolute -top-1 -right-1 z-10">
           <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">
             30%OFF
           </div>
