@@ -309,7 +309,7 @@ export default function ModernDigitalMenu() {
                     </div>
                     
                     {/* Grid de produtos */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-3">
                       {section.products
                         .sort((a, b) => a.displayOrder - b.displayOrder)
                         .map((product) => (
@@ -412,100 +412,56 @@ export default function ModernDigitalMenu() {
 // Componente moderno para produtos - Layout clean como na referência
 function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart: (product: any) => void }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-300">
-      <div className="flex min-h-[140px]">
+    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-sm transition-all duration-300">
+      <div className="flex h-28">
         {/* Conteúdo do produto */}
-        <div className="flex-1 p-6 flex flex-col justify-between">
-          <div className="flex-1">
-            <h3 className="font-bold text-xl text-gray-900 mb-3 leading-tight">
+        <div className="flex-1 p-4 flex flex-col justify-between">
+          <div>
+            <h3 className="font-bold text-base text-gray-900 mb-1 leading-tight">
               {product.name}
             </h3>
             {product.description && (
-              <p className="text-gray-600 text-sm leading-relaxed mb-4">
+              <p className="text-gray-500 text-sm line-clamp-2 mb-2 leading-relaxed">
                 {product.description}
               </p>
             )}
           </div>
           
-          {/* Preço - sempre visível */}
+          {/* Preços */}
           <div className="mt-auto">
-            <div className="mb-4">
-              <span className="text-xl font-bold text-gray-900 block">
-                A partir de R$ {parseFloat(product.price).toFixed(2).replace('.', ',')}
+            {product.originalPrice && (
+              <span className="text-xs text-gray-400 line-through block">
+                R$ {parseFloat(product.originalPrice).toFixed(2).replace('.', ',')}
               </span>
-              {product.originalPrice && (
-                <span className="text-sm text-gray-400 line-through">
-                  R$ {parseFloat(product.originalPrice).toFixed(2).replace('.', ',')}
-                </span>
-              )}
-            </div>
-            
-            {/* Botão adicionar */}
-            <Button 
-              onClick={() => onAddToCart(product)}
-              disabled={!product.isAvailable}
-              className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-2.5 rounded-lg transition-colors"
-            >
-              Adicionar
-            </Button>
+            )}
+            <span className="font-bold text-lg text-gray-900">
+              R$ {parseFloat(product.price).toFixed(2).replace('.', ',')}
+            </span>
           </div>
         </div>
         
-        {/* Imagem do produto */}
-        <div className="w-36 min-h-[140px] bg-gray-50 flex-shrink-0 relative">
+        {/* Imagem quadrada */}
+        <div className="w-28 h-28 bg-gray-50 flex-shrink-0 relative">
           {product.imageUrl ? (
             <img 
               src={product.imageUrl} 
               alt={product.name}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-                const parent = target.parentElement;
-                if (parent) {
-                  parent.innerHTML = `
-                    <div class="w-full h-full bg-gray-100 flex items-center justify-center">
-                      <div class="text-center p-4">
-                        <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-2">
-                          <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                          </svg>
-                        </div>
-                        <span class="text-xs text-gray-400">Sem foto</span>
-                      </div>
-                    </div>
-                  `;
-                }
-              }}
+              className="w-full h-full object-cover rounded-r-lg"
             />
           ) : (
-            <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-              <div className="text-center p-4">
-                <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <span className="text-xs text-gray-400">Sem foto</span>
-              </div>
+            <div className="w-full h-full bg-gray-100 flex items-center justify-center rounded-r-lg">
+              <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
             </div>
           )}
           
-          {/* Badges de promoção/tags */}
-          {(product.isPromotion || product.tags) && (
-            <div className="absolute top-2 right-2 space-y-1">
-              {product.isPromotion && (
-                <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1 block">
-                  Oferta
-                </Badge>
-              )}
-              {product.tags && (
-                product.tags.split(',').slice(0, 1).map((tag: string) => (
-                  <Badge key={tag.trim()} className="bg-green-500 text-white text-xs px-2 py-1 block">
-                    {tag.trim()}
-                  </Badge>
-                ))
-              )}
+          {/* Badge de desconto */}
+          {product.isPromotion && (
+            <div className="absolute -top-1 -right-1">
+              <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+                30%OFF
+              </div>
             </div>
           )}
         </div>
