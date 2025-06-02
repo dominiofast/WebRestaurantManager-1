@@ -169,103 +169,101 @@ export default function ModernDigitalMenu() {
     : [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header com banner e logo da loja */}
-      <div className="relative">
-        {/* Banner */}
-        <div className="h-40 sm:h-48 bg-gradient-to-r from-orange-500 to-red-600 relative overflow-hidden">
-          {storeData.bannerUrl && (
-            <img 
-              src={storeData.bannerUrl} 
-              alt="Banner da loja"
-              className="w-full h-full object-cover"
-            />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+    <div className="min-h-screen bg-white">
+      {/* Hero Banner - Moderno e atrativo */}
+      <div className="relative h-64 bg-gradient-to-br from-orange-600 via-red-600 to-orange-800 overflow-hidden">
+        {/* Pattern de fundo */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-64 h-64 bg-white rounded-full -translate-x-32 -translate-y-32"></div>
+          <div className="absolute top-16 right-0 w-48 h-48 bg-white rounded-full translate-x-24 -translate-y-24"></div>
+          <div className="absolute bottom-0 left-1/3 w-32 h-32 bg-white rounded-full translate-y-16"></div>
         </div>
         
-        {/* Logo e informações da loja */}
-        <div className="relative -mt-16 px-4 pb-4">
-          <div className="flex items-end gap-4">
-            {/* Logo */}
-            <div className="w-20 h-20 bg-white rounded-2xl shadow-lg flex items-center justify-center flex-shrink-0 border-4 border-white">
-              {storeData.logoUrl ? (
-                <img 
-                  src={storeData.logoUrl} 
-                  alt="Logo da loja"
-                  className="w-full h-full object-cover rounded-xl"
-                />
-              ) : (
-                <span className="text-xl font-bold text-orange-600">
-                  {storeData.name.charAt(0)}
-                </span>
-              )}
+        {/* Conteúdo do banner */}
+        <div className="relative h-full flex flex-col justify-center items-center text-white px-4">
+          {/* Logo */}
+          <div className="w-24 h-24 bg-white rounded-3xl shadow-2xl flex items-center justify-center mb-4">
+            {storeData.logoUrl ? (
+              <img 
+                src={storeData.logoUrl} 
+                alt="Logo da loja"
+                className="w-20 h-20 object-cover rounded-2xl"
+              />
+            ) : (
+              <span className="text-2xl font-bold text-orange-600">
+                {storeData.name.charAt(0)}
+              </span>
+            )}
+          </div>
+          
+          {/* Nome e informações */}
+          <h1 className="text-3xl font-bold text-center mb-2">{storeData.name}</h1>
+          {storeData.description && (
+            <p className="text-white/90 text-center text-lg mb-4 max-w-md">{storeData.description}</p>
+          )}
+          
+          {/* Badges informativos */}
+          <div className="flex flex-wrap justify-center gap-3">
+            <div className="bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2">
+              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+              <span className="text-sm font-semibold">4.8 • Avaliação</span>
             </div>
-            
-            {/* Informações */}
-            <div className="flex-1 text-white">
-              <h1 className="text-xl sm:text-2xl font-bold">{storeData.name}</h1>
-              {storeData.description && (
-                <p className="text-white/90 text-sm">{storeData.description}</p>
-              )}
-              <div className="flex items-center gap-4 mt-2 text-sm">
-                <div className="flex items-center gap-1">
-                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                  <span>4.8</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Clock className="w-4 h-4" />
-                  <span>25-40 min</span>
-                </div>
-              </div>
+            <div className="bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              <span className="text-sm font-semibold">25-40 min</span>
+            </div>
+            <div className="bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2">
+              <MapPin className="w-4 h-4" />
+              <span className="text-sm font-semibold">Taxa: R$ 5,90</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Informações de contato */}
-      <div className="bg-white border-b px-4 py-3">
-        <div className="flex flex-col sm:flex-row gap-2 text-sm text-gray-600">
-          {storeData.address && (
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4" />
-              <span>{storeData.address}</span>
-            </div>
-          )}
-          {storeData.phone && (
-            <div className="flex items-center gap-2">
-              <Phone className="w-4 h-4" />
-              <span>{storeData.phone}</span>
-            </div>
-          )}
+      {/* Header info e busca */}
+      <div className="bg-gray-50 px-4 py-4">
+        <div className="max-w-4xl mx-auto">
+          {/* Informações de contato */}
+          <div className="flex items-center justify-center gap-6 text-sm text-gray-600 mb-4">
+            {storeData.address && (
+              <div className="flex items-center gap-1">
+                <MapPin className="w-4 h-4" />
+                <span>{storeData.address}</span>
+              </div>
+            )}
+            {storeData.phone && (
+              <div className="flex items-center gap-1">
+                <Phone className="w-4 h-4" />
+                <span>{storeData.phone}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Busca centralizada */}
+          <div className="relative max-w-md mx-auto">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Pesquisar no cardápio..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-orange-500 focus:border-transparent shadow-sm"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Busca */}
-      <div className="bg-white border-b px-4 py-3">
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <input
-            type="text"
-            placeholder="Buscar no cardápio..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-          />
-        </div>
-      </div>
-
-      {/* Conteúdo principal */}
-      <div className="pb-20">
+      {/* Conteúdo principal - Container centralizado */}
+      <div className="max-w-4xl mx-auto px-4 pb-24">
         {searchQuery ? (
           /* Resultados da busca */
-          <div className="px-4 py-6">
-            <h2 className="text-xl font-bold mb-4">
+          <div className="py-6">
+            <h2 className="text-2xl font-bold mb-6 text-center">
               Resultados para "{searchQuery}" ({filteredProducts.length})
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredProducts.map((product) => (
-                <ProductCard 
+                <ModernProductCard 
                   key={product.id} 
                   product={product} 
                   onAddToCart={addToCart}
@@ -275,35 +273,19 @@ export default function ModernDigitalMenu() {
           </div>
         ) : (
           <>
-            {/* Seção de destaques */}
-            {featuredProducts.length > 0 && (
-              <div className="px-4 py-6 bg-white border-b">
-                <h2 className="text-xl font-bold mb-4">Destaques</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-                  {featuredProducts.map((product) => (
-                    <FeaturedProductCard 
-                      key={product.id} 
-                      product={product} 
-                      onAddToCart={addToCart}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Navegação de categorias */}
-            <div className="bg-white border-b px-4 py-3">
-              <div className="flex gap-2 overflow-x-auto">
+            {/* Navegação de categorias - Pills horizontais */}
+            <div className="sticky top-0 bg-white/95 backdrop-blur-sm z-30 py-4 border-b">
+              <div className="flex gap-3 overflow-x-auto scrollbar-hide">
                 {storeData.sections
                   .sort((a, b) => a.displayOrder - b.displayOrder)
                   .map((section) => (
                     <button
                       key={section.id}
                       onClick={() => setActiveSection(section.id)}
-                      className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                      className={`flex-shrink-0 px-6 py-3 rounded-full text-sm font-semibold transition-all duration-200 border-2 ${
                         activeSection === section.id
-                          ? "bg-orange-100 text-orange-700"
-                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                          ? "bg-orange-600 text-white border-orange-600 shadow-lg"
+                          : "bg-white text-gray-600 border-gray-200 hover:border-orange-300 hover:text-orange-600"
                       }`}
                     >
                       {section.name}
@@ -313,23 +295,25 @@ export default function ModernDigitalMenu() {
             </div>
 
             {/* Produtos por seção */}
-            <div className="px-4 py-6 space-y-8">
+            <div className="py-8 space-y-12">
               {storeData.sections
                 .sort((a, b) => a.displayOrder - b.displayOrder)
                 .map((section) => (
                   <div key={section.id} id={`section-${section.id}`}>
-                    <div className="mb-4">
-                      <h2 className="text-xl font-bold">{section.name}</h2>
+                    {/* Header da seção */}
+                    <div className="text-center mb-8">
+                      <h2 className="text-3xl font-bold text-gray-900 mb-2">{section.name}</h2>
                       {section.description && (
-                        <p className="text-gray-600 text-sm">{section.description}</p>
+                        <p className="text-gray-600 text-lg max-w-2xl mx-auto">{section.description}</p>
                       )}
                     </div>
                     
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Grid de produtos */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {section.products
                         .sort((a, b) => a.displayOrder - b.displayOrder)
                         .map((product) => (
-                          <ProductCard 
+                          <ModernProductCard 
                             key={product.id} 
                             product={product} 
                             onAddToCart={addToCart}
@@ -425,79 +409,32 @@ export default function ModernDigitalMenu() {
   );
 }
 
-// Componente para produtos em destaque
-function FeaturedProductCard({ product, onAddToCart }: { product: any; onAddToCart: (product: any) => void }) {
+// Componente moderno para produtos - Layout como na referência
+function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart: (product: any) => void }) {
   return (
-    <Card className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow">
-      <div className="aspect-square bg-gray-100 relative">
-        {product.imageUrl ? (
-          <img 
-            src={product.imageUrl} 
-            alt={product.name}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-            <span className="text-gray-400 text-xs">Sem imagem</span>
-          </div>
-        )}
-        {product.isPromotion && (
-          <Badge className="absolute top-2 right-2 bg-red-500 text-white text-xs">
-            Oferta
-          </Badge>
-        )}
-      </div>
-      <CardContent className="p-3">
-        <h3 className="font-medium text-sm truncate">{product.name}</h3>
-        <div className="flex items-center justify-between mt-2">
-          <span className="font-bold text-orange-600">
-            R$ {parseFloat(product.price).toFixed(2).replace('.', ',')}
-          </span>
-          <Button 
-            size="sm" 
-            onClick={() => onAddToCart(product)}
-            className="h-7 w-7 p-0 bg-orange-600 hover:bg-orange-700"
-          >
-            <Plus className="w-3 h-3" />
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-// Componente para produtos normais
-function ProductCard({ product, onAddToCart }: { product: any; onAddToCart: (product: any) => void }) {
-  return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow">
-      <div className="flex">
-        <div className="flex-1 p-4">
-          <div className="mb-2">
-            <h3 className="font-semibold text-gray-900">{product.name}</h3>
-            {product.tags && (
-              <div className="flex gap-1 mt-1">
-                {product.tags.split(',').map((tag: string) => (
-                  <Badge key={tag.trim()} variant="secondary" className="text-xs">
-                    {tag.trim()}
-                  </Badge>
-                ))}
-              </div>
+    <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+      <div className="flex h-32">
+        {/* Conteúdo do produto */}
+        <div className="flex-1 p-6 flex flex-col justify-between">
+          <div>
+            <h3 className="font-bold text-lg text-gray-900 mb-2 leading-tight">
+              {product.name}
+            </h3>
+            {product.description && (
+              <p className="text-gray-600 text-sm line-clamp-2 mb-3">
+                {product.description}
+              </p>
             )}
           </div>
           
-          {product.description && (
-            <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-              {product.description}
-            </p>
-          )}
-          
+          {/* Preço e ação */}
           <div className="flex items-center justify-between">
-            <div>
-              <span className="font-bold text-lg">
-                R$ {parseFloat(product.price).toFixed(2).replace('.', ',')}
+            <div className="flex flex-col">
+              <span className="text-lg font-bold text-gray-900">
+                A partir de R$ {parseFloat(product.price).toFixed(2).replace('.', ',')}
               </span>
               {product.originalPrice && (
-                <span className="text-gray-400 text-sm line-through ml-2">
+                <span className="text-sm text-gray-400 line-through">
                   R$ {parseFloat(product.originalPrice).toFixed(2).replace('.', ',')}
                 </span>
               )}
@@ -506,25 +443,59 @@ function ProductCard({ product, onAddToCart }: { product: any; onAddToCart: (pro
             <Button 
               onClick={() => onAddToCart(product)}
               disabled={!product.isAvailable}
-              className="bg-orange-600 hover:bg-orange-700 text-white"
+              className="bg-orange-600 hover:bg-orange-700 text-white font-semibold px-6 py-2 rounded-xl transition-colors shadow-md hover:shadow-lg"
               size="sm"
             >
-              <Plus className="w-4 h-4 mr-1" />
               Adicionar
             </Button>
           </div>
         </div>
         
-        {product.imageUrl && (
-          <div className="w-24 h-24 bg-gray-100 flex-shrink-0">
+        {/* Imagem do produto */}
+        <div className="w-32 h-32 bg-gray-50 flex-shrink-0 relative overflow-hidden">
+          {product.imageUrl ? (
             <img 
               src={product.imageUrl} 
               alt={product.name}
               className="w-full h-full object-cover"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00OCA0OEw4MCA4MEw0OCA4MFY0OFoiIGZpbGw9IiM5Q0EzQUYiLz4KPGNpcmNsZSBjeD0iNTYiIGN5PSI1NiIgcj0iNCIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
+              }}
             />
-          </div>
-        )}
+          ) : (
+            <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <span className="text-xs text-gray-400">Sem foto</span>
+              </div>
+            </div>
+          )}
+          
+          {/* Badges */}
+          {product.isPromotion && (
+            <div className="absolute top-2 right-2">
+              <Badge className="bg-red-500 text-white text-xs font-semibold px-2 py-1">
+                Oferta
+              </Badge>
+            </div>
+          )}
+          
+          {product.tags && (
+            <div className="absolute bottom-2 left-2">
+              {product.tags.split(',').slice(0, 1).map((tag: string) => (
+                <Badge key={tag.trim()} variant="secondary" className="text-xs bg-white/90 text-gray-700">
+                  {tag.trim()}
+                </Badge>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-    </Card>
+    </div>
   );
 }
