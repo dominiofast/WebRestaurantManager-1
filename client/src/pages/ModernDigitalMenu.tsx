@@ -177,8 +177,8 @@ export default function ModernDigitalMenu() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Banner - Moderno e atrativo */}
-      <div className="relative h-64 overflow-hidden">
+      {/* Hero Banner - Compacto e organizado */}
+      <div className="relative h-56 overflow-hidden">
         {/* Banner de fundo ou gradiente */}
         {storeData.bannerUrl ? (
           <img 
@@ -203,41 +203,41 @@ export default function ModernDigitalMenu() {
         )}
         
         {/* Conteúdo do banner */}
-        <div className="relative h-full flex flex-col justify-center items-center text-white px-4">
+        <div className="relative h-full flex flex-col justify-center items-center text-white px-4 py-4">
           {/* Logo */}
-          <div className="w-24 h-24 bg-white rounded-3xl shadow-2xl flex items-center justify-center mb-4">
+          <div className="w-20 h-20 bg-white rounded-2xl shadow-2xl flex items-center justify-center mb-3 p-1">
             {storeData.logoUrl ? (
               <img 
                 src={storeData.logoUrl} 
                 alt="Logo da loja"
-                className="w-20 h-20 object-cover rounded-2xl"
+                className="w-full h-full object-contain rounded-xl"
               />
             ) : (
-              <span className="text-2xl font-bold text-orange-600">
+              <span className="text-xl font-bold text-orange-600">
                 {storeData.name.charAt(0)}
               </span>
             )}
           </div>
           
           {/* Nome e informações */}
-          <h1 className="text-3xl font-bold text-center mb-2">{storeData.name}</h1>
+          <h1 className="text-2xl font-bold text-center mb-2">{storeData.name}</h1>
           {storeData.description && (
-            <p className="text-white/90 text-center text-lg mb-4 max-w-md">{storeData.description}</p>
+            <p className="text-white/90 text-center text-sm mb-3 max-w-sm line-clamp-2">{storeData.description}</p>
           )}
           
-          {/* Badges informativos */}
-          <div className="flex flex-wrap justify-center gap-3">
-            <div className="bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2">
-              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-              <span className="text-sm font-semibold">4.8 • Avaliação</span>
+          {/* Badges informativos - mais compactos */}
+          <div className="flex flex-wrap justify-center gap-2">
+            <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
+              <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+              <span className="text-xs font-semibold">4.8</span>
             </div>
-            <div className="bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              <span className="text-sm font-semibold">25-40 min</span>
+            <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
+              <Clock className="w-3 h-3" />
+              <span className="text-xs font-semibold">25-40 min</span>
             </div>
-            <div className="bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 flex items-center gap-2">
-              <MapPin className="w-4 h-4" />
-              <span className="text-sm font-semibold">Taxa: R$ 5,90</span>
+            <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
+              <MapPin className="w-3 h-3" />
+              <span className="text-xs font-semibold">Taxa: R$ 5,90</span>
             </div>
           </div>
         </div>
@@ -463,28 +463,28 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
         className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-sm transition-all duration-300 cursor-pointer"
         onClick={() => setIsModalOpen(true)}
       >
-        <div className="flex p-4 min-h-[120px]">
+        <div className="flex p-4">
           {/* Conteúdo do produto */}
-          <div className="flex-1 pr-4 flex flex-col">
-            <h3 className="font-bold text-base text-gray-900 mb-2 leading-tight">
-              {product.name}
-            </h3>
-            
-            {/* Descrição limitada a 2 linhas */}
-            <div className="flex-1 mb-3">
+          <div className="flex-1 pr-4 flex flex-col justify-between">
+            <div>
+              <h3 className="font-bold text-base text-gray-900 mb-1 leading-tight">
+                {product.name}
+              </h3>
+              
+              {/* Descrição limitada a 1 linha para equilibrar */}
               {product.description ? (
-                <p className="text-gray-500 text-sm leading-relaxed line-clamp-2">
+                <p className="text-gray-500 text-sm leading-relaxed line-clamp-1 mb-2">
                   {product.description}
                 </p>
               ) : (
-                <p className="text-gray-400 text-sm italic">
+                <p className="text-gray-400 text-sm italic mb-2">
                   Sem descrição disponível
                 </p>
               )}
             </div>
             
-            {/* Preços alinhados com a parte inferior da imagem */}
-            <div className="flex items-center gap-2 mt-auto">
+            {/* Preços na parte inferior */}
+            <div className="flex items-center gap-2">
               {product.originalPrice && (
                 <span className="text-sm text-gray-400 line-through">
                   R$ {parseFloat(product.originalPrice).toFixed(2).replace('.', ',')}
@@ -496,13 +496,13 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
             </div>
           </div>
           
-          {/* Imagem à direita - maior */}
+          {/* Imagem à direita */}
           <div className="flex-shrink-0">
             <div 
               className="bg-gray-50 relative overflow-hidden rounded-lg"
               style={{ 
-                width: '120px', 
-                height: '100px'
+                width: '110px', 
+                height: '90px'
               }}
             >
               {product.imageUrl ? (
