@@ -52,6 +52,7 @@ interface StoreInfo {
 
 export default function StoreDashboard({ storeId: propStoreId }: { storeId?: number }) {
   const params = useParams();
+  const [, setLocation] = useLocation();
   const { user } = useAuth();
   // Use prop storeId if provided, otherwise use URL parameter or default for managers
   const storeId = propStoreId?.toString() || params.id || '11';

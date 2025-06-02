@@ -452,7 +452,7 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
             
             {/* Preços na parte inferior */}
             <div className="flex items-center gap-2">
-              {product.originalPrice && (
+              {product.originalPrice && parseFloat(product.originalPrice) > parseFloat(product.price) && (
                 <span className="text-xs text-gray-400 line-through">
                   R$ {parseFloat(product.originalPrice).toFixed(2).replace('.', ',')}
                 </span>
@@ -527,7 +527,7 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
             
             {/* Preços */}
             <div className="border-t pt-4">
-              {product.originalPrice && (
+              {product.originalPrice && parseFloat(product.originalPrice) > parseFloat(product.price) && (
                 <span className="text-sm text-gray-400 line-through block">
                   R$ {parseFloat(product.originalPrice).toFixed(2).replace('.', ',')}
                 </span>
