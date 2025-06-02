@@ -23,6 +23,7 @@ import {
   User,
   Heart
 } from "lucide-react";
+import ProductImage from "@/components/ProductImage";
 
 interface CartItem {
   productId: number;
@@ -468,31 +469,13 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
             </div>
           </div>
           
-          {/* Imagem sempre quadrada - responsive */}
-          <div className="aspect-square w-20 sm:w-24 md:w-28 bg-gray-50 flex-shrink-0 relative">
-            {product.imageUrl ? (
-              <img 
-                src={product.imageUrl} 
-                alt={product.name}
-                className="w-full h-full object-cover rounded-r-lg"
-              />
-            ) : (
-              <div className="w-full h-full bg-gray-100 flex items-center justify-center rounded-r-lg">
-                <svg className="w-6 h-6 sm:w-8 sm:h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-            )}
-            
-            {/* Badge de desconto */}
-            {product.isPromotion && (
-              <div className="absolute -top-1 -right-1">
-                <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">
-                  30%OFF
-                </div>
-              </div>
-            )}
-          </div>
+          <ProductImage
+            src={product.imageUrl}
+            alt={product.name}
+            size="md"
+            className="rounded-r-lg"
+            showPromoBadge={product.isPromotion}
+          />
         </div>
       </div>
 
@@ -507,10 +490,11 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
             {/* Imagem do produto */}
             {product.imageUrl && (
               <div className="w-full h-48 bg-gray-100 rounded-lg overflow-hidden">
-                <img 
-                  src={product.imageUrl} 
+                <ProductImage
+                  src={product.imageUrl}
                   alt={product.name}
-                  className="w-full h-full object-cover"
+                  size="lg"
+                  className="w-full h-full"
                 />
               </div>
             )}
