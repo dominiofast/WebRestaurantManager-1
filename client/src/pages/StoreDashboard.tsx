@@ -107,6 +107,39 @@ export default function StoreDashboard({ storeId: propStoreId }: { storeId?: num
     enabled: !!storeId
   });
 
+  // Update product availability mutation
+  const updateProductMutation = useMutation({
+    mutationFn: async ({ productId, updates }: { productId: number; updates: any }) => {
+      const response = await fetch(`/api/stores/${storeId}/menu-products/${productId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao atualizar produto');
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Sucesso",
+        description: "Produto atualizado com sucesso!",
+      });
+      queryClient.invalidateQueries({ queryKey: [`/api/stores/${storeId}/menu-products`] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Erro",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   // Fetch store orders
   const { data: orders = [] } = useQuery({
     queryKey: [`/api/stores/${storeId}/orders`],
@@ -367,56 +400,204 @@ export default function StoreDashboard({ storeId: propStoreId }: { storeId?: num
               </div>
             </div>
 
-            <Card>
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Produto</TableHead>
-                      <TableHead>Seção</TableHead>
-                      <TableHead>Preço</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {menuProducts.map((product: any) => (
-                      <TableRow key={product.id}>
-                        <TableCell className="font-medium">{product.name}</TableCell>
-                        <TableCell>{product.section?.name || '-'}</TableCell>
-                        <TableCell>R$ {product.price}</TableCell>
-                        <TableCell>
-                          <Badge variant={product.available ? 'default' : 'secondary'}>
-                            {product.available ? 'Disponível' : 'Indisponível'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
+            {/* Organize products by sections */}
+            {menuSections.length === 0 ? (
+              <Card>
+                <CardContent className="text-center py-8">
+                  <Store className="mx-auto h-12 w-12 text-gray-400" />
+                  <h3 className="mt-2 text-sm font-semibold text-gray-900">
+                    Nenhuma seção cadastrada
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Comece criando seções para organizar seu cardápio.
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-6">
+                {menuSections.map((section: any) => {
+                  const sectionProducts = menuProducts.filter((product: any) => product.sectionId === section.id);
+                  
+                  return (
+                    <Card key={section.id}>
+                      <CardHeader className="pb-3">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <CardTitle className="text-lg">{section.name}</CardTitle>
+                            {section.description && (
+                              <p className="text-sm text-gray-600 mt-1">{section.description}</p>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline">
+                              {sectionProducts.length} {sectionProducts.length === 1 ? 'produto' : 'produtos'}
+                            </Badge>
                             <Button variant="outline" size="sm">
                               <Edit className="h-4 w-4" />
                             </Button>
-                            <Button variant="outline" size="sm">
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
                           </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                {menuProducts.length === 0 && (
-                  <div className="text-center py-8">
-                    <Store className="mx-auto h-12 w-12 text-gray-400" />
-                    <h3 className="mt-2 text-sm font-semibold text-gray-900">
-                      Nenhum produto cadastrado
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-500">
-                      Comece adicionando o primeiro produto ao cardápio.
-                    </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="p-0">
+                        {sectionProducts.length === 0 ? (
+                          <div className="text-center py-6 border-t">
+                            <p className="text-sm text-gray-500">Nenhum produto nesta seção</p>
+                          </div>
+                        ) : (
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Produto</TableHead>
+                                <TableHead>Preço</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead className="text-right">Ações</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {sectionProducts.map((product: any) => (
+                                <TableRow key={product.id}>
+                                  <TableCell>
+                                    <div className="flex items-center gap-3">
+                                      {product.imageUrl && (
+                                        <img 
+                                          src={product.imageUrl} 
+                                          alt={product.name}
+                                          className="w-10 h-10 rounded-lg object-cover"
+                                        />
+                                      )}
+                                      <div>
+                                        <p className="font-medium">{product.name}</p>
+                                        {product.description && (
+                                          <p className="text-sm text-gray-500 line-clamp-1">{product.description}</p>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className="font-medium">R$ {product.price}</TableCell>
+                                  <TableCell>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => updateProductMutation.mutate({
+                                        productId: product.id,
+                                        updates: { available: !product.available }
+                                      })}
+                                      disabled={updateProductMutation.isPending}
+                                      className="p-0 h-auto"
+                                    >
+                                      <Badge 
+                                        variant={product.available ? 'default' : 'secondary'}
+                                        className="cursor-pointer hover:opacity-80"
+                                      >
+                                        {product.available ? 'Disponível' : 'Indisponível'}
+                                      </Badge>
+                                    </Button>
+                                  </TableCell>
+                                  <TableCell className="text-right">
+                                    <div className="flex justify-end gap-2">
+                                      <Button variant="outline" size="sm">
+                                        <Edit className="h-4 w-4" />
+                                      </Button>
+                                      <Button variant="outline" size="sm">
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        )}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+
+                {/* Products without section */}
+                {(() => {
+                  const orphanProducts = menuProducts.filter((product: any) => !product.sectionId);
+                  if (orphanProducts.length === 0) return null;
+                  
+                  return (
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <div className="flex justify-between items-center">
+                          <CardTitle className="text-lg text-amber-600">Produtos sem Seção</CardTitle>
+                          <Badge variant="outline" className="border-amber-200 text-amber-600">
+                            {orphanProducts.length} {orphanProducts.length === 1 ? 'produto' : 'produtos'}
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="p-0">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Produto</TableHead>
+                              <TableHead>Preço</TableHead>
+                              <TableHead>Status</TableHead>
+                              <TableHead className="text-right">Ações</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {orphanProducts.map((product: any) => (
+                              <TableRow key={product.id}>
+                                <TableCell>
+                                  <div className="flex items-center gap-3">
+                                    {product.imageUrl && (
+                                      <img 
+                                        src={product.imageUrl} 
+                                        alt={product.name}
+                                        className="w-10 h-10 rounded-lg object-cover"
+                                      />
+                                    )}
+                                    <div>
+                                      <p className="font-medium">{product.name}</p>
+                                      {product.description && (
+                                        <p className="text-sm text-gray-500 line-clamp-1">{product.description}</p>
+                                      )}
+                                    </div>
+                                  </div>
+                                </TableCell>
+                                <TableCell className="font-medium">R$ {product.price}</TableCell>
+                                <TableCell>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => updateProductMutation.mutate({
+                                      productId: product.id,
+                                      updates: { isAvailable: !product.isAvailable }
+                                    })}
+                                    disabled={updateProductMutation.isPending}
+                                    className="p-0 h-auto"
+                                  >
+                                    <Badge 
+                                      variant={product.isAvailable ? 'default' : 'secondary'}
+                                      className="cursor-pointer hover:opacity-80"
+                                    >
+                                      {product.isAvailable ? 'Disponível' : 'Indisponível'}
+                                    </Badge>
+                                  </Button>
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  <div className="flex justify-end gap-2">
+                                    <Button variant="outline" size="sm">
+                                      <Edit className="h-4 w-4" />
+                                    </Button>
+                                    <Button variant="outline" size="sm">
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </CardContent>
+                    </Card>
+                  );
+                })()}
+              </div>
+            )}
           </TabsContent>
 
           {/* Orders Tab */}
