@@ -1,6 +1,12 @@
-import { Bell } from "lucide-react";
+import { Bell, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function TopBar() {
   const { user } = useAuth();
@@ -17,6 +23,21 @@ export default function TopBar() {
       year: "numeric",
     });
     return { time, date };
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      localStorage.removeItem('restaurantUser');
+      window.location.href = '/login';
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+      localStorage.removeItem('restaurantUser');
+      window.location.href = '/login';
+    }
   };
 
   const { time, date } = getCurrentDateTime();
@@ -47,6 +68,21 @@ export default function TopBar() {
             <p className="text-sm font-medium text-foreground">{time}</p>
             <p className="text-xs text-muted-foreground">{date}</p>
           </div>
+
+          {/* User Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <User className="w-5 h-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600">
+                <LogOut className="w-4 h-4 mr-2" />
+                Sair da conta
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>
