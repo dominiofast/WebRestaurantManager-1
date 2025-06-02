@@ -48,6 +48,35 @@ export default function StoreDashboard() {
   const storeId = params.id;
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("overview");
+  const [storeSettings, setStoreSettings] = useState({
+    name: "",
+    address: "",
+    phone: "",
+    email: "",
+    cnpj: "",
+    razaoSocial: "",
+    nomeFantasia: "",
+    inscricaoEstadual: "",
+    cep: "",
+    numero: "",
+    complemento: "",
+    bairro: "",
+    cidade: "",
+    estado: "",
+    pais: "Brasil",
+    cnae: "",
+    padrao: "",
+    descricaoCnae: "",
+    deliveryFee: "",
+    minimumOrder: "",
+    deliveryTime: "",
+    openingHours: "",
+    whatsapp: "",
+    instagram: "",
+    onlineOrders: true,
+    showPrices: true,
+    deliveryAvailable: true
+  });
 
   // Fetch store info
   const { data: store, isLoading: storeLoading } = useQuery<StoreInfo>({
@@ -78,6 +107,78 @@ export default function StoreDashboard() {
     queryKey: [`/api/stores/${storeId}/orders`],
     enabled: !!storeId
   });
+
+  // Update store settings mutation
+  const updateStoreMutation = useMutation({
+    mutationFn: async (updatedData: any) => {
+      const response = await fetch(`/api/admin/stores/${storeId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao atualizar informações da loja');
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Sucesso",
+        description: "Informações da loja atualizadas com sucesso!",
+      });
+      queryClient.invalidateQueries({ queryKey: [`/api/admin/stores/${storeId}`] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Erro",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Load store data into form when store data is available
+  useEffect(() => {
+    if (store) {
+      setStoreSettings({
+        name: store.name || "",
+        address: store.address || "",
+        phone: store.phone || "",
+        email: store.email || "",
+        cnpj: "47.375.928/0001-87",
+        razaoSocial: "DOMINIO PIZZAS E BURGERS GOURMET LTDA",
+        nomeFantasia: store.name || "",
+        inscricaoEstadual: "0000000013430",
+        cep: "70051-900",
+        numero: "2638",
+        complemento: "",
+        bairro: "Centro",
+        cidade: "Brasília",
+        estado: "DF",
+        pais: "Brasil",
+        cnae: "56201",
+        padrao: "medio",
+        descricaoCnae: "56201-1/04 - Fornecimento de alimentos preparados preponderantemente para consumo domiciliar",
+        deliveryFee: "5,00",
+        minimumOrder: "25,00",
+        deliveryTime: "30-45",
+        openingHours: "18:00 - 23:00",
+        whatsapp: "(95) 99999-9999",
+        instagram: `@${store.slug}`,
+        onlineOrders: true,
+        showPrices: true,
+        deliveryAvailable: true
+      });
+    }
+  }, [store]);
+
+  const handleSaveSettings = () => {
+    updateStoreMutation.mutate(storeSettings);
+  };
 
   if (storeLoading) {
     return (
@@ -398,9 +499,9 @@ export default function StoreDashboard() {
           <TabsContent value="settings" className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">Informações da Loja</h2>
-              <Button>
+              <Button onClick={handleSaveSettings} disabled={updateStoreMutation.isPending}>
                 <Settings className="h-4 w-4 mr-2" />
-                Salvar Todas as Alterações
+                {updateStoreMutation.isPending ? "Salvando..." : "Salvar Todas as Alterações"}
               </Button>
             </div>
             
@@ -417,15 +518,27 @@ export default function StoreDashboard() {
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="razao-social">Razão Social *</Label>
-                    <Input id="razao-social" defaultValue="DOMINIO PIZZAS E BURGERS GOURMET LTDA" />
+                    <Input 
+                      id="razao-social" 
+                      value={storeSettings.razaoSocial}
+                      onChange={(e) => setStoreSettings({...storeSettings, razaoSocial: e.target.value})}
+                    />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="cnpj">CNPJ/CPF *</Label>
-                    <Input id="cnpj" defaultValue="47.375.928/0001-87" />
+                    <Input 
+                      id="cnpj" 
+                      value={storeSettings.cnpj}
+                      onChange={(e) => setStoreSettings({...storeSettings, cnpj: e.target.value})}
+                    />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="telefone1">Telefone 1 *</Label>
-                    <Input id="telefone1" defaultValue="(95) 3441-4810" />
+                    <Input 
+                      id="telefone1" 
+                      value={storeSettings.phone}
+                      onChange={(e) => setStoreSettings({...storeSettings, phone: e.target.value})}
+                    />
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="cep">CEP *</Label>

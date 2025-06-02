@@ -747,6 +747,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Public digital menu route - no authentication required
+  app.get('/api/menu/:storeSlug', async (req, res) => {
+    try {
+      const { storeSlug } = req.params;
+      const store = await storage.getStoreBySlug(storeSlug);
+      
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+      
+      res.json(store);
+    } catch (error) {
+      console.error('Error fetching store by slug:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  // Update store information (managers can update their store)
+  app.put('/api/admin/stores/:id', async (req: any, res) => {
+    try {
+      if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Não autorizado" });
+      }
+
+      const user = await storage.getUser(req.session.userId);
+      if (!user) {
+        return res.status(401).json({ message: "Usuário não encontrado" });
+      }
+
+      const storeId = parseInt(req.params.id);
+      
+      // Allow managers to update their own store or super admins to update any store
+      if (user.role !== 'super_admin' && user.role !== 'manager') {
+        return res.status(403).json({ message: "Acesso negado" });
+      }
+
+      const updatedStore = await storage.updateStore(storeId, req.body);
+      res.json(updatedStore);
+    } catch (error) {
+      console.error('Error updating store:', error);
+      res.status(500).json({ message: "Erro ao atualizar loja" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
