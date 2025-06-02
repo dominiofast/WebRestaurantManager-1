@@ -95,6 +95,7 @@ export interface IStorage {
   getStores(): Promise<StoreWithCompany[]>;
   getStoresByCompany(companyId: number): Promise<Store[]>;
   getStoreById(id: number): Promise<StoreWithCompany | undefined>;
+  getStoreByManagerId(managerId: string): Promise<StoreWithCompany | undefined>;
   createStore(store: InsertStore): Promise<Store>;
   updateStore(id: number, store: Partial<InsertStore>): Promise<Store>;
   deleteStore(id: number): Promise<void>;
@@ -473,6 +474,27 @@ export class DatabaseStorage implements IStorage {
     await db.delete(stores).where(eq(stores.companyId, id));
     // Then delete the company
     await db.delete(companies).where(eq(companies.id, id));
+  }
+
+  // Get store managed by a specific user
+  async getStoreByManagerId(managerId: string): Promise<StoreWithCompany | undefined> {
+    const result = await db
+      .select({
+        store: stores,
+        company: companies,
+      })
+      .from(stores)
+      .leftJoin(companies, eq(stores.companyId, companies.id))
+      .where(eq(stores.managerId, managerId))
+      .limit(1);
+
+    if (result.length === 0) return undefined;
+
+    const row = result[0];
+    return {
+      ...row.store,
+      company: row.company!,
+    };
   }
 
   // Store operations

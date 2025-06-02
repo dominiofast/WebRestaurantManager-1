@@ -240,8 +240,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userCompanies.some(company => company.id === store.companyId)
       );
     } else if (userRole === 'manager') {
-      // Manager sees only their assigned store (implement store assignment later)
-      return await storage.getStores();
+      // Manager sees only their assigned store
+      const allStores = await storage.getStores();
+      return allStores.filter(store => store.managerId === userId);
     }
     return [];
   };
@@ -402,6 +403,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "Empresa deletada com sucesso" });
     } catch (error) {
       res.status(500).json({ message: "Erro ao deletar empresa" });
+    }
+  });
+
+  // Get manager's assigned store
+  app.get('/api/manager/store', requireAuth, async (req: any, res) => {
+    try {
+      if (req.user.role !== 'manager') {
+        return res.status(403).json({ message: "Acesso negado - Apenas managers" });
+      }
+
+      const store = await storage.getStoreByManagerId(req.user.id);
+      if (!store) {
+        return res.status(404).json({ message: "Nenhuma loja atribuída a este manager" });
+      }
+
+      res.json(store);
+    } catch (error) {
+      console.error('Erro ao buscar loja do manager:', error);
+      res.status(500).json({ message: 'Erro interno do servidor' });
     }
   });
 
