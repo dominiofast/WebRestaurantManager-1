@@ -452,13 +452,16 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
             
             {/* Preços na parte inferior */}
             <div className="flex items-center gap-2">
-              {product.originalPrice && parseFloat(product.originalPrice) > parseFloat(product.price) && (
+              {product.originalPrice && parseFloat(product.originalPrice) !== parseFloat(product.price) && (
                 <span className="text-xs text-gray-400 line-through">
-                  R$ {parseFloat(product.originalPrice).toFixed(2).replace('.', ',')}
+                  R$ {Math.max(parseFloat(product.originalPrice), parseFloat(product.price)).toFixed(2).replace('.', ',')}
                 </span>
               )}
               <span className="font-bold text-base text-[#196e00]">
-                R$ {parseFloat(product.price).toFixed(2).replace('.', ',')}
+                R$ {product.originalPrice ? 
+                  Math.min(parseFloat(product.originalPrice), parseFloat(product.price)).toFixed(2).replace('.', ',') :
+                  parseFloat(product.price).toFixed(2).replace('.', ',')
+                }
               </span>
             </div>
           </div>
@@ -527,13 +530,16 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
             
             {/* Preços */}
             <div className="border-t pt-4">
-              {product.originalPrice && parseFloat(product.originalPrice) > parseFloat(product.price) && (
+              {product.originalPrice && parseFloat(product.originalPrice) !== parseFloat(product.price) && (
                 <span className="text-sm text-gray-400 line-through block">
-                  R$ {parseFloat(product.originalPrice).toFixed(2).replace('.', ',')}
+                  R$ {Math.max(parseFloat(product.originalPrice), parseFloat(product.price)).toFixed(2).replace('.', ',')}
                 </span>
               )}
               <span className="font-bold text-xl text-gray-900">
-                R$ {parseFloat(product.price).toFixed(2).replace('.', ',')}
+                R$ {product.originalPrice ? 
+                  Math.min(parseFloat(product.originalPrice), parseFloat(product.price)).toFixed(2).replace('.', ',') :
+                  parseFloat(product.price).toFixed(2).replace('.', ',')
+                }
               </span>
             </div>
             
