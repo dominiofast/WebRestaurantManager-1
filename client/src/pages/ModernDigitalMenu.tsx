@@ -439,7 +439,7 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
         className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-sm transition-all duration-300 cursor-pointer"
         onClick={() => setIsModalOpen(true)}
       >
-        <div className="flex h-20 sm:h-24 md:h-28">
+        <div className="flex min-h-[5rem] sm:min-h-[6rem] md:min-h-[7rem]">
           {/* Conteúdo do produto */}
           <div className="flex-1 p-3 sm:p-4 flex flex-col">
             <div className="flex-1">
@@ -468,8 +468,8 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
             </div>
           </div>
           
-          {/* Imagem quadrada - responsiva */}
-          <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 bg-gray-50 flex-shrink-0 relative">
+          {/* Imagem sempre quadrada - responsive */}
+          <div className="aspect-square w-20 sm:w-24 md:w-28 bg-gray-50 flex-shrink-0 relative">
             {product.imageUrl ? (
               <img 
                 src={product.imageUrl} 
