@@ -717,31 +717,56 @@ function ProductForm({
         />
       </div>
       
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="price">Preço</Label>
-          <Input
-            id="price"
-            value={formData.price}
-            onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-            placeholder="0.00"
-            type="number"
-            step="0.01"
-            required
+      {/* Configuração de promoção */}
+      <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+        <div className="flex items-center space-x-2">
+          <Switch
+            id="isPromotion"
+            checked={formData.isPromotion}
+            onCheckedChange={(checked) => setFormData({ ...formData, isPromotion: checked })}
           />
+          <Label htmlFor="isPromotion" className="font-medium">Produto em promoção</Label>
         </div>
         
-        <div>
-          <Label htmlFor="originalPrice">Preço Original (opcional)</Label>
-          <Input
-            id="originalPrice"
-            value={formData.originalPrice}
-            onChange={(e) => setFormData({ ...formData, originalPrice: e.target.value })}
-            placeholder="0.00"
-            type="number"
-            step="0.01"
-          />
+        <div className="grid grid-cols-2 gap-4">
+          {formData.isPromotion && (
+            <div>
+              <Label htmlFor="originalPrice" className="text-sm font-medium">Preço Original (R$)</Label>
+              <Input
+                id="originalPrice"
+                value={formData.originalPrice}
+                onChange={(e) => setFormData({ ...formData, originalPrice: e.target.value })}
+                placeholder="80.00"
+                type="number"
+                step="0.01"
+                className="mt-1"
+                required={formData.isPromotion}
+              />
+            </div>
+          )}
+          
+          <div>
+            <Label htmlFor="price" className="text-sm font-medium">
+              {formData.isPromotion ? 'Preço Promocional (R$)' : 'Preço (R$)'}
+            </Label>
+            <Input
+              id="price"
+              value={formData.price}
+              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+              placeholder={formData.isPromotion ? "50.00" : "0.00"}
+              type="number"
+              step="0.01"
+              className="mt-1"
+              required
+            />
+          </div>
         </div>
+        
+        {formData.isPromotion && formData.originalPrice && formData.price && (
+          <div className="text-sm text-green-600 bg-green-100 p-2 rounded font-medium">
+            💰 Desconto: {Math.round(((parseFloat(formData.originalPrice) - parseFloat(formData.price)) / parseFloat(formData.originalPrice)) * 100)}% OFF
+          </div>
+        )}
       </div>
       
       <ImageUpload
@@ -759,24 +784,13 @@ function ProductForm({
         />
       </div>
       
-      <div className="flex gap-4">
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="isAvailable"
-            checked={formData.isAvailable}
-            onCheckedChange={(checked) => setFormData({ ...formData, isAvailable: checked })}
-          />
-          <Label htmlFor="isAvailable">Disponível</Label>
-        </div>
-        
-        <div className="flex items-center space-x-2">
-          <Switch
-            id="isPromotion"
-            checked={formData.isPromotion}
-            onCheckedChange={(checked) => setFormData({ ...formData, isPromotion: checked })}
-          />
-          <Label htmlFor="isPromotion">Em promoção</Label>
-        </div>
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="isAvailable"
+          checked={formData.isAvailable}
+          onCheckedChange={(checked) => setFormData({ ...formData, isAvailable: checked })}
+        />
+        <Label htmlFor="isAvailable">Produto disponível no cardápio</Label>
       </div>
       
       <div className="flex gap-2">
