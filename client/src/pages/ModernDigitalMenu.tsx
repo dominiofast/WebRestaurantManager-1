@@ -242,7 +242,6 @@ export default function ModernDigitalMenu() {
           </div>
         </div>
       </div>
-
       {/* Header info e busca */}
       <div className="bg-gray-50 px-4 py-4">
         <div className="max-w-4xl mx-auto">
@@ -281,12 +280,11 @@ export default function ModernDigitalMenu() {
           </div>
         </div>
       </div>
-
       {/* Conteúdo principal - Container mais largo */}
       <div className="max-w-6xl mx-auto px-4 pb-24">
         {searchQuery ? (
           /* Resultados da busca */
-          <div className="py-6">
+          (<div className="py-6">
             <h2 className="text-2xl font-bold mb-6 text-center">
               Resultados para "{searchQuery}" ({filteredProducts.length})
             </h2>
@@ -299,7 +297,7 @@ export default function ModernDigitalMenu() {
                 />
               ))}
             </div>
-          </div>
+          </div>)
         ) : (
           <>
             {/* Navegação de categorias - Pills menores */}
@@ -361,7 +359,6 @@ export default function ModernDigitalMenu() {
           </>
         )}
       </div>
-
       {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-pb">
         <div className="flex items-center justify-around py-2">
@@ -383,7 +380,6 @@ export default function ModernDigitalMenu() {
           </button>
         </div>
       </div>
-
       {/* Carrinho flutuante */}
       {cartItemCount > 0 && (
         <div className="fixed bottom-20 left-4 right-4 z-40">
@@ -490,7 +486,7 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
                   R$ {parseFloat(product.originalPrice).toFixed(2).replace('.', ',')}
                 </span>
               )}
-              <span className="font-bold text-base text-gray-900">
+              <span className="font-bold text-base text-[#287012]">
                 R$ {parseFloat(product.price).toFixed(2).replace('.', ',')}
               </span>
             </div>
@@ -531,7 +527,6 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
           </div>
         </div>
       </div>
-
       {/* Modal de detalhes do produto - Layout fixo */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="max-w-md mx-auto h-[90vh] flex flex-col p-0">
@@ -591,7 +586,7 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
                     
                     {group.maxSelections === 1 ? (
                       // Radio buttons para seleção única
-                      <RadioGroup 
+                      (<RadioGroup 
                         value={selectedAddons.find(a => a.groupId === group.id)?.id?.toString() || ""}
                         onValueChange={(value) => {
                           if (value) {
@@ -628,10 +623,10 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
                             </div>
                           ))}
                         </div>
-                      </RadioGroup>
+                      </RadioGroup>)
                     ) : (
                       // Checkboxes para seleção múltipla
-                      <div className="space-y-2">
+                      (<div className="space-y-2">
                         {group.addons.map((addon: any) => (
                           <div key={addon.id} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-white bg-white border">
                             <Checkbox
@@ -664,7 +659,7 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
                             </Label>
                           </div>
                         ))}
-                      </div>
+                      </div>)
                     )}
                   </div>
                 ))}
