@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -45,7 +46,9 @@ interface StoreInfo {
 
 export default function StoreDashboard() {
   const params = useParams();
-  const storeId = params.id;
+  const { user } = useAuth();
+  // For managers, use store ID 1 (Centro), for others use URL parameter
+  const storeId = user?.role === 'manager' ? '1' : params.id;
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("overview");
   const [storeSettings, setStoreSettings] = useState({

@@ -23,13 +23,32 @@ import NotFound from "@/pages/not-found";
 function AuthenticatedApp() {
   const { user } = useAuth();
 
-  // Redirect managers to their specific store dashboard
-  if (user?.role === 'manager' && window.location.pathname === '/') {
-    // For now, redirect to store ID 1 (Centro) - this should be dynamic based on manager's store
-    window.location.href = '/store/1/dashboard';
-    return null;
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-coral"></div>
+      </div>
+    );
   }
 
+  // Role-based routing
+  if (user.role === 'manager') {
+    return <ManagerApp user={user} />;
+  }
+
+  if (user.role === 'super_admin') {
+    return <SuperAdminApp user={user} />;
+  }
+
+  if (user.role === 'owner') {
+    return <OwnerApp user={user} />;
+  }
+
+  return <ManagerApp user={user} />; // Default fallback
+}
+
+// Manager-specific app with only store management
+function ManagerApp({ user }: { user: any }) {
   return (
     <div className="flex h-screen bg-background">
       <Sidebar />
@@ -37,12 +56,56 @@ function AuthenticatedApp() {
         <TopBar />
         <main className="flex-1 overflow-x-hidden overflow-y-auto">
           <Switch>
-            <Route path="/" component={user?.role === 'manager' ? StoreDashboard : Dashboard} />
+            <Route path="/" component={() => <StoreDashboard />} />
+            <Route path="/store/:id/dashboard" component={StoreDashboard} />
+            <Route component={() => <StoreDashboard />} />
+          </Switch>
+        </main>
+      </div>
+    </div>
+  );
+}
+
+// Super Admin app with full access
+function SuperAdminApp({ user }: { user: any }) {
+  return (
+    <div className="flex h-screen bg-background">
+      <Sidebar />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <TopBar />
+        <main className="flex-1 overflow-x-hidden overflow-y-auto">
+          <Switch>
+            <Route path="/" component={Dashboard} />
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/menu" component={MenuManagement} />
             <Route path="/orders" component={OrderManagement} />
             <Route path="/menu-manager" component={MenuManager} />
             <Route path="/admin" component={SuperAdmin} />
+            <Route path="/stores" component={StoreManagement} />
+            <Route path="/store-management" component={StoreManagement} />
+            <Route path="/store/:id/dashboard" component={StoreDashboard} />
+            <Route component={NotFound} />
+          </Switch>
+        </main>
+      </div>
+    </div>
+  );
+}
+
+// Owner app with company and store management
+function OwnerApp({ user }: { user: any }) {
+  return (
+    <div className="flex h-screen bg-background">
+      <Sidebar />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <TopBar />
+        <main className="flex-1 overflow-x-hidden overflow-y-auto">
+          <Switch>
+            <Route path="/" component={Dashboard} />
+            <Route path="/dashboard" component={Dashboard} />
+            <Route path="/menu" component={MenuManagement} />
+            <Route path="/orders" component={OrderManagement} />
+            <Route path="/menu-manager" component={MenuManager} />
             <Route path="/stores" component={StoreManagement} />
             <Route path="/store-management" component={StoreManagement} />
             <Route path="/store/:id/dashboard" component={StoreDashboard} />
