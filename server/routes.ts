@@ -701,10 +701,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/stores/:id/stats', async (req: any, res) => {
     try {
-      if (!req.session || !req.session.userId) {
-        return res.status(401).json({ message: "Não autorizado" });
-      }
-
       const storeId = parseInt(req.params.id);
       
       // Get store stats - returning actual data from dashboard stats
@@ -724,10 +720,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/stores/:id/menu-sections', async (req: any, res) => {
     try {
-      if (!req.session || !req.session.userId) {
-        return res.status(401).json({ message: "Não autorizado" });
-      }
-
       const storeId = parseInt(req.params.id);
       const sections = await storage.getMenuSections(storeId);
       res.json(sections);
@@ -739,10 +731,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/stores/:id/menu-products', async (req: any, res) => {
     try {
-      if (!req.session || !req.session.userId) {
-        return res.status(401).json({ message: "Não autorizado" });
-      }
-
       const storeId = parseInt(req.params.id);
       const products = await storage.getMenuProducts(storeId);
       res.json(products);
