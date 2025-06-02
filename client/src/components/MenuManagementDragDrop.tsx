@@ -38,6 +38,7 @@ import {
   Clock,
   Tag
 } from "lucide-react";
+import ImageUpload from "@/components/ImageUpload";
 
 interface MenuSection {
   id: number;
@@ -700,15 +701,10 @@ function ProductForm({
         </div>
       </div>
       
-      <div>
-        <Label htmlFor="imageUrl">URL da Imagem</Label>
-        <Input
-          id="imageUrl"
-          value={formData.imageUrl}
-          onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-          placeholder="https://exemplo.com/imagem.jpg"
-        />
-      </div>
+      <ImageUpload
+        currentImage={formData.imageUrl}
+        onImageChange={(imageUrl) => setFormData({ ...formData, imageUrl })}
+      />
       
       <div>
         <Label htmlFor="tags">Tags (separadas por vírgula)</Label>
