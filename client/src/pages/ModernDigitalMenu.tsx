@@ -439,15 +439,15 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
         className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-sm transition-all duration-300 cursor-pointer"
         onClick={() => setIsModalOpen(true)}
       >
-        <div className="flex h-28">
+        <div className="flex h-20 sm:h-24 md:h-28">
           {/* Conteúdo do produto */}
-          <div className="flex-1 p-4 flex flex-col">
+          <div className="flex-1 p-3 sm:p-4 flex flex-col">
             <div className="flex-1">
-              <h3 className="font-bold text-base text-gray-900 mb-1 leading-tight">
+              <h3 className="font-bold text-sm sm:text-base text-gray-900 mb-1 leading-tight">
                 {product.name}
               </h3>
               {product.description && (
-                <p className="text-gray-500 text-sm truncate mb-2">
+                <p className="text-gray-500 text-xs sm:text-sm truncate mb-2">
                   {product.description}
                 </p>
               )}
@@ -461,15 +461,15 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
                     R$ {parseFloat(product.originalPrice).toFixed(2).replace('.', ',')}
                   </span>
                 )}
-                <span className="font-bold text-lg text-gray-900">
+                <span className="font-bold text-base sm:text-lg text-gray-900">
                   A partir de R$ {parseFloat(product.price).toFixed(2).replace('.', ',')}
                 </span>
               </div>
             </div>
           </div>
           
-          {/* Imagem quadrada */}
-          <div className="w-28 h-28 bg-gray-50 flex-shrink-0 relative">
+          {/* Imagem quadrada - responsiva */}
+          <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 bg-gray-50 flex-shrink-0 relative">
             {product.imageUrl ? (
               <img 
                 src={product.imageUrl} 
@@ -478,7 +478,7 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
               />
             ) : (
               <div className="w-full h-full bg-gray-100 flex items-center justify-center rounded-r-lg">
-                <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 sm:w-8 sm:h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
