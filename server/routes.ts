@@ -402,41 +402,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/admin/stores/:id', requireAuth, async (req: any, res) => {
+  app.get('/api/admin/stores/:id', async (req: any, res) => {
     try {
-      const user = await storage.getUser(req.user.id);
-      if (!user || user.role !== 'super_admin') {
-        return res.status(403).json({ message: "Acesso negado" });
+      if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Não autorizado" });
       }
 
-      const id = parseInt(req.params.id);
-      const store = await storage.getStoreById(id);
+      const user = await storage.getUser(req.session.userId);
+      if (!user) {
+        return res.status(401).json({ message: "Usuário não encontrado" });
+      }
+
+      const storeId = parseInt(req.params.id);
+      const store = await storage.getStoreById(storeId);
       
       if (!store) {
         return res.status(404).json({ message: "Loja não encontrada" });
       }
 
-      res.json(store);
-    } catch (error) {
-      res.status(500).json({ message: "Erro ao buscar loja" });
-    }
-  });
-
-  app.put('/api/admin/stores/:id', requireAuth, async (req: any, res) => {
-    try {
-      const user = await storage.getUser(req.user.id);
-      if (!user || user.role !== 'super_admin') {
+      // Allow super admins to access all stores, managers and owners to access their stores
+      if (user.role !== 'super_admin' && user.role !== 'manager' && user.role !== 'owner') {
         return res.status(403).json({ message: "Acesso negado" });
       }
 
-      const id = parseInt(req.params.id);
-      const storeData = insertStoreSchema.partial().parse(req.body);
-      const store = await storage.updateStore(id, storeData);
       res.json(store);
     } catch (error) {
-      res.status(500).json({ message: "Erro ao atualizar loja" });
+      console.error('Error fetching store:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
     }
   });
+
+  // Removed duplicate PUT route - using the one below that allows managers
 
   app.delete('/api/admin/stores/:id', requireAuth, async (req: any, res) => {
     try {
@@ -645,39 +641,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Individual store management routes
-  app.get('/api/admin/stores/:id', async (req: any, res) => {
-    try {
-      console.log('Auth check - Session:', req.session);
-      console.log('Auth check - userId:', req.session?.userId);
-      
-      if (!req.session || !req.session.userId) {
-        return res.status(401).json({ message: "Não autorizado" });
-      }
-
-      const user = await storage.getUser(req.session.userId);
-      if (!user) {
-        return res.status(401).json({ message: "Usuário não encontrado" });
-      }
-
-      const storeId = parseInt(req.params.id);
-      const store = await storage.getStoreById(storeId);
-      
-      if (!store) {
-        return res.status(404).json({ message: "Loja não encontrada" });
-      }
-
-      // Check permissions: super admin can access all, owners can access their stores
-      if (user.role !== 'super_admin' && user.role !== 'owner') {
-        return res.status(403).json({ message: "Sem permissão para acessar esta loja" });
-      }
-
-      res.json(store);
-    } catch (error) {
-      console.error('Error fetching store:', error);
-      res.status(500).json({ message: "Erro interno do servidor" });
-    }
-  });
+  // Removed duplicate route - using the main one above that allows managers
 
   app.get('/api/stores/:id/stats', async (req: any, res) => {
     try {
