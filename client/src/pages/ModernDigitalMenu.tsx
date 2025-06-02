@@ -457,7 +457,7 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
                   R$ {parseFloat(product.originalPrice).toFixed(2).replace('.', ',')}
                 </span>
               )}
-              <span className="font-bold text-base text-[#287012]">
+              <span className="font-bold text-base text-[#196e00]">
                 R$ {parseFloat(product.price).toFixed(2).replace('.', ',')}
               </span>
             </div>
