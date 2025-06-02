@@ -242,31 +242,10 @@ export default function ModernDigitalMenu() {
           </div>
         </div>
       </div>
-      {/* Header info e busca */}
+
+      {/* Header de busca */}
       <div className="bg-gray-50 px-4 py-4">
         <div className="max-w-4xl mx-auto">
-          {/* Informações de contato */}
-          <div className="flex items-center justify-center gap-6 text-sm text-gray-600 mb-4">
-            {storeData.address && (
-              <div className="flex items-center gap-1">
-                <MapPin className="w-4 h-4" />
-                <span>{storeData.address}</span>
-              </div>
-            )}
-            {storeData.phone && (
-              <div className="flex items-center gap-1">
-                <Phone className="w-4 h-4" />
-                <span>{storeData.phone}</span>
-              </div>
-            )}
-            {storeData.company?.name && (
-              <div className="flex items-center gap-1">
-                <Store className="w-4 h-4" />
-                <span>{storeData.company.name}</span>
-              </div>
-            )}
-          </div>
-
           {/* Busca centralizada */}
           <div className="relative max-w-md mx-auto">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
