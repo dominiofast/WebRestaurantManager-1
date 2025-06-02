@@ -5,28 +5,36 @@ import { Home, UtensilsCrossed, ClipboardList, LogOut, Shield, Store, Globe } fr
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
-const navigationItems = [
-  {
-    href: "/",
-    icon: Home,
-    label: "Dashboard",
-  },
-  {
-    href: "/menu",
-    icon: UtensilsCrossed,
-    label: "Cardápio",
-  },
-  {
-    href: "/orders",
-    icon: ClipboardList,
-    label: "Pedidos",
-  },
-  {
-    href: "/menu-manager",
-    icon: Globe,
-    label: "Gestor de Cardápio",
-  },
-];
+const getNavigationItems = (userRole: string) => {
+  const baseItems = [
+    {
+      href: "/",
+      icon: Home,
+      label: "Dashboard",
+    },
+    {
+      href: "/menu",
+      icon: UtensilsCrossed,
+      label: "Cardápio",
+    },
+    {
+      href: "/orders",
+      icon: ClipboardList,
+      label: "Pedidos",
+    },
+  ];
+
+  // Only show menu manager for owners and super admins (multi-store management)
+  if (userRole === 'owner' || userRole === 'super_admin') {
+    baseItems.push({
+      href: "/menu-manager",
+      icon: Globe,
+      label: "Gestor de Cardápio",
+    });
+  }
+
+  return baseItems;
+};
 
 export default function Sidebar() {
   const [location] = useLocation();
@@ -56,7 +64,7 @@ export default function Sidebar() {
       {/* Navigation */}
       <nav className="flex-1 p-4">
         <div className="space-y-2">
-          {navigationItems.map((item) => {
+          {getNavigationItems(user?.role || '').map((item) => {
             const isActive = location === item.href;
             const Icon = item.icon;
 

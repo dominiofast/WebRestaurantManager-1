@@ -21,6 +21,15 @@ import TopBar from "@/components/TopBar";
 import NotFound from "@/pages/not-found";
 
 function AuthenticatedApp() {
+  const { user } = useAuth();
+
+  // Redirect managers to their specific store dashboard
+  if (user?.role === 'manager' && window.location.pathname === '/') {
+    // For now, redirect to store ID 1 (Centro) - this should be dynamic based on manager's store
+    window.location.href = '/store/1/dashboard';
+    return null;
+  }
+
   return (
     <div className="flex h-screen bg-background">
       <Sidebar />
@@ -28,7 +37,7 @@ function AuthenticatedApp() {
         <TopBar />
         <main className="flex-1 overflow-x-hidden overflow-y-auto">
           <Switch>
-            <Route path="/" component={Dashboard} />
+            <Route path="/" component={user?.role === 'manager' ? StoreDashboard : Dashboard} />
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/menu" component={MenuManagement} />
             <Route path="/orders" component={OrderManagement} />
