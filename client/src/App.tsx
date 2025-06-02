@@ -14,6 +14,7 @@ import SuperAdmin from "@/pages/SuperAdmin";
 import StoreManagement from "@/pages/StoreManagement";
 import StoreDashboard from "@/pages/StoreDashboard";
 import DigitalMenu from "@/pages/DigitalMenu";
+import ModernDigitalMenu from "@/pages/ModernDigitalMenu";
 import MenuManager from "@/pages/MenuManager";
 import MenuIndex from "@/pages/MenuIndex";
 import Sidebar from "@/components/Sidebar";
@@ -132,7 +133,7 @@ function Router() {
     <Switch>
       {/* Rotas públicas do cardápio digital */}
       <Route path="/cardapios" component={MenuIndex} />
-      <Route path="/menu/:storeSlug" component={DigitalMenu} />
+      <Route path="/menu/:storeSlug" component={ModernDigitalMenu} />
       
       {!isAuthenticated ? (
         <>
