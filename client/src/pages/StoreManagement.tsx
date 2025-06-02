@@ -269,7 +269,7 @@ export default function StoreManagement() {
       </div>
 
       {/* Tabs para Empresas e Lojas */}
-      <Tabs defaultValue="companies" className="space-y-4">
+      <Tabs defaultValue="stores" className="space-y-4">
         <TabsList>
           <TabsTrigger value="companies">Empresas</TabsTrigger>
           <TabsTrigger value="stores">Lojas</TabsTrigger>
