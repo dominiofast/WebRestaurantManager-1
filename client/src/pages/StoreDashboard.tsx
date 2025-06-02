@@ -396,59 +396,214 @@ export default function StoreDashboard() {
 
           {/* Settings Tab */}
           <TabsContent value="settings" className="space-y-6">
-            <h2 className="text-xl font-semibold">Configurações da Loja</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold">Informações da Loja</h2>
+              <Button>
+                <Settings className="h-4 w-4 mr-2" />
+                Salvar Todas as Alterações
+              </Button>
+            </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Informações da Loja */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Informações Básicas</CardTitle>
+                  <CardTitle className="text-blue-600">Informações da Loja</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="store-name">Nome da Loja</Label>
-                    <Input id="store-name" defaultValue={store.name} />
+                    <Label htmlFor="codigo">Código</Label>
+                    <Input id="codigo" defaultValue="2502" disabled className="bg-gray-50" />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="store-address">Endereço</Label>
-                    <Textarea id="store-address" defaultValue={store.address} />
+                    <Label htmlFor="razao-social">Razão Social *</Label>
+                    <Input id="razao-social" defaultValue="DOMINIO PIZZAS E BURGERS GOURMET LTDA" />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="store-phone">Telefone</Label>
-                    <Input id="store-phone" defaultValue={store.phone} />
+                    <Label htmlFor="cnpj">CNPJ/CPF *</Label>
+                    <Input id="cnpj" defaultValue="47.375.928/0001-87" />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="store-email">Email</Label>
-                    <Input id="store-email" type="email" defaultValue={store.email} />
+                    <Label htmlFor="telefone1">Telefone 1 *</Label>
+                    <Input id="telefone1" defaultValue="(95) 3441-4810" />
                   </div>
-                  <Button>Salvar Alterações</Button>
+                  <div className="grid gap-2">
+                    <Label htmlFor="cep">CEP *</Label>
+                    <Input id="cep" defaultValue="70051-900" />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="endereco">Endereço *</Label>
+                    <Input id="endereco" defaultValue="AV PORTO VELHO" />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="bairro">Bairro</Label>
+                    <Input id="bairro" defaultValue="Centro" />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="estado">Estado</Label>
+                    <Select defaultValue="DF">
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="AC">AC</SelectItem>
+                        <SelectItem value="AL">AL</SelectItem>
+                        <SelectItem value="AP">AP</SelectItem>
+                        <SelectItem value="AM">AM</SelectItem>
+                        <SelectItem value="BA">BA</SelectItem>
+                        <SelectItem value="CE">CE</SelectItem>
+                        <SelectItem value="DF">DF</SelectItem>
+                        <SelectItem value="ES">ES</SelectItem>
+                        <SelectItem value="GO">GO</SelectItem>
+                        <SelectItem value="MA">MA</SelectItem>
+                        <SelectItem value="MT">MT</SelectItem>
+                        <SelectItem value="MS">MS</SelectItem>
+                        <SelectItem value="MG">MG</SelectItem>
+                        <SelectItem value="PA">PA</SelectItem>
+                        <SelectItem value="PB">PB</SelectItem>
+                        <SelectItem value="PR">PR</SelectItem>
+                        <SelectItem value="PE">PE</SelectItem>
+                        <SelectItem value="PI">PI</SelectItem>
+                        <SelectItem value="RJ">RJ</SelectItem>
+                        <SelectItem value="RN">RN</SelectItem>
+                        <SelectItem value="RS">RS</SelectItem>
+                        <SelectItem value="RO">RO</SelectItem>
+                        <SelectItem value="RR">RR</SelectItem>
+                        <SelectItem value="SC">SC</SelectItem>
+                        <SelectItem value="SP">SP</SelectItem>
+                        <SelectItem value="SE">SE</SelectItem>
+                        <SelectItem value="TO">TO</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="pais">País</Label>
+                    <Input id="pais" defaultValue="Brasil" />
+                  </div>
                 </CardContent>
               </Card>
 
+              {/* Informações Fiscais */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Configurações do Cardápio</CardTitle>
+                  <CardTitle className="text-green-600">Informações Fiscais</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="online-orders">Pedidos Online</Label>
-                    <input type="checkbox" id="online-orders" defaultChecked />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="show-prices">Mostrar Preços</Label>
-                    <input type="checkbox" id="show-prices" defaultChecked />
+                  <div className="grid gap-2">
+                    <Label htmlFor="nome-fantasia">Nome Fantasia *</Label>
+                    <Input id="nome-fantasia" defaultValue="DOMINIO PIZZAS - LACUBA" />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="delivery-fee">Taxa de Entrega</Label>
-                    <Input id="delivery-fee" placeholder="0,00" />
+                    <Label htmlFor="inscricao-estadual">Inscrição Estadual *</Label>
+                    <Input id="inscricao-estadual" defaultValue="0000000013430" />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="min-order">Pedido Mínimo</Label>
-                    <Input id="min-order" placeholder="0,00" />
+                    <Label htmlFor="telefone2">Telefone 2</Label>
+                    <Input id="telefone2" defaultValue="(95) 99232-4060" />
                   </div>
-                  <Button>Salvar Configurações</Button>
+                  <div className="grid gap-2">
+                    <Label htmlFor="numero">Número *</Label>
+                    <Input id="numero" defaultValue="2638" />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="complemento">Complemento</Label>
+                    <Input id="complemento" />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="cidade">Cidade</Label>
+                    <Input id="cidade" defaultValue="Caracaí" />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="cnae">CNAE</Label>
+                    <Select defaultValue="56201">
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione a atividade" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="56201">56201 - Restaurantes e estabelecimentos de bebidas, com serviço completo</SelectItem>
+                        <SelectItem value="56202">56202 - Lanchonetes, casas de chá, de sucos e similares</SelectItem>
+                        <SelectItem value="56203">56203 - Bares e outros estabelecimentos especializados em servir bebidas</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="padrao">Padrão</Label>
+                    <Select defaultValue="medio">
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="simples">Simples</SelectItem>
+                        <SelectItem value="medio">Médio</SelectItem>
+                        <SelectItem value="alto">Alto</SelectItem>
+                        <SelectItem value="luxo">Luxo</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="descricao-cnae">Descrição CNAE</Label>
+                    <Textarea 
+                      id="descricao-cnae" 
+                      defaultValue="56201-1/04 - Fornecimento de alimentos preparados preponderantemente para consumo domiciliar"
+                      rows={3}
+                    />
+                  </div>
                 </CardContent>
               </Card>
             </div>
+
+            {/* Configurações do Sistema */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-purple-600">Configurações do Cardápio Digital</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="online-orders">Pedidos Online</Label>
+                      <input type="checkbox" id="online-orders" defaultChecked className="w-4 h-4" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="show-prices">Mostrar Preços</Label>
+                      <input type="checkbox" id="show-prices" defaultChecked className="w-4 h-4" />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="delivery-available">Entrega Disponível</Label>
+                      <input type="checkbox" id="delivery-available" defaultChecked className="w-4 h-4" />
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="delivery-fee">Taxa de Entrega (R$)</Label>
+                      <Input id="delivery-fee" placeholder="5,00" />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="min-order">Pedido Mínimo (R$)</Label>
+                      <Input id="min-order" placeholder="25,00" />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="delivery-time">Tempo de Entrega (min)</Label>
+                      <Input id="delivery-time" placeholder="30-45" />
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="opening-hours">Horário de Funcionamento</Label>
+                      <Input id="opening-hours" placeholder="18:00 - 23:00" />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="whatsapp">WhatsApp para Pedidos</Label>
+                      <Input id="whatsapp" placeholder="(95) 99999-9999" />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="instagram">Instagram</Label>
+                      <Input id="instagram" placeholder="@bellavista.centro" />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Analytics Tab */}
