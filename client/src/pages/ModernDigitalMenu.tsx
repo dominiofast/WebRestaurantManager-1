@@ -329,22 +329,22 @@ export default function ModernDigitalMenu() {
               </div>
             </div>
 
-            {/* Produtos por seção */}
-            <div className="py-8 space-y-16">
+            {/* Produtos por seção - Espaçamento reduzido */}
+            <div className="py-4 space-y-8">
               {storeData.sections
                 .sort((a, b) => a.displayOrder - b.displayOrder)
                 .map((section) => (
                   <div key={section.id} id={`section-${section.id}`}>
-                    {/* Header da seção */}
-                    <div className="text-left mb-8">
-                      <h2 className="text-3xl font-bold text-gray-900 mb-2">{section.name}</h2>
+                    {/* Header da seção - mais compacto */}
+                    <div className="text-left mb-4">
+                      <h2 className="text-2xl font-bold text-gray-900 mb-1">{section.name}</h2>
                       {section.description && (
-                        <p className="text-gray-500 text-base leading-relaxed">{section.description}</p>
+                        <p className="text-gray-500 text-sm leading-relaxed">{section.description}</p>
                       )}
                     </div>
                     
-                    {/* Grid responsivo de produtos */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                    {/* Grid responsivo de produtos - gap reduzido */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       {section.products
                         .sort((a, b) => a.displayOrder - b.displayOrder)
                         .map((product) => (
@@ -463,21 +463,21 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
         className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-sm transition-all duration-300 cursor-pointer"
         onClick={() => setIsModalOpen(true)}
       >
-        <div className="flex p-4">
+        <div className="flex p-3">
           {/* Conteúdo do produto */}
-          <div className="flex-1 pr-4 flex flex-col justify-between">
+          <div className="flex-1 pr-3 flex flex-col justify-between">
             <div>
-              <h3 className="font-bold text-base text-gray-900 mb-1 leading-tight">
+              <h3 className="font-bold text-sm text-gray-900 mb-1 leading-tight">
                 {product.name}
               </h3>
               
               {/* Descrição limitada a 1 linha para equilibrar */}
               {product.description ? (
-                <p className="text-gray-500 text-sm leading-relaxed line-clamp-1 mb-2">
+                <p className="text-gray-500 text-xs leading-relaxed line-clamp-1 mb-1">
                   {product.description}
                 </p>
               ) : (
-                <p className="text-gray-400 text-sm italic mb-2">
+                <p className="text-gray-400 text-xs italic mb-1">
                   Sem descrição disponível
                 </p>
               )}
@@ -486,11 +486,11 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
             {/* Preços na parte inferior */}
             <div className="flex items-center gap-2">
               {product.originalPrice && (
-                <span className="text-sm text-gray-400 line-through">
+                <span className="text-xs text-gray-400 line-through">
                   R$ {parseFloat(product.originalPrice).toFixed(2).replace('.', ',')}
                 </span>
               )}
-              <span className="font-bold text-lg text-gray-900">
+              <span className="font-bold text-base text-gray-900">
                 R$ {parseFloat(product.price).toFixed(2).replace('.', ',')}
               </span>
             </div>
@@ -501,8 +501,8 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
             <div 
               className="bg-gray-50 relative overflow-hidden rounded-lg"
               style={{ 
-                width: '110px', 
-                height: '90px'
+                width: '90px', 
+                height: '80px'
               }}
             >
               {product.imageUrl ? (
