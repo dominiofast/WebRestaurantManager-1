@@ -731,6 +731,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Create menu product
+  app.post('/api/stores/:id/menu-products', async (req: any, res) => {
+    try {
+      if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Não autorizado" });
+      }
+
+      const storeId = parseInt(req.params.id);
+      const productData = { 
+        ...req.body, 
+        storeId,
+        sectionId: parseInt(req.body.sectionId)
+      };
+      
+      const product = await storage.createMenuProduct(productData);
+      res.json(product);
+    } catch (error) {
+      console.error('Error creating menu product:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  // Update menu product
+  app.put('/api/stores/:storeId/menu-products/:id', async (req: any, res) => {
+    try {
+      if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Não autorizado" });
+      }
+
+      const productId = parseInt(req.params.id);
+      const product = await storage.updateMenuProduct(productId, req.body);
+      res.json(product);
+    } catch (error) {
+      console.error('Error updating menu product:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  // Delete menu product
+  app.delete('/api/stores/:storeId/menu-products/:id', async (req: any, res) => {
+    try {
+      if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Não autorizado" });
+      }
+
+      const productId = parseInt(req.params.id);
+      await storage.deleteMenuProduct(productId);
+      res.json({ message: "Produto excluído com sucesso" });
+    } catch (error) {
+      console.error('Error deleting menu product:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
   app.get('/api/stores/:id/orders', async (req: any, res) => {
     try {
       if (!req.session || !req.session.userId) {

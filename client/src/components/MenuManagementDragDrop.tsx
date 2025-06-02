@@ -119,6 +119,36 @@ export default function MenuManagementDragDrop({ storeId }: MenuManagementDragDr
     }
   });
 
+  // Mutation to delete product
+  const deleteProductMutation = useMutation({
+    mutationFn: async (productId: number) => {
+      const response = await fetch(`/api/stores/${storeId}/menu-products/${productId}`, {
+        method: 'DELETE',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erro ao deletar produto');
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/stores/${storeId}/menu-products`] });
+      toast({ title: "Produto excluído com sucesso!" });
+    },
+    onError: () => {
+      toast({ 
+        title: "Erro", 
+        description: "Não foi possível excluir o produto",
+        variant: "destructive"
+      });
+    }
+  });
+
+  const handleDeleteProduct = (productId: number) => {
+    if (confirm('Tem certeza que deseja excluir este produto?')) {
+      deleteProductMutation.mutate(productId);
+    }
+  };
+
   // Mutation to update product order
   const updateProductOrderMutation = useMutation({
     mutationFn: async (updatedProducts: { id: number; displayOrder: number }[]) => {
@@ -366,6 +396,7 @@ function SortableSection({
                     key={product.id}
                     product={product}
                     onEdit={() => onEditProduct(product)}
+                    onDelete={handleDeleteProduct}
                   />
                 ))}
               </div>
@@ -392,10 +423,12 @@ function SortableSection({
 // Sortable Product Component
 function SortableProduct({ 
   product, 
-  onEdit 
+  onEdit,
+  onDelete 
 }: {
   product: MenuProduct;
   onEdit: () => void;
+  onDelete: (id: number) => void;
 }) {
   const {
     attributes,
@@ -459,13 +492,23 @@ function SortableProduct({
         </div>
       </div>
       
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={onEdit}
-      >
-        <Edit className="w-4 h-4" />
-      </Button>
+      <div className="flex gap-1">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onEdit}
+        >
+          <Edit className="w-4 h-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onDelete(product.id)}
+          className="text-red-600 hover:text-red-700"
+        >
+          <Trash2 className="w-4 h-4" />
+        </Button>
+      </div>
     </div>
   );
 }
