@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "wouter";
+import { useParams, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -343,7 +343,7 @@ export default function StoreDashboard({ storeId: propStoreId }: { storeId?: num
           <p className="mt-1 text-gray-500">A loja solicitada não existe ou você não tem permissão para acessá-la.</p>
           <Button 
             className="mt-4" 
-            onClick={() => window.location.href = '/store-management'}
+            onClick={() => setLocation('/store-management')}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Voltar para Gestão de Lojas
@@ -362,7 +362,7 @@ export default function StoreDashboard({ storeId: propStoreId }: { storeId?: num
             <div className="flex items-center space-x-4">
               <Button
                 variant="ghost"
-                onClick={() => window.location.href = '/store-management'}
+                onClick={() => setLocation('/store-management')}
                 className="text-gray-600 hover:text-gray-900"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
