@@ -4,6 +4,41 @@ import { storage } from "./storage";
 import { insertCategorySchema, insertMenuItemSchema, insertOrderSchema, insertCompanySchema, insertStoreSchema } from "@shared/schema";
 import { z } from "zod";
 import bcrypt from "bcrypt";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import express from "express";
+
+// Criar diretório de uploads se não existir
+const uploadsDir = path.join(process.cwd(), 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Configurar multer para upload de arquivos
+const storage_multer = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ 
+  storage: storage_multer,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Apenas arquivos de imagem são permitidos'));
+    }
+  }
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Check current session
@@ -784,21 +819,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Servir arquivos estáticos da pasta uploads
+  app.use('/uploads', express.static(uploadsDir));
+
   // Rota para upload de imagens
-  app.post("/api/upload", async (req, res) => {
+  app.post("/api/upload", upload.single('image'), async (req, res) => {
     try {
-      // Simular upload - Em produção seria integrado com serviços como AWS S3, Cloudinary, etc
-      const { file, type } = req.body;
-      
-      if (!file) {
+      if (!req.file) {
         return res.status(400).json({ message: "Nenhum arquivo fornecido" });
       }
 
-      // Gerar URL simulada baseada no tipo
-      const timestamp = Date.now();
-      const imageUrl = `https://images.unsplash.com/photo-${timestamp}?w=400&h=300&fit=crop`;
+      // Gerar URL do arquivo
+      const imageUrl = `/uploads/${req.file.filename}`;
       
-      res.json({ imageUrl });
+      res.json({ 
+        imageUrl,
+        filename: req.file.filename,
+        originalName: req.file.originalname,
+        size: req.file.size
+      });
     } catch (error) {
       console.error("Erro no upload:", error);
       res.status(500).json({ message: "Erro no upload da imagem" });
