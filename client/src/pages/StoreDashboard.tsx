@@ -27,11 +27,15 @@ import {
   CheckCircle,
   XCircle,
   Settings,
-  Eye
+  Eye,
+  Sliders
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
 import ImageUpload from "@/components/ImageUpload";
+import ProductModal from "@/components/ProductModal";
+import SectionModal from "@/components/SectionModal";
+import AddonsModal from "@/components/AddonsModal";
 
 interface StoreInfo {
   id: number;
@@ -53,6 +57,14 @@ export default function StoreDashboard({ storeId: propStoreId }: { storeId?: num
   const storeId = propStoreId?.toString() || params.id || '11';
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("overview");
+  
+  // Modal states
+  const [productModalOpen, setProductModalOpen] = useState(false);
+  const [sectionModalOpen, setSectionModalOpen] = useState(false);
+  const [addonsModalOpen, setAddonsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [selectedSection, setSelectedSection] = useState<any>(null);
+  
   const [storeSettings, setStoreSettings] = useState({
     name: "",
     address: "",

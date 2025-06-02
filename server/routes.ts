@@ -849,6 +849,153 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Create addon group
+  app.post('/api/addon-groups', async (req: any, res) => {
+    try {
+      if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Não autorizado" });
+      }
+
+      const group = await storage.createAddonGroup(req.body);
+      res.status(201).json(group);
+    } catch (error) {
+      console.error('Error creating addon group:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  // Update addon group
+  app.put('/api/addon-groups/:id', async (req: any, res) => {
+    try {
+      if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Não autorizado" });
+      }
+
+      const groupId = parseInt(req.params.id);
+      const group = await storage.updateAddonGroup(groupId, req.body);
+      res.json(group);
+    } catch (error) {
+      console.error('Error updating addon group:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  // Delete addon group
+  app.delete('/api/addon-groups/:id', async (req: any, res) => {
+    try {
+      if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Não autorizado" });
+      }
+
+      const groupId = parseInt(req.params.id);
+      await storage.deleteAddonGroup(groupId);
+      res.json({ message: "Grupo excluído com sucesso" });
+    } catch (error) {
+      console.error('Error deleting addon group:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  // Create addon
+  app.post('/api/addons', async (req: any, res) => {
+    try {
+      if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Não autorizado" });
+      }
+
+      const addon = await storage.createAddon(req.body);
+      res.status(201).json(addon);
+    } catch (error) {
+      console.error('Error creating addon:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  // Update addon
+  app.put('/api/addons/:id', async (req: any, res) => {
+    try {
+      if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Não autorizado" });
+      }
+
+      const addonId = parseInt(req.params.id);
+      const addon = await storage.updateAddon(addonId, req.body);
+      res.json(addon);
+    } catch (error) {
+      console.error('Error updating addon:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  // Delete addon
+  app.delete('/api/addons/:id', async (req: any, res) => {
+    try {
+      if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Não autorizado" });
+      }
+
+      const addonId = parseInt(req.params.id);
+      await storage.deleteAddon(addonId);
+      res.json({ message: "Adicional excluído com sucesso" });
+    } catch (error) {
+      console.error('Error deleting addon:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  // Create menu section
+  app.post('/api/stores/:id/menu-sections', async (req: any, res) => {
+    try {
+      if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Não autorizado" });
+      }
+
+      const storeId = parseInt(req.params.id);
+      const sectionData = { 
+        ...req.body, 
+        storeId
+      };
+      
+      const section = await storage.createMenuSection(sectionData);
+      res.json(section);
+    } catch (error) {
+      console.error('Error creating menu section:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  // Update menu section
+  app.put('/api/stores/:storeId/menu-sections/:id', async (req: any, res) => {
+    try {
+      if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Não autorizado" });
+      }
+
+      const sectionId = parseInt(req.params.id);
+      const section = await storage.updateMenuSection(sectionId, req.body);
+      res.json(section);
+    } catch (error) {
+      console.error('Error updating menu section:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  // Delete menu section
+  app.delete('/api/stores/:storeId/menu-sections/:id', async (req: any, res) => {
+    try {
+      if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Não autorizado" });
+      }
+
+      const sectionId = parseInt(req.params.id);
+      await storage.deleteMenuSection(sectionId);
+      res.json({ message: "Seção excluída com sucesso" });
+    } catch (error) {
+      console.error('Error deleting menu section:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
   // Servir arquivos estáticos da pasta uploads
   app.use('/uploads', express.static(uploadsDir));
 
