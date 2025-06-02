@@ -463,23 +463,23 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
         className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-sm transition-all duration-300 cursor-pointer"
         onClick={() => setIsModalOpen(true)}
       >
-        <div className="flex min-h-[100px]">
+        <div className="flex p-4">
           {/* Conteúdo do produto */}
-          <div className="flex-1 p-4 flex flex-col justify-between">
-            <div>
-              <h3 className="font-bold text-base text-gray-900 mb-1 leading-tight">
-                {product.name}
-              </h3>
-              {product.description && (
-                <p className="text-gray-500 text-sm line-clamp-2 mb-2">
-                  {product.description}
-                </p>
-              )}
-            </div>
+          <div className="flex-1 pr-4">
+            <h3 className="font-bold text-base text-gray-900 mb-1 leading-tight">
+              {product.name}
+            </h3>
             
-            <div className="mt-auto">
+            {product.description && (
+              <p className="text-gray-500 text-sm mb-3 leading-relaxed">
+                {product.description}
+              </p>
+            )}
+            
+            {/* Preços na mesma linha */}
+            <div className="flex items-center gap-2">
               {product.originalPrice && (
-                <span className="text-xs text-gray-400 line-through block">
+                <span className="text-sm text-gray-400 line-through">
                   R$ {parseFloat(product.originalPrice).toFixed(2).replace('.', ',')}
                 </span>
               )}
@@ -489,30 +489,24 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
             </div>
           </div>
           
-          {/* Container da imagem - QUADRADA e acompanha altura do conteúdo */}
-          <div className="flex items-center pr-4">
+          {/* Imagem à direita */}
+          <div className="flex-shrink-0">
             <div 
-              className="bg-gray-50 flex-shrink-0 relative overflow-hidden rounded-lg"
+              className="bg-gray-50 relative overflow-hidden rounded-lg"
               style={{ 
-                width: '100px', 
-                height: '100px',
-                aspectRatio: '1 / 1'
+                width: '80px', 
+                height: '80px'
               }}
             >
               {product.imageUrl ? (
                 <img 
                   src={product.imageUrl} 
                   alt={product.name}
-                  style={{ 
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    aspectRatio: '1 / 1'
-                  }}
+                  className="w-full h-full object-cover"
                 />
               ) : (
                 <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                  <svg className="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
