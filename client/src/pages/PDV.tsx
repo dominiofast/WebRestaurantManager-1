@@ -43,7 +43,14 @@ export default function PDV() {
   const [customerName, setCustomerName] = useState("");
   const [activeSection, setActiveSection] = useState<string>("all");
 
-  const storeId = "11";
+  // Buscar a loja do usuário logado
+  const { data: userStore } = useQuery({
+    queryKey: ['/api/manager/store'],
+    enabled: !!user?.id && user?.role === 'manager'
+  });
+
+  // Para managers, usar a loja específica; para outros, usar loja padrão 11
+  const storeId = user?.role === 'manager' && userStore ? String((userStore as any)?.id || "11") : "11";
   
   const { data: menuSections = [] } = useQuery({
     queryKey: [`/api/stores/${storeId}/menu-sections`],
