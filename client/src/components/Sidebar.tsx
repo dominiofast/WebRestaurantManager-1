@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
-import { Home, UtensilsCrossed, ClipboardList, LogOut, Shield, Store, Globe, ShoppingCart } from "lucide-react";
+import { Home, UtensilsCrossed, ClipboardList, LogOut, Shield, Store, Globe, ShoppingCart, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
@@ -28,6 +28,15 @@ const getNavigationItems = (userRole: string) => {
       label: "Pedidos (PDV)",
     },
   ];
+
+  // Add AI Agent for managers
+  if (userRole === 'manager') {
+    baseItems.push({
+      href: "/ai-agent",
+      icon: Bot,
+      label: "Agente de IA",
+    });
+  }
 
   // Only show menu manager for owners and super admins (multi-store management)
   if (userRole === 'owner' || userRole === 'super_admin') {

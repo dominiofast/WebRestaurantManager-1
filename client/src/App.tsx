@@ -19,6 +19,7 @@ import ModernDigitalMenu from "@/pages/ModernDigitalMenu";
 import MenuManager from "@/pages/MenuManager";
 import MenuIndex from "@/pages/MenuIndex";
 import PDV from "@/pages/PDV";
+import AIAgent from "@/pages/AIAgent";
 import Sidebar from "@/components/Sidebar";
 import TopBar from "@/components/TopBar";
 import NotFound from "@/pages/not-found";
@@ -62,6 +63,7 @@ function ManagerApp({ user }: { user: any }) {
             <Route path="/" component={ManagerStoreDashboard} />
             <Route path="/pdv" component={PDV} />
             <Route path="/dashboard" component={ManagerStoreDashboard} />
+            <Route path="/ai-agent" component={AIAgent} />
             <Route component={ManagerStoreDashboard} />
           </Switch>
         </main>
