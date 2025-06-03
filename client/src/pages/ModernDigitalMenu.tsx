@@ -177,8 +177,8 @@ export default function ModernDigitalMenu() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Banner - Compacto e organizado */}
-      <div className="relative h-56 overflow-hidden">
+      {/* Hero Banner - Modelo estendido com logo e informações na base */}
+      <div className="relative h-64 overflow-hidden">
         {/* Banner de fundo ou gradiente */}
         {storeData.bannerUrl ? (
           <img 
@@ -190,51 +190,46 @@ export default function ModernDigitalMenu() {
           <div className="absolute inset-0 bg-gradient-to-br from-orange-600 via-red-600 to-orange-800" />
         )}
         
-        {/* Overlay escuro para contraste */}
-        <div className="absolute inset-0 bg-black/40" />
+        {/* Overlay suave para contraste */}
+        <div className="absolute inset-0 bg-black/30" />
         
-        {/* Pattern de fundo quando não há banner */}
-        {!storeData.bannerUrl && (
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-0 left-0 w-64 h-64 bg-white rounded-full -translate-x-32 -translate-y-32"></div>
-            <div className="absolute top-16 right-0 w-48 h-48 bg-white rounded-full translate-x-24 -translate-y-24"></div>
-            <div className="absolute bottom-0 left-1/3 w-32 h-32 bg-white rounded-full translate-y-16"></div>
-          </div>
-        )}
-        
-        {/* Conteúdo do banner */}
-        <div className="relative h-full flex flex-col justify-center items-center text-white px-4 py-4">
-          {/* Logo */}
-          <div className="w-20 h-20 bg-white rounded-2xl shadow-2xl flex items-center justify-center mb-3 p-1">
-            {storeData.logoUrl ? (
-              <img 
-                src={storeData.logoUrl} 
-                alt="Logo da loja"
-                className="w-full h-full object-contain rounded-xl"
-              />
-            ) : (
-              <span className="text-xl font-bold text-orange-600">
-                {storeData.name.charAt(0)}
-              </span>
-            )}
-          </div>
-          
-          {/* Nome e informações */}
-          <h1 className="text-2xl font-bold text-center mb-2">{storeData.name}</h1>
-          
-          {/* Badges informativos - mais compactos */}
-          <div className="flex flex-wrap justify-center gap-2">
-            <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
-              <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-              <span className="text-xs font-semibold">4.8</span>
+        {/* Layout inspirado no modelo - Logo e informações na parte inferior */}
+        <div className="absolute bottom-0 left-0 right-0 p-6">
+          <div className="flex items-end gap-4">
+            {/* Logo circular */}
+            <div className="w-16 h-16 bg-white rounded-full shadow-lg flex items-center justify-center p-1 flex-shrink-0">
+              {storeData.logoUrl ? (
+                <img 
+                  src={storeData.logoUrl} 
+                  alt="Logo da loja"
+                  className="w-full h-full object-contain rounded-full"
+                />
+              ) : (
+                <span className="text-lg font-bold text-orange-600">
+                  {storeData.name.charAt(0)}
+                </span>
+              )}
             </div>
-            <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
-              <Clock className="w-3 h-3" />
-              <span className="text-xs font-semibold">25-40 min</span>
-            </div>
-            <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
-              <MapPin className="w-3 h-3" />
-              <span className="text-xs font-semibold">Taxa: R$ 5,90</span>
+            
+            {/* Informações ao lado da logo */}
+            <div className="flex-1 text-white">
+              <h1 className="text-xl font-bold mb-2">{storeData.name}</h1>
+              
+              {/* Badges informativos em linha horizontal */}
+              <div className="flex flex-wrap gap-2">
+                <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
+                  <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                  <span className="text-xs font-semibold">4.8</span>
+                </div>
+                <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  <span className="text-xs font-semibold">25-40 min</span>
+                </div>
+                <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
+                  <MapPin className="w-3 h-3" />
+                  <span className="text-xs font-semibold">Taxa: R$ 5,90</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
