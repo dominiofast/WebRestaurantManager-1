@@ -138,9 +138,9 @@ export default function IntegrationsNew() {
               host: instance.apiHost || prev.whatsapp.host,
               phoneNumber: instance.phoneNumber || prev.whatsapp.phoneNumber,
               webhookUrl: instance.webhookUrl || prev.whatsapp.webhookUrl,
-              enabled: instance.enabled ?? prev.whatsapp.enabled,
-              autoResponder: instance.autoResponder ?? prev.whatsapp.autoResponder,
-              businessHours: instance.businessHours ?? prev.whatsapp.businessHours,
+              enabled: instance.status === 'connected' ? true : (instance.enabled ?? false),
+              autoResponder: instance.autoResponder ?? true,
+              businessHours: instance.businessHours ?? true,
               status: instance.status || 'disconnected'
             }
           }));

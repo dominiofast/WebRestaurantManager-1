@@ -1111,6 +1111,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // WhatsApp webhook for processing messages
+  app.post('/api/webhook/whatsapp/:storeId', async (req, res) => {
+    try {
+      const storeId = parseInt(req.params.storeId);
+      const webhookData = req.body;
+      
+      console.log('WhatsApp webhook received for store:', storeId, webhookData);
+      
+      // Check if it's an incoming message
+      if (webhookData.event === 'onMessage' || webhookData.event === 'messages.upsert') {
+        const message = webhookData.data || webhookData.message;
+        
+        if (message && !message.fromMe && message.body) {
+          // Get WhatsApp instance and AI agent for this store
+          const instance = await storage.getWhatsappInstance(storeId);
+          
+          if (instance && instance.isActive) {
+            // Process message with AI agent
+            await processWhatsAppMessage(storeId, message, instance);
+          }
+        }
+      }
+      
+      res.status(200).json({ success: true });
+    } catch (error) {
+      console.error('Webhook error:', error);
+      res.status(500).json({ error: 'Webhook processing failed' });
+    }
+  });
+
+  // Function to process WhatsApp messages with AI
+  async function processWhatsAppMessage(storeId: number, message: any, instance: any) {
+    try {
+      const store = await storage.getStoreById(storeId);
+      if (!store) return;
+
+      const customerPhone = message.from || message.participant;
+      const messageText = message.body || message.text;
+      
+      // Basic AI responses for common scenarios
+      let responseText = '';
+      
+      if (messageText.toLowerCase().includes('cardápio') || messageText.toLowerCase().includes('menu')) {
+        responseText = `Olá! 🍕 Bem-vindo ao ${store.name}!\n\nVocê pode ver nosso cardápio completo em:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu me diga o que você gostaria de pedir!`;
+      } else if (messageText.toLowerCase().includes('horário') || messageText.toLowerCase().includes('funcionamento')) {
+        responseText = `📅 Nosso horário de funcionamento:\n\nSegunda a Sexta: 11h às 23h\nSábado e Domingo: 18h às 23h\n\nEstamos sempre prontos para atendê-lo!`;
+      } else if (messageText.toLowerCase().includes('delivery') || messageText.toLowerCase().includes('entrega')) {
+        responseText = `🚚 Sim, fazemos delivery!\n\nTaxa de entrega: R$ 5,00\nTempo estimado: 30-45 minutos\n\nFaça seu pedido através do nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}`;
+      } else if (messageText.toLowerCase().includes('oi') || messageText.toLowerCase().includes('olá') || messageText.toLowerCase().includes('bom dia') || messageText.toLowerCase().includes('boa tarde') || messageText.toLowerCase().includes('boa noite')) {
+        responseText = `Olá! 👋 Bem-vindo ao ${store.name}!\n\nComo posso ajudá-lo hoje?\n\n📱 Cardápio digital: https://dominiomenu-app.replit.app/menu/${store.slug}\n\nDigite "cardápio" para ver nossas opções ou "horário" para saber quando funcionamos!`;
+      } else {
+        responseText = `Obrigado pela sua mensagem! 😊\n\nPara fazer seu pedido, acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite:\n• "cardápio" - ver opções\n• "horário" - horário de funcionamento\n• "delivery" - informações de entrega`;
+      }
+
+      // Send response via Mega API
+      if (responseText) {
+        await fetch(`https://${instance.apiHost}/rest/instance/sendText/${instance.instanceKey}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${instance.apiToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            number: customerPhone,
+            text: responseText
+          })
+        });
+      }
+    } catch (error) {
+      console.error('Error processing WhatsApp message:', error);
+    }
+  }
+
   // WhatsApp Instance routes for multi-store support
   // Disconnect WhatsApp instance for a specific store
   app.delete('/api/stores/:storeId/whatsapp-instance/disconnect', async (req, res) => {
@@ -1199,7 +1272,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         apiToken: req.body.apiToken || 'MDT3OHEGIyu',
         apiHost: req.body.apiHost || 'apinocode01.megaapi.com.br',
         status: 'disconnected',
-        webhookUrl: `https://dominiomenu-app.replit.app/api/webhook/whatsapp/${storeId}`
+        webhookUrl: `https://dominiomenu-app.replit.app/api/webhook/whatsapp/${storeId}`,
+        phoneNumber: req.body.phoneNumber,
+        isActive: req.body.enabled ?? true
       };
 
       const existingInstance = await storage.getWhatsappInstance(storeId);
