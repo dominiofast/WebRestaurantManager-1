@@ -12,6 +12,7 @@ import {
   addons,
   cartItems,
   digitalOrders,
+  whatsappInstances,
   type User,
   type UpsertUser,
   type Category,
@@ -42,6 +43,8 @@ import {
   type InsertCartItem,
   type DigitalOrder,
   type InsertDigitalOrder,
+  type WhatsappInstance,
+  type InsertWhatsappInstance,
   type MenuProductWithSection,
   type AddonGroupWithAddons,
   type MenuSectionWithProducts,
@@ -131,6 +134,12 @@ export interface IStorage {
   createDigitalOrder(order: InsertDigitalOrder): Promise<DigitalOrder>;
   getDigitalOrders(storeId: number, status?: string): Promise<DigitalOrderWithItems[]>;
   updateDigitalOrderStatus(id: number, status: string): Promise<DigitalOrder>;
+
+  // WhatsApp Instance operations
+  getWhatsappInstance(storeId: number): Promise<WhatsappInstance | undefined>;
+  createWhatsappInstance(instance: InsertWhatsappInstance): Promise<WhatsappInstance>;
+  updateWhatsappInstance(storeId: number, instance: Partial<InsertWhatsappInstance>): Promise<WhatsappInstance>;
+  deleteWhatsappInstance(storeId: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -789,6 +798,38 @@ export class DatabaseStorage implements IStorage {
       .where(eq(digitalOrders.id, id))
       .returning();
     return updated;
+  }
+
+  // WhatsApp Instance operations
+  async getWhatsappInstance(storeId: number): Promise<WhatsappInstance | undefined> {
+    const [instance] = await db
+      .select()
+      .from(whatsappInstances)
+      .where(eq(whatsappInstances.storeId, storeId));
+    return instance;
+  }
+
+  async createWhatsappInstance(instance: InsertWhatsappInstance): Promise<WhatsappInstance> {
+    const [created] = await db
+      .insert(whatsappInstances)
+      .values(instance)
+      .returning();
+    return created;
+  }
+
+  async updateWhatsappInstance(storeId: number, instance: Partial<InsertWhatsappInstance>): Promise<WhatsappInstance> {
+    const [updated] = await db
+      .update(whatsappInstances)
+      .set({ ...instance, updatedAt: new Date() })
+      .where(eq(whatsappInstances.storeId, storeId))
+      .returning();
+    return updated;
+  }
+
+  async deleteWhatsappInstance(storeId: number): Promise<void> {
+    await db
+      .delete(whatsappInstances)
+      .where(eq(whatsappInstances.storeId, storeId));
   }
 }
 

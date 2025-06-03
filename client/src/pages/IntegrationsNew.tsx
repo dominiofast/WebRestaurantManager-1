@@ -543,7 +543,21 @@ export default function IntegrationsNew() {
 
                       {/* Connection Actions */}
                       {integrations.whatsapp.status === 'connected' && (
-                        <div className="space-y-2">
+                        <div className="space-y-3">
+                          <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                            <h4 className="font-medium text-blue-900 mb-2">📡 Configuração do Webhook</h4>
+                            <p className="text-sm text-blue-700 mb-2">Configure esta URL no painel da Mega API:</p>
+                            <div className="bg-white p-2 rounded border text-xs font-mono break-all">
+                              https://dominiomenu-app.replit.app/api/webhook/whatsapp
+                            </div>
+                            <div className="mt-2 text-xs text-blue-600">
+                              <p>1. Acesse o painel da Mega API</p>
+                              <p>2. Configure o webhook com a URL acima</p>
+                              <p>3. Ative eventos de mensagem</p>
+                              <p>4. Teste enviando uma mensagem</p>
+                            </div>
+                          </div>
+                          
                           <Button 
                             variant="outline" 
                             className="w-full"

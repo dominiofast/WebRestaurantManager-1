@@ -217,21 +217,36 @@ export const digitalOrders = pgTable("digital_orders", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// WhatsApp Instances table - each store can have its own instance
+export const whatsappInstances = pgTable("whatsapp_instances", {
+  id: serial("id").primaryKey(),
+  storeId: integer("store_id").references(() => stores.id, { onDelete: "cascade" }).notNull().unique(),
+  instanceKey: varchar("instance_key", { length: 100 }).notNull(),
+  apiToken: varchar("api_token", { length: 100 }).notNull(),
+  apiHost: varchar("api_host", { length: 255 }).notNull().default("apinocode01.megaapi.com.br"),
+  status: varchar("status", { length: 20 }).notNull().default("disconnected"), // disconnected, connecting, connected
+  qrCode: text("qr_code"),
+  phoneNumber: varchar("phone_number", { length: 20 }),
+  isActive: boolean("is_active").default(true),
+  webhookUrl: varchar("webhook_url", { length: 500 }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // AI Agents table for WhatsApp integration
 export const aiAgents = pgTable("ai_agents", {
   id: serial("id").primaryKey(),
   storeId: integer("store_id").references(() => stores.id, { onDelete: "cascade" }).notNull().unique(),
+  whatsappInstanceId: integer("whatsapp_instance_id").references(() => whatsappInstances.id, { onDelete: "cascade" }),
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
   personality: text("personality"),
-  whatsappNumber: varchar("whatsapp_number", { length: 20 }),
   isActive: boolean("is_active").default(true),
   welcomeMessage: text("welcome_message"),
   menuPrompt: text("menu_prompt"),
   orderPrompt: text("order_prompt"),
   businessHours: jsonb("business_hours"),
   autoResponses: jsonb("auto_responses"),
-  apiKey: varchar("api_key"),
   settings: jsonb("settings"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -313,6 +328,12 @@ export const insertDigitalOrderSchema = createInsertSchema(digitalOrders).omit({
   updatedAt: true,
 });
 
+export const insertWhatsappInstanceSchema = createInsertSchema(whatsappInstances).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const insertAiAgentSchema = createInsertSchema(aiAgents).omit({
   id: true,
   createdAt: true,
@@ -346,6 +367,8 @@ export type InsertCartItem = z.infer<typeof insertCartItemSchema>;
 export type CartItem = typeof cartItems.$inferSelect;
 export type InsertDigitalOrder = z.infer<typeof insertDigitalOrderSchema>;
 export type DigitalOrder = typeof digitalOrders.$inferSelect;
+export type InsertWhatsappInstance = z.infer<typeof insertWhatsappInstanceSchema>;
+export type WhatsappInstance = typeof whatsappInstances.$inferSelect;
 export type InsertAiAgent = z.infer<typeof insertAiAgentSchema>;
 export type AiAgent = typeof aiAgents.$inferSelect;
 
