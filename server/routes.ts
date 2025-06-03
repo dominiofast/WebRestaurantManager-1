@@ -1113,22 +1113,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // WhatsApp Instance routes for multi-store support
   // Get WhatsApp instance for a specific store
-  app.get('/api/stores/:storeId/whatsapp-instance', isAuthenticated, async (req, res) => {
+  app.get('/api/stores/:storeId/whatsapp-instance', async (req, res) => {
     try {
       const storeId = parseInt(req.params.storeId);
       
-      // Verify user has access to this store
+      // Verify store exists
       const store = await storage.getStoreById(storeId);
       if (!store) {
         return res.status(404).json({ message: "Loja não encontrada" });
-      }
-
-      // Check if user is owner of company or manager of store
-      const user = req.user!;
-      if (user.role !== 'super_admin' && 
-          user.role !== 'owner' && 
-          store.managerId !== user.id) {
-        return res.status(403).json({ message: "Acesso negado" });
       }
 
       const instance = await storage.getWhatsappInstance(storeId);
@@ -1140,20 +1132,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create or update WhatsApp instance for a store
-  app.post('/api/stores/:storeId/whatsapp-instance', isAuthenticated, async (req, res) => {
+  app.post('/api/stores/:storeId/whatsapp-instance', async (req, res) => {
     try {
       const storeId = parseInt(req.params.storeId);
       
       const store = await storage.getStoreById(storeId);
       if (!store) {
         return res.status(404).json({ message: "Loja não encontrada" });
-      }
-
-      const user = req.user!;
-      if (user.role !== 'super_admin' && 
-          user.role !== 'owner' && 
-          store.managerId !== user.id) {
-        return res.status(403).json({ message: "Acesso negado" });
       }
 
       const instanceData = {
