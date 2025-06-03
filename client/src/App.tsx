@@ -21,6 +21,7 @@ import MenuIndex from "@/pages/MenuIndex";
 import PDV from "@/pages/PDV";
 import AIAgent from "@/pages/AIAgent";
 import Integrations from "@/pages/Integrations";
+import Profile from "@/pages/Profile";
 import Sidebar from "@/components/Sidebar";
 import TopBar from "@/components/TopBar";
 import NotFound from "@/pages/not-found";
@@ -65,6 +66,7 @@ function ManagerApp({ user }: { user: any }) {
             <Route path="/pdv" component={PDV} />
             <Route path="/dashboard" component={ManagerStoreDashboard} />
             <Route path="/ai-agent" component={AIAgent} />
+            <Route path="/config/profile" component={Profile} />
             <Route path="/config/integrations" component={Integrations} />
             <Route component={ManagerStoreDashboard} />
           </Switch>

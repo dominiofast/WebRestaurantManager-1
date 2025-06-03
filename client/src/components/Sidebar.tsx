@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
-import { Home, UtensilsCrossed, ClipboardList, LogOut, Shield, Store, Globe, ShoppingCart, Bot, Settings, ChevronDown, ChevronRight, Plug } from "lucide-react";
+import { Home, UtensilsCrossed, ClipboardList, LogOut, Shield, Store, Globe, ShoppingCart, Bot, Settings, ChevronDown, ChevronRight, Plug, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
@@ -125,6 +125,19 @@ export default function Sidebar() {
               {/* Submenu */}
               {configExpanded && (
                 <div className="ml-6 space-y-1">
+                  <Link href="/config/profile">
+                    <div
+                      className={cn(
+                        "flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors cursor-pointer",
+                        location === "/config/profile"
+                          ? "bg-coral text-white"
+                          : "text-white/70 hover:bg-white/10 hover:text-white"
+                      )}
+                    >
+                      <User className="w-4 h-4" />
+                      <span className="font-medium text-sm">Perfil</span>
+                    </div>
+                  </Link>
                   <Link href="/config/integrations">
                     <div
                       className={cn(
