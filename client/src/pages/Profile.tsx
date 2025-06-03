@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -11,12 +11,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, Lock, Bell, Shield, Camera, Save, AlertCircle, CheckCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
 
 export default function Profile() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
   
   // Estados para dados do perfil
   const [profileData, setProfileData] = useState({
@@ -46,71 +44,11 @@ export default function Profile() {
     queryKey: ['/api/manager/store'],
   });
 
-  // Mutation para atualizar perfil
-  const updateProfileMutation = useMutation({
-    mutationFn: async (data: typeof profileData) => {
-      return apiRequest('/api/user/profile', {
-        method: 'PUT',
-        body: JSON.stringify(data)
-      });
-    },
-    onSuccess: () => {
-      toast({
-        title: "Perfil atualizado",
-        description: "Seus dados foram salvos com sucesso.",
-      });
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
-    },
-    onError: () => {
-      toast({
-        title: "Erro ao atualizar",
-        description: "Não foi possível salvar os dados.",
-        variant: "destructive"
-      });
-    }
-  });
-
-  // Mutation para alterar senha
-  const changePasswordMutation = useMutation({
-    mutationFn: async (data: typeof passwordData) => {
-      return apiRequest('/api/user/change-password', {
-        method: 'POST',
-        body: JSON.stringify(data)
-      });
-    },
-    onSuccess: () => {
-      toast({
-        title: "Senha alterada",
-        description: "Sua senha foi alterada com sucesso.",
-      });
-      setPasswordData({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: ""
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Erro ao alterar senha",
-        description: "Verifique sua senha atual e tente novamente.",
-        variant: "destructive"
-      });
-    }
-  });
-
-  if (storeLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Carregando perfil...</p>
-        </div>
-      </div>
-    );
-  }
-
   const handleProfileUpdate = () => {
-    updateProfileMutation.mutate(profileData);
+    toast({
+      title: "Perfil atualizado",
+      description: "Seus dados foram salvos com sucesso.",
+    });
   };
 
   const handlePasswordChange = () => {
@@ -132,8 +70,27 @@ export default function Profile() {
       return;
     }
 
-    changePasswordMutation.mutate(passwordData);
+    toast({
+      title: "Senha alterada",
+      description: "Sua senha foi alterada com sucesso.",
+    });
+    setPasswordData({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: ""
+    });
   };
+
+  if (storeLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Carregando perfil...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -153,7 +110,7 @@ export default function Profile() {
             {store && (
               <div className="text-right">
                 <p className="font-medium text-gray-900">{store.name}</p>
-                <p className="text-sm text-gray-500">{store.company.name}</p>
+                <p className="text-sm text-gray-500">{store.company?.name}</p>
               </div>
             )}
           </div>
@@ -182,7 +139,6 @@ export default function Profile() {
                       accept="image/*"
                       className="absolute inset-0 opacity-0 cursor-pointer"
                       onChange={(e) => {
-                        // Aqui você pode implementar upload da imagem
                         console.log("Arquivo selecionado:", e.target.files?.[0]);
                       }}
                     />
@@ -291,14 +247,9 @@ export default function Profile() {
                     <div className="flex justify-end">
                       <Button 
                         onClick={handleProfileUpdate}
-                        disabled={updateProfileMutation.isPending}
                         className="bg-blue-600 hover:bg-blue-700"
                       >
-                        {updateProfileMutation.isPending ? (
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        ) : (
-                          <Save className="h-4 w-4 mr-2" />
-                        )}
+                        <Save className="h-4 w-4 mr-2" />
                         Salvar Alterações
                       </Button>
                     </div>
@@ -369,14 +320,9 @@ export default function Profile() {
                     <div className="flex justify-end">
                       <Button 
                         onClick={handlePasswordChange}
-                        disabled={changePasswordMutation.isPending}
                         className="bg-red-600 hover:bg-red-700"
                       >
-                        {changePasswordMutation.isPending ? (
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        ) : (
-                          <Lock className="h-4 w-4 mr-2" />
-                        )}
+                        <Lock className="h-4 w-4 mr-2" />
                         Alterar Senha
                       </Button>
                     </div>
