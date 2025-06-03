@@ -113,6 +113,32 @@ export default function StoreIntegrations({ storeId, storeName }: StoreIntegrati
     });
   };
 
+  // Teste de mensagem WhatsApp
+  const [testPhone, setTestPhone] = useState('69992254080');
+  const [testMessage, setTestMessage] = useState('');
+  const testMessageMutation = useMutation({
+    mutationFn: ({ phoneNumber, message }: { phoneNumber: string; message: string }) => 
+      apiRequest(`/api/stores/${storeId}/whatsapp-instance/test-message`, {
+        method: 'POST',
+        body: JSON.stringify({ phoneNumber, message })
+      }),
+    onSuccess: (data) => {
+      toast({
+        title: "Teste enviado!",
+        description: "Mensagem de teste enviada com sucesso"
+      });
+      console.log('Resposta do teste:', data);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Erro no teste",
+        description: error.message || "Erro ao enviar mensagem de teste",
+        variant: "destructive"
+      });
+      console.error('Erro no teste:', error);
+    }
+  });
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'connected':
@@ -310,6 +336,58 @@ export default function StoreIntegrations({ storeId, storeName }: StoreIntegrati
                       <li>• Respostas automáticas inteligentes</li>
                       <li>• Integração com cardápio digital</li>
                     </ul>
+                  </div>
+
+                  <Separator />
+
+                  <div className="space-y-4">
+                    <h4 className="font-medium">Teste de Mensagem</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Envie uma mensagem de teste para verificar a integração
+                    </p>
+                    
+                    <div className="space-y-3">
+                      <div>
+                        <Label htmlFor="test-phone">Número do WhatsApp (com DDD)</Label>
+                        <Input
+                          id="test-phone"
+                          value={testPhone}
+                          onChange={(e) => setTestPhone(e.target.value)}
+                          placeholder="69992254080"
+                          className="mt-1"
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="test-message">Mensagem de Teste (opcional)</Label>
+                        <Textarea
+                          id="test-message"
+                          value={testMessage}
+                          onChange={(e) => setTestMessage(e.target.value)}
+                          placeholder="Deixe vazio para mensagem padrão de teste"
+                          className="mt-1"
+                          rows={3}
+                        />
+                      </div>
+                      
+                      <Button
+                        onClick={() => testMessageMutation.mutate({
+                          phoneNumber: testPhone,
+                          message: testMessage
+                        })}
+                        disabled={testMessageMutation.isPending || !testPhone.trim()}
+                        className="w-full"
+                      >
+                        {testMessageMutation.isPending ? (
+                          <div className="flex items-center gap-2">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            Enviando teste...
+                          </div>
+                        ) : (
+                          'Enviar Mensagem de Teste'
+                        )}
+                      </Button>
+                    </div>
                   </div>
                 </div>
               )}
