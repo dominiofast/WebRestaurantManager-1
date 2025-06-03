@@ -86,6 +86,7 @@ function SuperAdminApp({ user }: { user: any }) {
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/menu" component={MenuManagement} />
             <Route path="/orders" component={OrderManagement} />
+            <Route path="/pdv" component={PDV} />
             <Route path="/menu-manager" component={MenuManager} />
             <Route path="/admin" component={SuperAdmin} />
             <Route path="/stores" component={StoreManagement} />
@@ -112,6 +113,7 @@ function OwnerApp({ user }: { user: any }) {
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/menu" component={MenuManagement} />
             <Route path="/orders" component={OrderManagement} />
+            <Route path="/pdv" component={PDV} />
             <Route path="/menu-manager" component={MenuManager} />
             <Route path="/stores" component={StoreManagement} />
             <Route path="/store-management" component={StoreManagement} />
