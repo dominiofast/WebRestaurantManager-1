@@ -1167,7 +1167,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Send response via Mega API
       if (responseText) {
-        await fetch(`https://${instance.apiHost}/rest/sendMessage/${instance.instanceKey}/sendText`, {
+        await fetch(`https://${instance.apiHost}/rest/sendMessage/${instance.instanceKey}/text`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${instance.apiToken}`,
@@ -1176,7 +1176,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           body: JSON.stringify({
             messageData: {
               to: customerPhone,
-              message: responseText
+              text: responseText
             }
           })
         });
@@ -1256,7 +1256,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Send test message via Mega API
-      const response = await fetch(`https://${instance.apiHost}/rest/sendMessage/${instance.instanceKey}/sendText`, {
+      const response = await fetch(`https://${instance.apiHost}/rest/sendMessage/${instance.instanceKey}/text`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${instance.apiToken}`,
@@ -1265,7 +1265,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         body: JSON.stringify({
           messageData: {
             to: phoneNumber + '@s.whatsapp.net',
-            message: message || `Mensagem de teste do ${store.name}! 🚀\n\nSeu sistema de WhatsApp está funcionando perfeitamente!\n\nCardápio digital: https://dominiomenu-app.replit.app/menu/${store.slug}`
+            text: message || `Mensagem de teste do ${store.name}! 🚀\n\nSeu sistema de WhatsApp está funcionando perfeitamente!\n\nCardápio digital: https://dominiomenu-app.replit.app/menu/${store.slug}`
           }
         })
       });
