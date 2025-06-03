@@ -72,6 +72,53 @@ export default function IntegrationsNew() {
     }));
   };
 
+  // Fetch QR Code from Mega API
+  const fetchQRCode = async () => {
+    try {
+      const response = await fetch(`https://${integrations.whatsapp.host}/rest/instance/qrcode_base64/${integrations.whatsapp.instanceId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${integrations.whatsapp.apiKey}`,
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.qrcode) {
+          updateIntegration('whatsapp', 'qrCode', `data:image/png;base64,${data.qrcode}`);
+          return true;
+        }
+      }
+      return false;
+    } catch (error) {
+      console.error('Erro ao buscar QR Code:', error);
+      return false;
+    }
+  };
+
+  // Check connection status
+  const checkConnectionStatus = async () => {
+    try {
+      const response = await fetch(`https://${integrations.whatsapp.host}/rest/instance/connection_state/${integrations.whatsapp.instanceId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${integrations.whatsapp.apiKey}`,
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.status || data.state;
+      }
+      return 'disconnected';
+    } catch (error) {
+      console.error('Erro ao verificar status:', error);
+      return 'disconnected';
+    }
+  };
+
   // Mega API WhatsApp handlers
   const handleWhatsAppConnection = async () => {
     if (!integrations.whatsapp.apiKey || !integrations.whatsapp.instanceId || !integrations.whatsapp.host) {
@@ -86,36 +133,54 @@ export default function IntegrationsNew() {
     updateIntegration('whatsapp', 'status', 'connecting');
     
     try {
-      // Fazer chamada real para a Mega API
-      const response = await fetch(`https://${integrations.whatsapp.host}/instance/status`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${integrations.whatsapp.apiKey}`,
-          'Content-Type': 'application/json',
-        }
-      });
+      // First check if already connected
+      const status = await checkConnectionStatus();
+      
+      if (status === 'open' || status === 'connected') {
+        updateIntegration('whatsapp', 'status', 'connected');
+        toast({
+          title: "WhatsApp já conectado",
+          description: "Sua instância já está conectada!",
+        });
+        return;
+      }
 
-      if (response.ok) {
-        const data = await response.json();
+      // If not connected, fetch QR code
+      const qrFetched = await fetchQRCode();
+      
+      if (qrFetched) {
+        updateIntegration('whatsapp', 'status', 'connecting');
+        toast({
+          title: "QR Code gerado",
+          description: "Escaneie o QR Code no WhatsApp para conectar",
+        });
+
+        // Poll for connection status every 3 seconds
+        const pollInterval = setInterval(async () => {
+          const currentStatus = await checkConnectionStatus();
+          
+          if (currentStatus === 'open' || currentStatus === 'connected') {
+            updateIntegration('whatsapp', 'status', 'connected');
+            updateIntegration('whatsapp', 'qrCode', '');
+            clearInterval(pollInterval);
+            toast({
+              title: "WhatsApp conectado",
+              description: "Integração configurada com sucesso!",
+            });
+          }
+        }, 3000);
+
+        // Stop polling after 2 minutes
+        setTimeout(() => {
+          clearInterval(pollInterval);
+        }, 120000);
         
-        if (data.status === 'connected') {
-          updateIntegration('whatsapp', 'status', 'connected');
-          toast({
-            title: "WhatsApp conectado",
-            description: "Integração configurada com sucesso!",
-          });
-        } else {
-          updateIntegration('whatsapp', 'status', 'connecting');
-          toast({
-            title: "Aguardando conexão",
-            description: "Escaneie o QR Code no WhatsApp",
-          });
-        }
       } else {
-        throw new Error('Falha na conexão com a API');
+        throw new Error('Não foi possível gerar o QR Code');
       }
     } catch (error) {
       updateIntegration('whatsapp', 'status', 'disconnected');
+      updateIntegration('whatsapp', 'qrCode', '');
       toast({
         title: "Erro na conexão",
         description: "Verifique suas credenciais e tente novamente",
@@ -137,10 +202,10 @@ export default function IntegrationsNew() {
     try {
       const testMessage = {
         number: "5511999999999", // Número de teste
-        message: "🤖 Teste de integração Mega API\n\nSua integração WhatsApp está funcionando perfeitamente!\n\n✅ Mensagem enviada automaticamente pelo sistema DomínioMenu.AI"
+        text: "🤖 Teste de integração Mega API\n\nSua integração WhatsApp está funcionando perfeitamente!\n\n✅ Mensagem enviada automaticamente pelo sistema DomínioMenu.AI"
       };
 
-      const response = await fetch(`https://${integrations.whatsapp.host}/message/sendText`, {
+      const response = await fetch(`https://${integrations.whatsapp.host}/rest/instance/send_text/${integrations.whatsapp.instanceId}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${integrations.whatsapp.apiKey}`,
