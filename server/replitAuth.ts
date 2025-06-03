@@ -130,8 +130,12 @@ export async function setupAuth(app: Express) {
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   const user = req.user as any;
 
-  if (!req.isAuthenticated || !req.isAuthenticated() || !user?.expires_at) {
+  if (!req.isAuthenticated || !req.isAuthenticated() || !user) {
     return res.status(401).json({ message: "Não autenticado" });
+  }
+
+  if (!user.expires_at) {
+    return next(); // Allow if no expiration check needed
   }
 
   const now = Math.floor(Date.now() / 1000);
