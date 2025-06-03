@@ -177,8 +177,8 @@ export default function ModernDigitalMenu() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Banner - Modelo estendido com logo e informações na base */}
-      <div className="relative h-64 overflow-hidden">
+      {/* Hero Banner - Apenas o banner sem sobreposições */}
+      <div className="relative h-48 overflow-hidden">
         {/* Banner de fundo ou gradiente */}
         {storeData.bannerUrl ? (
           <img 
@@ -191,13 +191,15 @@ export default function ModernDigitalMenu() {
         )}
         
         {/* Overlay suave para contraste */}
-        <div className="absolute inset-0 bg-black/30" />
-        
-        {/* Layout inspirado no modelo - Logo e informações na parte inferior */}
-        <div className="absolute bottom-0 left-0 right-0 p-6">
-          <div className="flex items-end gap-4">
+        <div className="absolute inset-0 bg-black/20" />
+      </div>
+
+      {/* Seção com logo e informações - Abaixo do banner */}
+      <div className="bg-white px-4 py-6 border-b border-gray-100">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center gap-4">
             {/* Logo circular */}
-            <div className="w-16 h-16 bg-white rounded-full shadow-lg flex items-center justify-center p-1 flex-shrink-0">
+            <div className="w-16 h-16 bg-white rounded-full shadow-lg flex items-center justify-center p-1 flex-shrink-0 border-2 border-gray-100">
               {storeData.logoUrl ? (
                 <img 
                   src={storeData.logoUrl} 
@@ -212,22 +214,22 @@ export default function ModernDigitalMenu() {
             </div>
             
             {/* Informações ao lado da logo */}
-            <div className="flex-1 text-white">
-              <h1 className="text-xl font-bold mb-2">{storeData.name}</h1>
+            <div className="flex-1">
+              <h1 className="text-xl font-bold text-gray-900 mb-2">{storeData.name}</h1>
               
               {/* Badges informativos em linha horizontal */}
               <div className="flex flex-wrap gap-2">
-                <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
+                <div className="bg-gray-100 rounded-full px-3 py-1 flex items-center gap-1">
                   <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                  <span className="text-xs font-semibold">4.8</span>
+                  <span className="text-xs font-semibold text-gray-700">4.8</span>
                 </div>
-                <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  <span className="text-xs font-semibold">25-40 min</span>
+                <div className="bg-gray-100 rounded-full px-3 py-1 flex items-center gap-1">
+                  <Clock className="w-3 h-3 text-gray-600" />
+                  <span className="text-xs font-semibold text-gray-700">25-40 min</span>
                 </div>
-                <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
-                  <MapPin className="w-3 h-3" />
-                  <span className="text-xs font-semibold">Taxa: R$ 5,90</span>
+                <div className="bg-gray-100 rounded-full px-3 py-1 flex items-center gap-1">
+                  <MapPin className="w-3 h-3 text-gray-600" />
+                  <span className="text-xs font-semibold text-gray-700">Taxa: R$ 5,90</span>
                 </div>
               </div>
             </div>
