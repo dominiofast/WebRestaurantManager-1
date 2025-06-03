@@ -32,11 +32,13 @@ export default function TopBar() {
         credentials: 'include'
       });
       localStorage.removeItem('restaurantUser');
-      window.location.href = '/login';
+      localStorage.clear();
+      window.location.reload();
     } catch (error) {
       console.error('Erro ao fazer logout:', error);
       localStorage.removeItem('restaurantUser');
-      window.location.href = '/login';
+      localStorage.clear();
+      window.location.reload();
     }
   };
 
