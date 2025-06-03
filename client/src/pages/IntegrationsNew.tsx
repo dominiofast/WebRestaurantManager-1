@@ -22,14 +22,16 @@ export default function IntegrationsNew() {
     whatsapp: {
       enabled: false,
       provider: "mega-api",
-      apiKey: "",
+      apiKey: "MDT3OHEGIyu",
       phoneNumber: "",
-      instanceId: "",
+      instanceId: "megacode-MDT3OHEGIyu",
       webhookUrl: "",
       qrCode: "",
       status: "disconnected", // disconnected, connecting, connected
       autoResponder: true,
-      businessHours: true
+      businessHours: true,
+      host: "apinocode01.megaapi.com.br",
+      controlId: "e570acd2-2d6a-41b0-8fee-7253c9caa91c"
     },
     delivery: {
       enabled: false,
@@ -72,10 +74,10 @@ export default function IntegrationsNew() {
 
   // Mega API WhatsApp handlers
   const handleWhatsAppConnection = async () => {
-    if (!integrations.whatsapp.apiKey || !integrations.whatsapp.instanceId) {
+    if (!integrations.whatsapp.apiKey || !integrations.whatsapp.instanceId || !integrations.whatsapp.host) {
       toast({
         title: "Dados incompletos",
-        description: "Preencha o token da API e ID da instância",
+        description: "Preencha todos os campos obrigatórios",
         variant: "destructive"
       });
       return;
@@ -84,14 +86,34 @@ export default function IntegrationsNew() {
     updateIntegration('whatsapp', 'status', 'connecting');
     
     try {
-      // Simular conexão com Mega API
-      setTimeout(() => {
-        updateIntegration('whatsapp', 'status', 'connected');
-        toast({
-          title: "WhatsApp conectado",
-          description: "Integração configurada com sucesso!",
-        });
-      }, 2000);
+      // Fazer chamada real para a Mega API
+      const response = await fetch(`https://${integrations.whatsapp.host}/instance/status`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${integrations.whatsapp.apiKey}`,
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        if (data.status === 'connected') {
+          updateIntegration('whatsapp', 'status', 'connected');
+          toast({
+            title: "WhatsApp conectado",
+            description: "Integração configurada com sucesso!",
+          });
+        } else {
+          updateIntegration('whatsapp', 'status', 'connecting');
+          toast({
+            title: "Aguardando conexão",
+            description: "Escaneie o QR Code no WhatsApp",
+          });
+        }
+      } else {
+        throw new Error('Falha na conexão com a API');
+      }
     } catch (error) {
       updateIntegration('whatsapp', 'status', 'disconnected');
       toast({
@@ -102,11 +124,46 @@ export default function IntegrationsNew() {
     }
   };
 
-  const handleTestConnection = () => {
-    toast({
-      title: "Teste enviado",
-      description: "Mensagem de teste enviada via WhatsApp",
-    });
+  const handleTestConnection = async () => {
+    if (integrations.whatsapp.status !== 'connected') {
+      toast({
+        title: "WhatsApp não conectado",
+        description: "Conecte o WhatsApp antes de testar",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const testMessage = {
+        number: "5511999999999", // Número de teste
+        message: "🤖 Teste de integração Mega API\n\nSua integração WhatsApp está funcionando perfeitamente!\n\n✅ Mensagem enviada automaticamente pelo sistema DomínioMenu.AI"
+      };
+
+      const response = await fetch(`https://${integrations.whatsapp.host}/message/sendText`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${integrations.whatsapp.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(testMessage)
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Teste enviado com sucesso",
+          description: "Mensagem de teste enviada via WhatsApp",
+        });
+      } else {
+        throw new Error('Falha ao enviar mensagem de teste');
+      }
+    } catch (error) {
+      toast({
+        title: "Erro no teste",
+        description: "Não foi possível enviar a mensagem de teste",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleDisconnectWhatsApp = () => {
@@ -250,6 +307,26 @@ export default function IntegrationsNew() {
                     </div>
 
                     <div className="space-y-2">
+                      <Label htmlFor="whatsapp-host">Host da API</Label>
+                      <Input
+                        id="whatsapp-host"
+                        placeholder="apinocode01.megaapi.com.br"
+                        value={integrations.whatsapp.host}
+                        onChange={(e) => updateIntegration('whatsapp', 'host', e.target.value)}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="whatsapp-control-id">ID Único de Controle</Label>
+                      <Input
+                        id="whatsapp-control-id"
+                        placeholder="ID único de controle"
+                        value={integrations.whatsapp.controlId}
+                        onChange={(e) => updateIntegration('whatsapp', 'controlId', e.target.value)}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
                       <Label htmlFor="whatsapp-api-key">Token da API</Label>
                       <Input
                         id="whatsapp-api-key"
@@ -264,10 +341,10 @@ export default function IntegrationsNew() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="whatsapp-instance">ID da Instância</Label>
+                      <Label htmlFor="whatsapp-instance">Instance Key</Label>
                       <Input
                         id="whatsapp-instance"
-                        placeholder="ID da sua instância"
+                        placeholder="Instance Key da sua instância"
                         value={integrations.whatsapp.instanceId}
                         onChange={(e) => updateIntegration('whatsapp', 'instanceId', e.target.value)}
                       />
