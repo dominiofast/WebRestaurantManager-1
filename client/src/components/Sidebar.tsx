@@ -1,9 +1,10 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
-import { Home, UtensilsCrossed, ClipboardList, LogOut, Shield, Store, Globe, ShoppingCart, Bot } from "lucide-react";
+import { Home, UtensilsCrossed, ClipboardList, LogOut, Shield, Store, Globe, ShoppingCart, Bot, Settings, ChevronDown, ChevronRight, Plug } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useState } from "react";
 
 const getNavigationItems = (userRole: string) => {
   const baseItems = [
@@ -53,6 +54,9 @@ const getNavigationItems = (userRole: string) => {
 export default function Sidebar() {
   const [location] = useLocation();
   const { user, isSuperAdmin } = useAuth();
+  const [configExpanded, setConfigExpanded] = useState(false);
+
+  const isManager = user?.role === 'manager';
 
   const handleLogout = async () => {
     try {
@@ -98,6 +102,46 @@ export default function Sidebar() {
               </Link>
             );
           })}
+          
+          {/* Configurações - Submenu recolhível para managers */}
+          {isManager && (
+            <div className="space-y-1">
+              <div
+                onClick={() => setConfigExpanded(!configExpanded)}
+                className={cn(
+                  "flex items-center space-x-3 px-3 py-3 rounded-lg transition-colors cursor-pointer",
+                  "text-white/80 hover:bg-white/10 hover:text-white"
+                )}
+              >
+                <Settings className="w-5 h-5" />
+                <span className="font-medium flex-1">Configurações</span>
+                {configExpanded ? (
+                  <ChevronDown className="w-4 h-4" />
+                ) : (
+                  <ChevronRight className="w-4 h-4" />
+                )}
+              </div>
+              
+              {/* Submenu */}
+              {configExpanded && (
+                <div className="ml-6 space-y-1">
+                  <Link href="/config/integrations">
+                    <div
+                      className={cn(
+                        "flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors cursor-pointer",
+                        location === "/config/integrations"
+                          ? "bg-coral text-white"
+                          : "text-white/70 hover:bg-white/10 hover:text-white"
+                      )}
+                    >
+                      <Plug className="w-4 h-4" />
+                      <span className="font-medium text-sm">Integrações</span>
+                    </div>
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
           
           {/* Super Admin Navigation */}
           {isSuperAdmin && (
