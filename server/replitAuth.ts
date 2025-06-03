@@ -130,8 +130,8 @@ export async function setupAuth(app: Express) {
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   const user = req.user as any;
 
-  if (!req.isAuthenticated() || !user.expires_at) {
-    return res.status(401).json({ message: "Unauthorized" });
+  if (!req.isAuthenticated || !req.isAuthenticated() || !user?.expires_at) {
+    return res.status(401).json({ message: "Não autenticado" });
   }
 
   const now = Math.floor(Date.now() / 1000);

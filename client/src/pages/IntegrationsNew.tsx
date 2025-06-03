@@ -72,6 +72,94 @@ export default function IntegrationsNew() {
     }));
   };
 
+  // Save WhatsApp configuration to backend
+  const handleSaveWhatsAppConfig = async () => {
+    if (!store) return;
+    
+    try {
+      const response = await fetch(`/api/stores/${(store as any).id}/whatsapp-instance`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          instanceKey: integrations.whatsapp.instanceId,
+          apiToken: integrations.whatsapp.apiKey,
+          apiHost: integrations.whatsapp.host,
+          phoneNumber: integrations.whatsapp.phoneNumber,
+          webhookUrl: integrations.whatsapp.webhookUrl,
+          enabled: integrations.whatsapp.enabled,
+          autoResponder: integrations.whatsapp.autoResponder,
+          businessHours: integrations.whatsapp.businessHours
+        })
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Configurações salvas",
+          description: "As configurações do WhatsApp foram salvas com sucesso",
+        });
+      } else {
+        throw new Error('Erro ao salvar configurações');
+      }
+    } catch (error) {
+      console.error('Erro ao salvar configurações:', error);
+      toast({
+        title: "Erro ao salvar",
+        description: "Não foi possível salvar as configurações",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Load WhatsApp configuration from backend
+  const handleLoadWhatsAppConfig = async () => {
+    if (!store) return;
+    
+    try {
+      const response = await fetch(`/api/stores/${(store as any).id}/whatsapp-instance`);
+      
+      if (response.ok) {
+        const instance = await response.json();
+        if (instance) {
+          setIntegrations(prev => ({
+            ...prev,
+            whatsapp: {
+              ...prev.whatsapp,
+              instanceId: instance.instanceKey || prev.whatsapp.instanceId,
+              apiKey: instance.apiToken || prev.whatsapp.apiKey,
+              host: instance.apiHost || prev.whatsapp.host,
+              phoneNumber: instance.phoneNumber || prev.whatsapp.phoneNumber,
+              webhookUrl: instance.webhookUrl || prev.whatsapp.webhookUrl,
+              enabled: instance.enabled ?? prev.whatsapp.enabled,
+              autoResponder: instance.autoResponder ?? prev.whatsapp.autoResponder,
+              businessHours: instance.businessHours ?? prev.whatsapp.businessHours,
+              status: instance.status || 'disconnected'
+            }
+          }));
+          
+          toast({
+            title: "Configurações carregadas",
+            description: "As configurações salvas foram carregadas com sucesso",
+          });
+        } else {
+          toast({
+            title: "Nenhuma configuração encontrada",
+            description: "Não há configurações salvas para esta loja",
+            variant: "destructive"
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao carregar configurações:', error);
+      toast({
+        title: "Erro ao carregar",
+        description: "Não foi possível carregar as configurações",
+        variant: "destructive"
+      });
+    }
+  };
+
   // Fetch QR Code from Mega API
   const fetchQRCode = async () => {
     try {
@@ -466,21 +554,39 @@ export default function IntegrationsNew() {
                       <p className="text-xs text-gray-500">URL para receber mensagens e eventos</p>
                     </div>
 
-                    <div className="flex gap-2">
-                      <Button 
-                        onClick={handleWhatsAppConnection}
-                        className="flex-1 bg-green-600 hover:bg-green-700"
-                        disabled={!integrations.whatsapp.apiKey || !integrations.whatsapp.instanceId}
-                      >
-                        {integrations.whatsapp.status === 'connecting' ? 'Conectando...' : 'Conectar WhatsApp'}
-                      </Button>
-                      <Button 
-                        variant="outline"
-                        onClick={handleTestConnection}
-                        disabled={integrations.whatsapp.status !== 'connected'}
-                      >
-                        Testar
-                      </Button>
+                    <div className="space-y-2">
+                      <div className="flex gap-2">
+                        <Button 
+                          onClick={handleSaveWhatsAppConfig}
+                          variant="outline"
+                          className="flex-1"
+                        >
+                          Salvar Configurações
+                        </Button>
+                        <Button 
+                          onClick={handleLoadWhatsAppConfig}
+                          variant="outline"
+                        >
+                          Carregar
+                        </Button>
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        <Button 
+                          onClick={handleWhatsAppConnection}
+                          className="flex-1 bg-green-600 hover:bg-green-700"
+                          disabled={!integrations.whatsapp.apiKey || !integrations.whatsapp.instanceId}
+                        >
+                          {integrations.whatsapp.status === 'connecting' ? 'Conectando...' : 'Conectar WhatsApp'}
+                        </Button>
+                        <Button 
+                          variant="outline"
+                          onClick={handleTestConnection}
+                          disabled={integrations.whatsapp.status !== 'connected'}
+                        >
+                          Testar
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
