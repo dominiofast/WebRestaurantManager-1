@@ -28,10 +28,7 @@ import {
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-// import MenuSectionForm from "@/components/MenuSectionForm";
-// import MenuProductForm from "@/components/MenuProductForm";
 import AddonsModal from "@/components/AddonsModal";
-import ImageUpload from "@/components/ImageUpload";
 
 interface StoreInfo {
   id: number;
@@ -419,204 +416,22 @@ export default function ManagerStoreDashboard() {
 
           {/* Menu Tab */}
           <TabsContent value="menu" className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">Gerenciar Cardápio</h2>
-                <p className="text-gray-600">Organize seções e produtos do seu cardápio digital</p>
-              </div>
-              <div className="flex gap-2">
-                <Dialog open={sectionModalOpen} onOpenChange={setSectionModalOpen}>
-                  <DialogTrigger asChild>
-                    <Button variant="outline">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Nova Seção
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>
-                        {selectedSection ? 'Editar Seção' : 'Nova Seção'}
-                      </DialogTitle>
-                    </DialogHeader>
-                    <MenuSectionForm 
-                      storeId={store.id} 
-                      section={selectedSection}
-                      onSuccess={() => {
-                        setSectionModalOpen(false);
-                        setSelectedSection(null);
-                      }}
-                    />
-                  </DialogContent>
-                </Dialog>
-
-                <Dialog open={productModalOpen} onOpenChange={setProductModalOpen}>
-                  <DialogTrigger asChild>
-                    <Button>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Novo Produto
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-2xl">
-                    <DialogHeader>
-                      <DialogTitle>
-                        {selectedProduct ? 'Editar Produto' : 'Novo Produto'}
-                      </DialogTitle>
-                    </DialogHeader>
-                    <MenuProductForm 
-                      storeId={store.id}
-                      product={selectedProduct}
-                      sections={menuSections}
-                      onSuccess={() => {
-                        setProductModalOpen(false);
-                        setSelectedProduct(null);
-                      }}
-                    />
-                  </DialogContent>
-                </Dialog>
-              </div>
-            </div>
-
-            {/* Menu Sections */}
-            <div className="space-y-6">
-              {menuSections?.map((section: any) => {
-                const sectionProducts = menuProducts?.filter((product: any) => product.sectionId === section.id) || [];
-                
-                return (
-                  <Card key={section.id}>
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <CardTitle className="text-lg">{section.name}</CardTitle>
-                          {section.description && (
-                            <CardDescription>{section.description}</CardDescription>
-                          )}
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEditSection(section)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDeleteSection(section.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      {sectionProducts.length === 0 ? (
-                        <div className="text-center py-8 text-gray-500">
-                          <p>Nenhum produto nesta seção</p>
-                          <Button 
-                            variant="outline" 
-                            className="mt-2"
-                            onClick={handleCreateProduct}
-                          >
-                            <Plus className="h-4 w-4 mr-2" />
-                            Adicionar Produto
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                          {sectionProducts.map((product: any) => (
-                            <Card key={product.id} className="overflow-hidden">
-                              <div className="aspect-video bg-gray-100 overflow-hidden">
-                                {product.imageUrl ? (
-                                  <img 
-                                    src={product.imageUrl} 
-                                    alt={product.name}
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (
-                                  <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                    <div className="text-center">
-                                      <div className="w-12 h-12 mx-auto mb-2 bg-gray-200 rounded-full flex items-center justify-center">
-                                        <span className="text-lg">🍽️</span>
-                                      </div>
-                                      <p className="text-sm">Sem imagem</p>
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                              <CardContent className="p-4">
-                                <div className="flex items-start justify-between mb-2">
-                                  <h4 className="font-medium text-sm">{product.name}</h4>
-                                  <div className="flex items-center space-x-1">
-                                    <Switch
-                                      checked={product.available}
-                                      onCheckedChange={(checked) => 
-                                        updateProductMutation.mutate({
-                                          productId: product.id,
-                                          updates: { available: checked }
-                                        })
-                                      }
-                                      disabled={updateProductMutation.isPending}
-                                    />
-                                  </div>
-                                </div>
-                                {product.description && (
-                                  <p className="text-xs text-gray-600 mb-2 line-clamp-2">
-                                    {product.description}
-                                  </p>
-                                )}
-                                <div className="flex items-center justify-between">
-                                  <span className="font-bold text-sm">R$ {product.price}</span>
-                                  <div className="flex gap-1">
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => handleEditProduct(product)}
-                                    >
-                                      <Edit className="h-3 w-3" />
-                                    </Button>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => handleManageAddons(product)}
-                                    >
-                                      <Plus className="h-3 w-3" />
-                                    </Button>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => handleDeleteProduct(product.id)}
-                                    >
-                                      <Trash2 className="h-3 w-3" />
-                                    </Button>
-                                  </div>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          ))}
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                );
-              })}
-              
-              {!menuSections?.length && (
-                <Card>
-                  <CardContent className="text-center py-12">
-                    <div className="text-gray-500">
-                      <Store className="mx-auto h-12 w-12 mb-4" />
-                      <h3 className="text-lg font-medium mb-2">Nenhuma seção criada</h3>
-                      <p className="mb-4">Crie sua primeira seção para organizar o cardápio</p>
-                      <Button onClick={handleCreateSection}>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Criar Primeira Seção
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
+            <Card>
+              <CardContent className="text-center py-12">
+                <div className="text-gray-500">
+                  <Store className="mx-auto h-12 w-12 mb-4" />
+                  <h3 className="text-lg font-medium mb-2">Gerenciamento de Cardápio</h3>
+                  <p className="mb-4">Use o sistema administrativo completo para gerenciar seções e produtos</p>
+                  <Button 
+                    onClick={() => window.open(`/menu/${store.slug}`, '_blank')}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    <Globe className="h-4 w-4 mr-2" />
+                    Ver Cardápio Digital
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Orders Tab */}
