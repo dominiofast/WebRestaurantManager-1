@@ -92,7 +92,8 @@ export default function IntegrationsNew() {
         console.log('QR Code response data:', data);
         
         if (data.qrcode) {
-          const qrCodeDataURL = `data:image/png;base64,${data.qrcode}`;
+          // Check if qrcode already has data URL prefix
+          const qrCodeDataURL = data.qrcode.startsWith('data:') ? data.qrcode : `data:image/png;base64,${data.qrcode}`;
           updateIntegration('whatsapp', 'qrCode', qrCodeDataURL);
           console.log('QR Code set successfully');
           return true;

@@ -1,0 +1,124 @@
+# Qrcode Imagem
+
+> ## <Icon icon="ph-bold-whatsapp-logo"/> **Conectar whatsapp**
+
+Para acessar os recursos da **megaAPI**, você terá que efetuar a leitura de um QRCode ou inserir um número de telefone, de forma semelhante ao que ocorre com o WhatsApp Web.
+
+Há duas abordagens possíveis para estabelecer essa conexão:
+
+- Utilizar o nosso painel de gestão para efetuar a conexão, ou
+- Integrar esse processo diretamente na sua própria aplicação, utilizando as diretrizes fornecidas nesta documentação.
+
+Escolha o método mais adequado para ler o QRCode do WhatsApp, conforme os métodos abaixo:
+
+- [qrcode](https://doc.mega-api.app.br/api-10974904.md)
+- [qrcode_base64](https://doc.mega-api.app.br/api-10974905.md)
+- [pairingCode](https://doc.mega-api.app.br/api-10974906.md)
+
+## OpenAPI
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ''
+  description: ''
+  version: 1.0.0
+paths:
+  /rest/instance/qrcode/instance_key:
+    get:
+      summary: Qrcode Imagem
+      deprecated: false
+      description: >-
+        ## <Icon icon="ph-bold-whatsapp-logo"/> **Conectar whatsapp**
+
+
+        Para acessar os recursos da **megaAPI**, você terá que efetuar a leitura
+        de um QRCode ou inserir um número de telefone, de forma semelhante ao
+        que ocorre com o WhatsApp Web.
+
+
+        Há duas abordagens possíveis para estabelecer essa conexão:
+
+
+        - Utilizar o nosso painel de gestão para efetuar a conexão, ou
+
+        - Integrar esse processo diretamente na sua própria aplicação,
+        utilizando as diretrizes fornecidas nesta documentação.
+
+
+        Escolha o método mais adequado para ler o QRCode do WhatsApp, conforme
+        os métodos abaixo:
+
+
+        - [qrcode](https://doc.mega-api.app.br/api-10974904.md)
+
+        - [qrcode_base64](https://doc.mega-api.app.br/api-10974905.md)
+
+        - [pairingCode](https://doc.mega-api.app.br/api-10974906.md)
+      tags:
+        - InstanceController
+      parameters:
+        - name: Content-Type
+          in: header
+          description: ''
+          required: true
+          example: application/json
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer {{token}}
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            '*/*':
+              schema:
+                type: object
+                properties: {}
+          headers: {}
+          x-apidog-name: Success
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                  name:
+                    type: string
+                  message:
+                    type: string
+                  statusCode:
+                    type: integer
+                x-apidog-orders:
+                  - error
+                  - name
+                  - message
+                  - statusCode
+          headers: {}
+          x-apidog-name: Unauthorized
+      security:
+        - bearer: []
+      x-apidog-folder: InstanceController
+      x-apidog-status: released
+      x-run-in-apidog: https://app.apidog.com/web/project/706630/apis/api-10974904-run
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://apinocode01.megaapi.com.br
+    description: apinocode01.megaapi.com.br
+security:
+  - bearer: []
+
+```
