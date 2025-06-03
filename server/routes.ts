@@ -1021,6 +1021,95 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Webhook endpoint for Mega API WhatsApp messages
+  app.post('/api/webhook/whatsapp', express.json(), async (req, res) => {
+    try {
+      console.log('Webhook received:', JSON.stringify(req.body, null, 2));
+      
+      const webhookData = req.body;
+      
+      // Verify if it's a message event
+      if (webhookData.event === 'message' && webhookData.data) {
+        const messageData = webhookData.data;
+        const fromNumber = messageData.from;
+        const messageText = messageData.body || messageData.text;
+        const instanceId = messageData.instanceId;
+        
+        console.log(`Message from ${fromNumber}: ${messageText}`);
+        
+        // Basic auto-response logic
+        if (messageText && typeof messageText === 'string') {
+          const lowerMessage = messageText.toLowerCase();
+          
+          let response = '';
+          
+          // Simple keyword-based responses
+          if (lowerMessage.includes('cardápio') || lowerMessage.includes('menu')) {
+            response = '🍽️ Acesse nosso cardápio digital em: https://dominiomenu.ai/menu/sua-loja\n\nOu digite "delivery" para fazer seu pedido!';
+          } else if (lowerMessage.includes('delivery') || lowerMessage.includes('entrega')) {
+            response = '🚚 Fazemos delivery!\n\nPara fazer seu pedido:\n1. Acesse nosso cardápio\n2. Escolha seus pratos\n3. Finalize o pedido\n\nTempo de entrega: 45-60 minutos';
+          } else if (lowerMessage.includes('horário') || lowerMessage.includes('horario') || lowerMessage.includes('funcionamento')) {
+            response = '🕐 Nosso horário de funcionamento:\n\nSegunda a Sexta: 11h às 23h\nSábado e Domingo: 12h às 00h\n\nEstamos sempre prontos para te atender!';
+          } else if (lowerMessage.includes('endereço') || lowerMessage.includes('endereco') || lowerMessage.includes('localização')) {
+            response = '📍 Venha nos visitar!\n\nEndereço: [Seu endereço aqui]\nReferência: [Ponto de referência]\n\nTemos estacionamento disponível!';
+          } else if (lowerMessage.includes('preço') || lowerMessage.includes('preco') || lowerMessage.includes('valor')) {
+            response = '💰 Confira nossos preços no cardápio digital!\n\nTemos opções para todos os gostos e bolsos. Acesse: https://dominiomenu.ai/menu/sua-loja';
+          } else if (lowerMessage.includes('promoção') || lowerMessage.includes('promocao') || lowerMessage.includes('desconto')) {
+            response = '🎉 Promoções especiais!\n\n🔥 Toda terça: 20% OFF em pizzas\n🍔 Combo burger + batata + refrigerante: R$ 25,90\n\nNão perca essas ofertas!';
+          } else {
+            // Default welcome message
+            response = `Olá! 👋 Bem-vindo(a) ao nosso restaurante!\n\n🍽️ Digite "cardápio" para ver nosso menu\n🚚 Digite "delivery" para informações de entrega\n🕐 Digite "horário" para saber quando funcionamos\n\nComo posso te ajudar hoje?`;
+          }
+          
+          // Send response back via Mega API
+          try {
+            const megaApiResponse = await fetch(`https://apinocode01.megaapi.com.br/rest/instance/send_text/${instanceId}`, {
+              method: 'POST',
+              headers: {
+                'Authorization': 'Bearer MDT3OHEGIyu',
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                number: fromNumber,
+                text: response
+              })
+            });
+            
+            if (megaApiResponse.ok) {
+              console.log(`Auto-response sent to ${fromNumber}`);
+            } else {
+              console.error('Failed to send auto-response:', await megaApiResponse.text());
+            }
+          } catch (error) {
+            console.error('Error sending auto-response:', error);
+          }
+        }
+      }
+      
+      // Always respond with 200 to acknowledge webhook
+      res.status(200).json({ status: 'received' });
+    } catch (error) {
+      console.error('Webhook error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // Get webhook URL for configuration
+  app.get('/api/webhook/url', (req, res) => {
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const webhookUrl = `${baseUrl}/api/webhook/whatsapp`;
+    
+    res.json({
+      webhookUrl,
+      instructions: [
+        '1. Copie a URL do webhook',
+        '2. Configure no painel da Mega API',
+        '3. Ative eventos de mensagem',
+        '4. Teste enviando uma mensagem'
+      ]
+    });
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
