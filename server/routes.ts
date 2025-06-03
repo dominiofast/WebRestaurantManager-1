@@ -1112,6 +1112,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // WhatsApp Instance routes for multi-store support
+  // Disconnect WhatsApp instance for a specific store
+  app.delete('/api/stores/:storeId/whatsapp-instance/disconnect', async (req, res) => {
+    try {
+      const storeId = parseInt(req.params.storeId);
+      
+      const store = await storage.getStoreById(storeId);
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      const instance = await storage.getWhatsappInstance(storeId);
+      if (!instance) {
+        return res.status(404).json({ message: "Instância WhatsApp não encontrada" });
+      }
+
+      // Call Mega API logout endpoint
+      const response = await fetch(`https://${instance.apiHost}/rest/instance/${instance.instanceKey}/logout`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${instance.apiToken}`,
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (response.ok) {
+        // Update instance status to disconnected
+        const updatedInstance = await storage.updateWhatsappInstance(storeId, {
+          status: 'disconnected'
+        });
+        
+        res.json({
+          success: true,
+          message: "WhatsApp desconectado com sucesso",
+          instance: updatedInstance
+        });
+      } else {
+        const errorData = await response.json();
+        res.status(response.status).json({
+          success: false,
+          message: "Erro ao desconectar WhatsApp",
+          error: errorData
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao desconectar WhatsApp:', error);
+      res.status(500).json({ 
+        success: false,
+        message: "Erro interno do servidor" 
+      });
+    }
+  });
+
   // Get WhatsApp instance for a specific store
   app.get('/api/stores/:storeId/whatsapp-instance', async (req, res) => {
     try {

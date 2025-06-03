@@ -348,13 +348,46 @@ export default function IntegrationsNew() {
     }
   };
 
-  const handleDisconnectWhatsApp = () => {
-    updateIntegration('whatsapp', 'status', 'disconnected');
-    updateIntegration('whatsapp', 'qrCode', '');
-    toast({
-      title: "WhatsApp desconectado",
-      description: "Integração desativada com sucesso",
-    });
+  const handleDisconnectWhatsApp = async () => {
+    if (!store) {
+      toast({
+        title: "Erro",
+        description: "Loja não encontrada",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/stores/${(store as any).id}/whatsapp-instance/disconnect`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Update local state
+        updateIntegration('whatsapp', 'status', 'disconnected');
+        updateIntegration('whatsapp', 'qrCode', '');
+        
+        toast({
+          title: "WhatsApp desconectado",
+          description: data.message || "Integração desativada com sucesso",
+        });
+      } else {
+        throw new Error(data.message || 'Erro ao desconectar');
+      }
+    } catch (error) {
+      console.error('Erro ao desconectar WhatsApp:', error);
+      toast({
+        title: "Erro ao desconectar",
+        description: "Não foi possível desconectar o WhatsApp",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleRestartInstance = () => {
