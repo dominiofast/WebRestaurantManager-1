@@ -22,6 +22,7 @@ import PDV from "@/pages/PDV";
 import AIAgent from "@/pages/AIAgent";
 import AIAgentNew from "@/pages/AIAgentNew";
 import Integrations from "@/pages/Integrations";
+import IntegrationsNew from "@/pages/IntegrationsNew";
 import Profile from "@/pages/Profile";
 import Sidebar from "@/components/Sidebar";
 import TopBar from "@/components/TopBar";
@@ -68,7 +69,7 @@ function ManagerApp({ user }: { user: any }) {
             <Route path="/dashboard" component={ManagerStoreDashboard} />
             <Route path="/ai-agent" component={AIAgentNew} />
             <Route path="/config/profile" component={Profile} />
-            <Route path="/config/integrations" component={Integrations} />
+            <Route path="/config/integrations" component={IntegrationsNew} />
             <Route component={ManagerStoreDashboard} />
           </Switch>
         </main>
