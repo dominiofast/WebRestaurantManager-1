@@ -171,8 +171,8 @@ export default function PDV() {
 
     return (
       <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => addToCart(product)}>
-        <CardContent className="p-2">
-          <div className="h-24 bg-gray-100 rounded-lg mb-2 overflow-hidden">
+        <CardContent className="p-1.5">
+          <div className="aspect-square h-20 bg-gray-100 rounded-md mb-1.5 overflow-hidden">
             {product.imageUrl ? (
               <img 
                 src={product.imageUrl} 
@@ -180,13 +180,13 @@ export default function PDV() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-400">
+              <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gradient-to-br from-gray-100 to-gray-200">
                 <UtensilsCrossed className="w-6 h-6" />
               </div>
             )}
           </div>
 
-          <h4 className="font-medium text-xs mb-1 line-clamp-2">{product.name}</h4>
+          <h4 className="font-medium text-xs mb-0.5 line-clamp-2 leading-tight">{product.name}</h4>
           {product.description && (
             <p className="text-xs text-gray-600 mb-1 line-clamp-1">{product.description}</p>
           )}
@@ -237,7 +237,7 @@ export default function PDV() {
                 <h2 className="text-lg font-semibold mb-4">
                   Resultados para "{searchQuery}" ({filteredProducts.length})
                 </h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                   {filteredProducts.map((product) => (
                     <ProductCard key={product.id} product={product} />
                   ))}
@@ -263,7 +263,7 @@ export default function PDV() {
                     {productsBySection.map((section) => (
                       <div key={section.id}>
                         <h3 className="text-lg font-semibold mb-3">{section.name}</h3>
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                           {section.products.map((product) => (
                             <ProductCard key={product.id} product={product} />
                           ))}
@@ -275,7 +275,7 @@ export default function PDV() {
 
                 {(menuSections as Section[]).map((section) => (
                   <TabsContent key={section.id} value={section.id.toString()} className="p-4 mt-0">
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                       {productsBySection
                         .find((s) => s.id === section.id)
                         ?.products.map((product) => (

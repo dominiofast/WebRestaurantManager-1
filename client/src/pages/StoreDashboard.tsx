@@ -384,7 +384,7 @@ export default function StoreDashboard({ storeId: propStoreId }: { storeId?: num
                 className="bg-green-50 hover:bg-green-100 text-green-700 border-green-200"
               >
                 <Globe className="h-4 w-4 mr-2" />
-                Ver Cardápio
+                Ver Cardápio Digital
               </Button>
             </div>
           </div>
