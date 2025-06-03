@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
-import { Home, UtensilsCrossed, ClipboardList, LogOut, Shield, Store, Globe } from "lucide-react";
+import { Home, UtensilsCrossed, ClipboardList, LogOut, Shield, Store, Globe, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
@@ -21,6 +21,11 @@ const getNavigationItems = (userRole: string) => {
       href: "/orders",
       icon: ClipboardList,
       label: "Pedidos",
+    },
+    {
+      href: "/pdv",
+      icon: ShoppingCart,
+      label: "Pedidos (PDV)",
     },
   ];
 

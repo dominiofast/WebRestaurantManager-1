@@ -17,6 +17,7 @@ import DigitalMenu from "@/pages/DigitalMenu";
 import ModernDigitalMenu from "@/pages/ModernDigitalMenu";
 import MenuManager from "@/pages/MenuManager";
 import MenuIndex from "@/pages/MenuIndex";
+import PDV from "@/pages/PDV";
 import Sidebar from "@/components/Sidebar";
 import TopBar from "@/components/TopBar";
 import NotFound from "@/pages/not-found";
@@ -62,6 +63,7 @@ function ManagerApp({ user }: { user: any }) {
         <main className="flex-1 overflow-x-hidden overflow-y-auto">
           <Switch>
             <Route path="/" component={() => <StoreDashboard storeId={storeId} />} />
+            <Route path="/pdv" component={PDV} />
             <Route path="/store/:id/dashboard" component={() => <StoreDashboard storeId={storeId} />} />
             <Route component={() => <StoreDashboard storeId={storeId} />} />
           </Switch>
