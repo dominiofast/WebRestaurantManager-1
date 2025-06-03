@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Plus, Minus, Trash2, CreditCard, Clock, UtensilsCrossed } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Search, Plus, Minus, Trash2, CreditCard, Clock, UtensilsCrossed, Phone, User, Truck, DollarSign } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface CartItem {
@@ -41,6 +42,9 @@ export default function PDV() {
   const [searchQuery, setSearchQuery] = useState("");
   const [cart, setCart] = useState<CartItem[]>([]);
   const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [deliveryType, setDeliveryType] = useState("balcao"); // balcao, entrega
+  const [paymentMethod, setPaymentMethod] = useState("dinheiro"); // dinheiro, cartao, pix
   const [activeSection, setActiveSection] = useState<string>("all");
 
   // Buscar a loja do usuário logado (apenas para managers)
@@ -151,6 +155,9 @@ export default function PDV() {
 
     setCart([]);
     setCustomerName("");
+    setCustomerPhone("");
+    setDeliveryType("balcao");
+    setPaymentMethod("dinheiro");
   };
 
   const ProductCard = ({ product }: { product: Product }) => {
@@ -164,8 +171,8 @@ export default function PDV() {
 
     return (
       <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => addToCart(product)}>
-        <CardContent className="p-3">
-          <div className="aspect-square bg-gray-100 rounded-lg mb-3 overflow-hidden">
+        <CardContent className="p-2">
+          <div className="h-24 bg-gray-100 rounded-lg mb-2 overflow-hidden">
             {product.imageUrl ? (
               <img 
                 src={product.imageUrl} 
@@ -174,14 +181,14 @@ export default function PDV() {
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-gray-400">
-                <UtensilsCrossed className="w-8 h-8" />
+                <UtensilsCrossed className="w-6 h-6" />
               </div>
             )}
           </div>
 
-          <h4 className="font-medium text-sm mb-1 line-clamp-2">{product.name}</h4>
+          <h4 className="font-medium text-xs mb-1 line-clamp-2">{product.name}</h4>
           {product.description && (
-            <p className="text-xs text-gray-600 mb-2 line-clamp-1">{product.description}</p>
+            <p className="text-xs text-gray-600 mb-1 line-clamp-1">{product.description}</p>
           )}
 
           <div className="flex items-center gap-1">
@@ -190,13 +197,13 @@ export default function PDV() {
                 R$ {originalPrice.toFixed(2).replace('.', ',')}
               </span>
             )}
-            <span className="font-bold text-sm text-green-600">
+            <span className="font-bold text-xs text-green-600">
               R$ {displayPrice.toFixed(2).replace('.', ',')}
             </span>
           </div>
 
           {!product.isAvailable && (
-            <Badge variant="secondary" className="mt-2 text-xs">
+            <Badge variant="secondary" className="mt-1 text-xs">
               Indisponível
             </Badge>
           )}
