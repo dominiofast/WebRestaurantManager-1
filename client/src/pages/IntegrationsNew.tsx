@@ -176,8 +176,8 @@ export default function IntegrationsNew() {
             </div>
             {store && (
               <div className="text-right">
-                <p className="font-medium text-gray-900">{store.name}</p>
-                <p className="text-sm text-gray-500">{store.company?.name}</p>
+                <p className="font-medium text-gray-900">{(store as any).name || 'Loja'}</p>
+                <p className="text-sm text-gray-500">{(store as any).company?.name || 'Empresa'}</p>
               </div>
             )}
           </div>
