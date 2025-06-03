@@ -1,0 +1,294 @@
+# Envio de Mensagens de Texto
+
+> <br>
+## <Icon icon="material-outline-info"/> Envio de Mensagens de Texto
+
+Este endpoint é projetado para enviar uma mensagem de texto. Você tem a liberdade de enriquecer suas mensagens com formatações de texto e emojis.
+
+Para aprender a formatar textos conforme as diretrizes do WhatsApp, [acesse este link](https://faq.whatsapp.com/539178204879377/?cms_platform=web&locale=pt_BR).
+
+Adicionalmente, a inserção de emojis pode agregar mais expressividade às suas mensagens. Se precisar de uma referência de emojis, visite este [Emojiterra](https://emojiterra.com/pt/).
+
+Quanto à inclusão de quebras de linha nas mensagens, o método pode variar conforme a plataforma e a linguagem de programação utilizada. Alguns dos formatos comuns incluem:
+
+\n
+\r
+\r\n
+%0a
+\\n
+
+## Exemplo
+
+![text.jpg](https://api.apidog.com/api/v1/projects/706630/resources/346938/image-preview)
+
+
+<br>
+
+:::info[]
+**Fique atento!**
+Para enviar para contatos privados, o contato deve conter o @s.whatsapp.net. Para envios em grupo, você precisará coletar os ID's dos grupos utilizando o endpoint listGroup, os ID's devem conter @g.us
+:::
+<br>
+
+:::danger[]
+⚠️ **Atenção**
+Tenha em mente que o envio de mensagens para um grande número de contatos simultaneamente pode ser interpretado pelo WhatsApp como comportamento de spam. Esta prática aumenta significativamente o risco de ter sua conta banida ou restrita. Recomendamos fortemente moderar a frequência e o volume dos envios para evitar tais consequências.
+:::
+
+## OpenAPI
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ''
+  description: ''
+  version: 1.0.0
+paths:
+  /rest/sendMessage/instance_key/text:
+    post:
+      summary: Envio de Mensagens de Texto
+      deprecated: false
+      description: >-
+        <br>
+
+        ## <Icon icon="material-outline-info"/> Envio de Mensagens de Texto
+
+
+        Este endpoint é projetado para enviar uma mensagem de texto. Você tem a
+        liberdade de enriquecer suas mensagens com formatações de texto e
+        emojis.
+
+
+        Para aprender a formatar textos conforme as diretrizes do WhatsApp,
+        [acesse este
+        link](https://faq.whatsapp.com/539178204879377/?cms_platform=web&locale=pt_BR).
+
+
+        Adicionalmente, a inserção de emojis pode agregar mais expressividade às
+        suas mensagens. Se precisar de uma referência de emojis, visite este
+        [Emojiterra](https://emojiterra.com/pt/).
+
+
+        Quanto à inclusão de quebras de linha nas mensagens, o método pode
+        variar conforme a plataforma e a linguagem de programação utilizada.
+        Alguns dos formatos comuns incluem:
+
+
+        \n
+
+        \r
+
+        \r\n
+
+        %0a
+
+        \\n
+
+
+        ## Exemplo
+
+
+        ![text.jpg](https://api.apidog.com/api/v1/projects/706630/resources/346938/image-preview)
+
+
+
+        <br>
+
+
+        :::info[]
+
+        **Fique atento!**
+
+        Para enviar para contatos privados, o contato deve conter o
+        @s.whatsapp.net. Para envios em grupo, você precisará coletar os ID's
+        dos grupos utilizando o endpoint listGroup, os ID's devem conter @g.us
+
+        :::
+
+        <br>
+
+
+        :::danger[]
+
+        ⚠️ **Atenção**
+
+        Tenha em mente que o envio de mensagens para um grande número de
+        contatos simultaneamente pode ser interpretado pelo WhatsApp como
+        comportamento de spam. Esta prática aumenta significativamente o risco
+        de ter sua conta banida ou restrita. Recomendamos fortemente moderar a
+        frequência e o volume dos envios para evitar tais consequências.
+
+        :::
+      tags:
+        - SendMessageController
+      parameters:
+        - name: Content-Type
+          in: header
+          description: ''
+          required: true
+          example: application/json
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer {{token}}
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                messageData:
+                  type: object
+                  properties:
+                    to:
+                      type: string
+                      description: Contato Whatsapp
+                    text:
+                      type: string
+                      description: Mensagem
+                  required:
+                    - to
+                    - text
+                  x-apidog-orders:
+                    - to
+                    - text
+              required:
+                - messageData
+              x-apidog-orders:
+                - messageData
+            example:
+              messageData:
+                to: 556195562618@s.whatsapp.net
+                text: Hello
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                  message:
+                    type: string
+                  messageData:
+                    type: object
+                    properties:
+                      key:
+                        type: object
+                        properties:
+                          remoteJid:
+                            type: string
+                            x-apidog-mock: Contato Whatsapp
+                          fromMe:
+                            type: boolean
+                            x-apidog-mock: >-
+                              false - mensagem recebida / true - mensagem
+                              enviada
+                          id:
+                            type: string
+                            x-apidog-mock: Id mensagem whatsapp
+                        required:
+                          - remoteJid
+                          - fromMe
+                          - id
+                        x-apidog-orders:
+                          - remoteJid
+                          - fromMe
+                          - id
+                      message:
+                        type: object
+                        properties:
+                          extendedTextMessage:
+                            type: object
+                            properties:
+                              text:
+                                type: string
+                                x-apidog-mock: Mensagem enviada
+                            required:
+                              - text
+                            x-apidog-orders:
+                              - text
+                        required:
+                          - extendedTextMessage
+                        x-apidog-orders:
+                          - extendedTextMessage
+                      messageTimestamp:
+                        type: string
+                        x-apidog-mock: Data e hora do envio
+                      status:
+                        type: string
+                        x-apidog-mock: Status
+                    required:
+                      - key
+                      - message
+                      - messageTimestamp
+                      - status
+                    x-apidog-orders:
+                      - key
+                      - message
+                      - messageTimestamp
+                      - status
+                required:
+                  - error
+                  - message
+                  - messageData
+                x-apidog-orders:
+                  - error
+                  - message
+                  - messageData
+          headers: {}
+          x-apidog-name: Success
+        x-200:Whatsapp inválido:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                  name:
+                    type: string
+                  message:
+                    type: string
+                    x-apidog-mock: Mensagem de erro
+                  statusCode:
+                    type: integer
+                    x-apidog-mock: Status Code
+                required:
+                  - error
+                  - name
+                  - message
+                  - statusCode
+                x-apidog-orders:
+                  - error
+                  - name
+                  - message
+                  - statusCode
+          headers: {}
+          x-apidog-name: Whatsapp inválido
+      security:
+        - bearer: []
+      x-apidog-folder: SendMessageController
+      x-apidog-status: released
+      x-run-in-apidog: https://app.apidog.com/web/project/706630/apis/api-10974911-run
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://apinocode01.megaapi.com.br
+    description: apinocode01.megaapi.com.br
+security:
+  - bearer: []
+
+```

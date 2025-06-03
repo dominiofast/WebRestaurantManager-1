@@ -1167,15 +1167,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Send response via Mega API
       if (responseText) {
-        await fetch(`https://${instance.apiHost}/rest/instance/sendText/${instance.instanceKey}`, {
+        await fetch(`https://${instance.apiHost}/rest/sendMessage/${instance.instanceKey}/sendText`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${instance.apiToken}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            number: customerPhone,
-            text: responseText
+            messageData: {
+              to: customerPhone,
+              message: responseText
+            }
           })
         });
       }
@@ -1230,6 +1232,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     } catch (error) {
       console.error('Erro ao desconectar WhatsApp:', error);
+      res.status(500).json({ 
+        success: false,
+        message: "Erro interno do servidor" 
+      });
+    }
+  });
+
+  // Test WhatsApp message sending
+  app.post('/api/stores/:storeId/whatsapp-instance/test-message', async (req, res) => {
+    try {
+      const storeId = parseInt(req.params.storeId);
+      const { phoneNumber, message } = req.body;
+      
+      const store = await storage.getStoreById(storeId);
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      const instance = await storage.getWhatsappInstance(storeId);
+      if (!instance) {
+        return res.status(404).json({ message: "Instância WhatsApp não encontrada" });
+      }
+
+      // Send test message via Mega API
+      const response = await fetch(`https://${instance.apiHost}/rest/sendMessage/${instance.instanceKey}/sendText`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${instance.apiToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messageData: {
+            to: phoneNumber + '@s.whatsapp.net',
+            message: message || `Mensagem de teste do ${store.name}! 🚀\n\nSeu sistema de WhatsApp está funcionando perfeitamente!\n\nCardápio digital: https://dominiomenu-app.replit.app/menu/${store.slug}`
+          }
+        })
+      });
+
+      const result = await response.json();
+      
+      if (response.ok && !result.error) {
+        res.json({
+          success: true,
+          message: "Mensagem de teste enviada com sucesso",
+          data: result
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          message: "Erro ao enviar mensagem de teste",
+          error: result
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao enviar mensagem de teste:', error);
       res.status(500).json({ 
         success: false,
         message: "Erro interno do servidor" 
