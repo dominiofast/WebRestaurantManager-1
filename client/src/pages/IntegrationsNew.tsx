@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -60,6 +60,13 @@ export default function IntegrationsNew() {
   const { data: store, isLoading: storeLoading } = useQuery({
     queryKey: ['/api/manager/store'],
   });
+
+  // Auto-load configurations when store is available
+  useEffect(() => {
+    if (store && !storeLoading) {
+      handleLoadWhatsAppConfig();
+    }
+  }, [store, storeLoading]);
 
   // Helper function to update integrations
   const updateIntegration = (service: string, field: string, value: any) => {
