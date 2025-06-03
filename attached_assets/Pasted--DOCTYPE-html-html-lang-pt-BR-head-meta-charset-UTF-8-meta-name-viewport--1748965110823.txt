@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuração do Agente IA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .config-content {
+            padding: 40px;
+        }
+
+        .config-section {
+            margin-bottom: 40px;
+            border: 2px solid #f3f4f6;
+            border-radius: 12px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .config-section:hover {
+            border-color: #4f46e5;
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #1f2937;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 30px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            background: white;
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #4f46e5;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-item:hover {
+            border-color: #4f46e5;
+            background: #f8faff;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #4f46e5;
+        }
+
+        .horario-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .preview-section {
+            background: #f8faff;
+            border: 2px dashed #4f46e5;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .chat-preview {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 18px;
+            max-width: 80%;
+        }
+
+        .message.bot {
+            background: #4f46e5;
+            color: white;
+            margin-right: auto;
+        }
+
+        .message.user {
+            background: #e5e7eb;
+            color: #1f2937;
+            margin-left: auto;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+        }
+
+        .btn-test {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-test:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .success-message {
+            background: #d1fae5;
+            border: 2px solid #10b981;
+            color: #065f46;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .horario-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .config-content {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Configuração do Agente IA</h1>
+            <p>Configure a personalidade e comportamento do seu assistente virtual</p>
+        </div>
+
+        <div class="config-content">
+            <form id="agentForm">
+                <!-- Seção 1: Personalidade -->
+                <div class="config-section">
+                    <h2 class="section-title">👤 Personalidade do Agente</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Nome do Agente</label>
+                            <input type="text" class="form-input" id="agentName" placeholder="Ex: Maria, João, Sofia" value="Maria">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Tom de Voz</label>
+                            <select class="form-select" id="agentTone">
+                                <option value="amigavel">Amigável e Caloroso</option>
+                                <option value="profissional">Profissional</option>
+                                <option value="casual">Casual e Descontraído</option>
+                                <option value="energetico">Energético e Animado</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Prompt Personalizado (Opcional)</label>
+                        <textarea class="form-textarea" id="customPrompt" placeholder="Ex: Você é um atendente especialista em pizzas artesanais, sempre sugira ingredientes premium e combos especiais..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Usar Emojis nas Respostas</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="useEmojis" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Seção 2: Comportamento -->
+                <div class="config-section">
+                    <h2 class="section-title">⚙️ Comportamento</h2>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Especialidades do Agente</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="sugestoes" checked>
+                                <label for="sugestoes">Sugestões Inteligentes</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="combos" checked>
+                                <label for="combos">Ofertas de Combos</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="promocoes" checked>
+                                <label for="promocoes">Informar Promoções</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="ingredientes">
+                                <label for="ingredientes">Detalhes de Ingredientes</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="nutricional">
+                                <label for="nutricional">Info. Nutricionais</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="alergias" checked>
+                                <label for="alergias">Alergias e Restrições</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Tempo Máximo de Resposta (segundos)</label>
+                            <input type="number" class="form-input" id="responseTime" value="3" min="1" max="10">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Máximo de Tentativas por Conversa</label>
+                            <input type="number" class="form-input" id="maxAttempts" value="5" min="3" max="10">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção 3: Horário de Funcionamento -->
+                <div class="config-section">
+                    <h2 class="section-title">🕒 Horário de Funcionamento</h2>
+                    
+                    <div class="horario-grid">
+                        <div class="form-group">
+                            <label class="form-label">Segunda a Sexta</label>
+                            <div class="form-row">
+                                <input type="time" class="form-input" id="seg_sex_inicio" value="18:00">
+                                <input type="time" class="form-input" id="seg_sex_fim" value="23:30">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Sábado</label>
+                            <div class="form-row">
+                                <input type="time" class="form-input" id="sabado_inicio" value="18:00">
+                                <input type="time" class="form-input" id="sabado_fim" value="00:00">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Domingo</label>
+                            <div class="form-row">
+                                <input type="time" class="form-input" id="domingo_inicio" value="18:00">
+                                <input type="time" class="form-input" id="domingo_fim" value="23:00">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Mensagem Fora do Horário</label>
+                        <textarea class="form-textarea" id="offHoursMessage" placeholder="Ex: Ops! Estamos fechados agora 😴 Voltamos amanhã às 18h. Quer fazer um pedido agendado?">Ops! Estamos fechados agora 😴 Voltamos amanhã às 18h. Quer fazer um pedido agendado?</textarea>
+                    </div>
+                </div>
+
+                <!-- Seção 4: Integrações -->
+                <div class="config-section">
+                    <h2 class="section-title">🔗 Integrações</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Webhook para Pedidos</label>
+                            <input type="url" class="form-input" id="webhookUrl" placeholder="https://seu-sistema.com/webhook/pedidos">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">API Key (se necessário)</label>
+                            <input type="password" class="form-input" id="apiKey" placeholder="Sua chave de API">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Canais Ativos</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="whatsapp" checked>
+                                <label for="whatsapp">WhatsApp</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="telegram">
+                                <label for="telegram">Telegram</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="website" checked>
+                                <label for="website">Site/Chat Widget</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="facebook">
+                                <label for="facebook">Facebook Messenger</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção 5: Preview -->
+                <div class="config-section">
+                    <h2 class="section-title">👁️ Preview do Agente</h2>
+                    
+                    <div class="preview-section">
+                        <h3>Teste a Conversa</h3>
+                        <div class="chat-preview" id="chatPreview">
+                            <div class="message bot">
+                                Olá! Bem-vindo à nossa pizzaria! 😊 Sou a Maria e estou aqui para ajudar com seu pedido. O que vai querer hoje?
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 15px; display: flex; gap: 10px;">
+                            <input type="text" class="form-input" id="testMessage" placeholder="Digite uma mensagem de teste..." style="flex: 1;">
+                            <button type="button" class="btn btn-test" onclick="sendTestMessage()">Enviar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="success-message" id="successMessage">
+                    ✅ Configurações salvas com sucesso! Seu agente está pronto para atender.
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()">Resetar</button>
+                    <button type="button" class="btn btn-test" onclick="testAgent()">Testar Agente</button>
+                    <button type="submit" class="btn btn-primary">Salvar Configurações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Configurações do agente
+        let agentConfig = {};
+
+        // Função para coletar todas as configurações
+        function collectConfig() {
+            agentConfig = {
+                personalidade: {
+                    nome: document.getElementById('agentName').value,
+                    tom: document.getElementById('agentTone').value,
+                    prompt_personalizado: document.getElementById('customPrompt').value,
+                    usar_emojis: document.getElementById('useEmojis').checked
+                },
+                comportamento: {
+                    especialidades: {
+                        sugestoes: document.getElementById('sugestoes').checked,
+                        combos: document.getElementById('combos').checked,
+                        promocoes: document.getElementById('promocoes').checked,
+                        ingredientes: document.getElementById('ingredientes').checked,
+                        nutricional: document.getElementById('nutricional').checked,
+                        alergias: document.getElementById('alergias').checked
+                    },
+                    tempo_resposta: parseInt(document.getElementById('responseTime').value),
+                    max_tentativas: parseInt(document.getElementById('maxAttempts').value)
+                },
+                horario: {
+                    seg_sex: {
+                        inicio: document.getElementById('seg_sex_inicio').value,
+                        fim: document.getElementById('seg_sex_fim').value
+                    },
+                    sabado: {
+                        inicio: document.getElementById('sabado_inicio').value,
+                        fim: document.getElementById('sabado_fim').value
+                    },
+                    domingo: {
+                        inicio: document.getElementById('domingo_inicio').value,
+                        fim: document.getElementById('domingo_fim').value
+                    },
+                    mensagem_fora_horario: document.getElementById('offHoursMessage').value
+                },
+                integracoes: {
+                    webhook_url: document.getElementById('webhookUrl').value,
+                    api_key: document.getElementById('apiKey').value,
+                    canais: {
+                        whatsapp: document.getElementById('whatsapp').checked,
+                        telegram: document.getElementById('telegram').checked,
+                        website: document.getElementById('website').checked,
+                        facebook: document.getElementById('facebook').checked
+                    }
+                }
+            };
+            return agentConfig;
+        }
+
+        // Função para testar mensagem
+        function sendTestMessage() {
+            const messageInput = document.getElementById('testMessage');
+            const chatPreview = document.getElementById('chatPreview');
+            const message = messageInput.value.trim();
+            
+            if (!message) return;
+
+            // Adicionar mensagem do usuário
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message user';
+            userMessage.textContent = message;
+            chatPreview.appendChild(userMessage);
+
+            // Simular resposta do bot
+            setTimeout(() => {
+                const botMessage = document.createElement('div');
+                botMessage.className = 'message bot';
+                
+                // Resposta simulada baseada na configuração
+                const config = collectConfig();
+                let response = generateTestResponse(message, config);
+                
+                botMessage.textContent = response;
+                chatPreview.appendChild(botMessage);
+                
+                // Scroll para o final
+                chatPreview.scrollTop = chatPreview.scrollHeight;
+            }, 1000);
+
+            messageInput.value = '';
+        }
+
+        // Gerar resposta de teste
+        function generateTestResponse(message, config) {
+            const responses = {
+                'oi': `Oi! Sou ${config.personalidade.nome}, como posso ajudar você hoje?`,
+                'olá': `Olá! Bem-vindo! Em que posso ajudar?`,
+                'pizza': 'Temos pizzas deliciosas! Qual sabor você prefere?',
+                'cardápio': 'Nosso cardápio tem pizzas, bebidas e acompanhamentos. Quer que eu sugira algo?',
+                'preço': 'Os preços variam de acordo com o tamanho. Quer saber o valor de alguma pizza específica?',
+                'entrega': 'Fazemos entrega sim! Qual seu endereço?',
+                default: 'Interessante! Como posso ajudar você com seu pedido?'
+            };
+
+            const key = Object.keys(responses).find(k => 
+                message.toLowerCase().includes(k)
+            );
+
+            let response = responses[key] || responses.default;
+            
+            // Adicionar emoji se habilitado
+            if (config.personalidade.usar_emojis) {
+                const emojis = ['😊', '🍕', '👍', '✨'];
+                response += ' ' + emojis[Math.floor(Math.random() * emojis.length)];
+            }
+
+            return response;
+        }
+
+        // Função para testar o agente
+        function testAgent() {
+            collectConfig();
+            alert('Teste iniciado! Use o chat preview acima para testar as respostas do agente.');
+        }
+
+        // Função para resetar formulário
+        function resetForm() {
+            if (confirm('Tem certeza que deseja resetar todas as configurações?')) {
+                document.getElementById('agentForm').reset();
+                document.getElementById('chatPreview').innerHTML = `
+                    <div class="message bot">
+                        Olá! Bem-vindo à nossa pizzaria! 😊 Sou a Maria e estou aqui para ajudar com seu pedido. O que vai querer hoje?
+                    </div>
+                `;
+            }
+        }
+
+        // Função para salvar configurações
+        function saveConfig() {
+            const config = collectConfig();
+            
+            // Aqui você pode enviar para seu backend no Replit
+            // Exemplo de envio via fetch:
+            /*
+            fetch('/api/save-agent-config', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(config)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('successMessage').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('successMessage').style.display = 'none';
+                }, 3000);
+            });
+            */
+            
+            // Por enquanto, apenas mostrar no console
+            console.log('Configuração do Agente:', config);
+            
+            // Mostrar mensagem de sucesso
+            document.getElementById('successMessage').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('successMessage').style.display = 'none';
+            }, 3000);
+        }
+
+        // Event listeners
+        document.getElementById('agentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveConfig();
+        });
+
+        // Permitir envio de mensagem com Enter
+        document.getElementById('testMessage').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendTestMessage();
+            }
+        });
+
+        // Atualizar preview quando configuração mudar
+        document.addEventListener('change', function() {
+            // Atualizar nome do agente no preview se necessário
+            const agentName = document.getElementById('agentName').value || 'Maria';
+            // Você pode atualizar o preview em tempo real aqui
+        });
+    </script>
+</body>
+</html>
