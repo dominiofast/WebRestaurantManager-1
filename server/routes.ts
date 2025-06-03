@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertCategorySchema, insertMenuItemSchema, insertOrderSchema, insertCompanySchema, insertStoreSchema } from "@shared/schema";
+import { isAuthenticated } from "./replitAuth";
 import { z } from "zod";
 import bcrypt from "bcrypt";
 import multer from "multer";
@@ -1108,6 +1109,204 @@ export async function registerRoutes(app: Express): Promise<Server> {
         '4. Teste enviando uma mensagem'
       ]
     });
+  });
+
+  // WhatsApp Instance routes for multi-store support
+  // Get WhatsApp instance for a specific store
+  app.get('/api/stores/:storeId/whatsapp-instance', isAuthenticated, async (req, res) => {
+    try {
+      const storeId = parseInt(req.params.storeId);
+      
+      // Verify user has access to this store
+      const store = await storage.getStoreById(storeId);
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      // Check if user is owner of company or manager of store
+      const user = req.user!;
+      if (user.role !== 'super_admin' && 
+          user.role !== 'owner' && 
+          store.managerId !== user.id) {
+        return res.status(403).json({ message: "Acesso negado" });
+      }
+
+      const instance = await storage.getWhatsappInstance(storeId);
+      res.json(instance || null);
+    } catch (error) {
+      console.error('Erro ao buscar instância WhatsApp:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  // Create or update WhatsApp instance for a store
+  app.post('/api/stores/:storeId/whatsapp-instance', isAuthenticated, async (req, res) => {
+    try {
+      const storeId = parseInt(req.params.storeId);
+      
+      const store = await storage.getStoreById(storeId);
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      const user = req.user!;
+      if (user.role !== 'super_admin' && 
+          user.role !== 'owner' && 
+          store.managerId !== user.id) {
+        return res.status(403).json({ message: "Acesso negado" });
+      }
+
+      const instanceData = {
+        storeId,
+        instanceKey: req.body.instanceKey || `${store.slug}-instance`,
+        apiToken: req.body.apiToken || 'MDT3OHEGIyu',
+        apiHost: req.body.apiHost || 'apinocode01.megaapi.com.br',
+        status: 'disconnected',
+        webhookUrl: `https://dominiomenu-app.replit.app/api/webhook/whatsapp/${storeId}`
+      };
+
+      const existingInstance = await storage.getWhatsappInstance(storeId);
+      
+      let instance;
+      if (existingInstance) {
+        instance = await storage.updateWhatsappInstance(storeId, instanceData);
+      } else {
+        instance = await storage.createWhatsappInstance(instanceData);
+      }
+
+      res.json(instance);
+    } catch (error) {
+      console.error('Erro ao criar/atualizar instância WhatsApp:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  // Connect WhatsApp instance for a specific store
+  app.post('/api/stores/:storeId/whatsapp-instance/connect', isAuthenticated, async (req, res) => {
+    try {
+      const storeId = parseInt(req.params.storeId);
+      
+      const store = await storage.getStoreById(storeId);
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      const user = req.user!;
+      if (user.role !== 'super_admin' && 
+          user.role !== 'owner' && 
+          store.managerId !== user.id) {
+        return res.status(403).json({ message: "Acesso negado" });
+      }
+
+      const instance = await storage.getWhatsappInstance(storeId);
+      if (!instance) {
+        return res.status(404).json({ message: "Instância WhatsApp não configurada para esta loja" });
+      }
+
+      // Update status to connecting
+      await storage.updateWhatsappInstance(storeId, { status: 'connecting' });
+
+      // Get QR Code from Mega API
+      const qrResponse = await fetch(`https://${instance.apiHost}/rest/instance/qrcode_base64/${instance.instanceKey}`, {
+        headers: {
+          'Authorization': `Bearer ${instance.apiToken}`
+        }
+      });
+
+      if (!qrResponse.ok) {
+        await storage.updateWhatsappInstance(storeId, { status: 'disconnected' });
+        return res.status(400).json({ message: "Erro ao gerar QR Code" });
+      }
+
+      const qrData = await qrResponse.json();
+      
+      const updatedInstance = await storage.updateWhatsappInstance(storeId, { 
+        qrCode: qrData.qrcode,
+        status: 'connecting'
+      });
+
+      res.json({
+        qrCode: qrData.qrcode,
+        instance: updatedInstance
+      });
+    } catch (error) {
+      console.error('Erro ao conectar WhatsApp:', error);
+      await storage.updateWhatsappInstance(parseInt(req.params.storeId), { status: 'disconnected' });
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  // Enhanced webhook endpoint for store-specific instances
+  app.post('/api/webhook/whatsapp/:storeId?', express.json(), async (req, res) => {
+    try {
+      console.log('Webhook received:', JSON.stringify(req.body, null, 2));
+      
+      const storeId = req.params.storeId ? parseInt(req.params.storeId) : null;
+      const webhookData = req.body;
+      
+      if (webhookData.event === 'message' && webhookData.data) {
+        const messageData = webhookData.data;
+        const fromNumber = messageData.from;
+        const messageText = messageData.body || messageData.text;
+        
+        console.log(`Message from ${fromNumber} to store ${storeId}: ${messageText}`);
+        
+        // Get store-specific information for personalized responses
+        let storeInfo = null;
+        if (storeId) {
+          storeInfo = await storage.getStoreById(storeId);
+        }
+        
+        if (messageText && typeof messageText === 'string') {
+          const lowerMessage = messageText.toLowerCase();
+          let response = '';
+          
+          if (lowerMessage.includes('cardápio') || lowerMessage.includes('menu')) {
+            const menuUrl = storeInfo 
+              ? `https://dominiomenu-app.replit.app/menu/${storeInfo.slug}`
+              : 'https://dominiomenu-app.replit.app/cardapios';
+            response = `🍽️ Acesse nosso cardápio digital em: ${menuUrl}\n\nOu digite "delivery" para fazer seu pedido!`;
+          } else if (lowerMessage.includes('delivery') || lowerMessage.includes('entrega')) {
+            response = `🚚 Fazemos delivery!\n\nPara fazer seu pedido:\n1. Acesse nosso cardápio\n2. Escolha seus pratos\n3. Finalize o pedido\n\nTempo de entrega: 45-60 minutos`;
+          } else if (lowerMessage.includes('horário') || lowerMessage.includes('funciona')) {
+            response = `⏰ Horário de funcionamento:\nSegunda a Sexta: 11h às 22h\nSábado e Domingo: 11h às 23h\n\nEstamos sempre prontos para atendê-lo!`;
+          } else if (lowerMessage.includes('oi') || lowerMessage.includes('olá') || lowerMessage.includes('bom dia') || lowerMessage.includes('boa tarde') || lowerMessage.includes('boa noite')) {
+            const storeName = storeInfo?.name || 'nosso restaurante';
+            response = `👋 Olá! Bem-vindo ao ${storeName}!\n\nComo posso ajudá-lo hoje?\n• Digite "cardápio" para ver nossos pratos\n• Digite "delivery" para informações de entrega\n• Digite "horário" para saber quando funcionamos`;
+          } else {
+            response = `🤖 Desculpe, não entendi sua mensagem.\n\nPosso ajudá-lo com:\n• Cardápio - digite "cardápio"\n• Delivery - digite "delivery"\n• Horários - digite "horário"\n\nOu fale com nosso atendente!`;
+          }
+          
+          // Get instance for this store to send response
+          if (storeId) {
+            const instance = await storage.getWhatsappInstance(storeId);
+            if (instance && instance.status === 'connected') {
+              // Send auto-response using store's specific instance
+              const sendResponse = await fetch(`https://${instance.apiHost}/rest/instance/sendtext/${instance.instanceKey}`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${instance.apiToken}`
+                },
+                body: JSON.stringify({
+                  number: fromNumber,
+                  text: response
+                })
+              });
+              
+              if (sendResponse.ok) {
+                console.log('Auto-response sent successfully');
+              }
+            }
+          }
+        }
+      }
+      
+      res.status(200).json({ received: true });
+    } catch (error) {
+      console.error('Webhook error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
   });
 
   const httpServer = createServer(app);

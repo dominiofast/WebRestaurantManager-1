@@ -29,6 +29,7 @@ import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import AddonsModal from "@/components/AddonsModal";
+import StoreIntegrations from "./StoreIntegrations";
 
 interface StoreInfo {
   id: number;
