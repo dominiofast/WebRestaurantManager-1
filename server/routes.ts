@@ -1239,57 +1239,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Test WhatsApp message sending
+  // Test WhatsApp message sending with detailed debugging
   app.post('/api/stores/:storeId/whatsapp-instance/test-message', async (req, res) => {
     try {
       const storeId = parseInt(req.params.storeId);
       const { phoneNumber, message } = req.body;
       
+      console.log(`[WhatsApp Test] Iniciando teste para loja ${storeId}, telefone: ${phoneNumber}`);
+      
       const store = await storage.getStoreById(storeId);
       if (!store) {
+        console.log(`[WhatsApp Test] Loja ${storeId} não encontrada`);
         return res.status(404).json({ message: "Loja não encontrada" });
       }
 
       const instance = await storage.getWhatsappInstance(storeId);
       if (!instance) {
+        console.log(`[WhatsApp Test] Instância WhatsApp não encontrada para loja ${storeId}`);
         return res.status(404).json({ message: "Instância WhatsApp não encontrada" });
       }
 
+      console.log(`[WhatsApp Test] Configuração encontrada - Host: ${instance.apiHost}, Key: ${instance.instanceKey}`);
+
+      const testMessage = message || `Teste do ${store.name}! 🚀\n\nSeu sistema de WhatsApp está funcionando!\n\nCardápio: https://dominiomenu-app.replit.app/menu/${store.slug}`;
+      
+      const apiUrl = `https://${instance.apiHost}/rest/sendMessage/${instance.instanceKey}/text`;
+      const requestBody = {
+        messageData: {
+          to: phoneNumber + '@s.whatsapp.net',
+          text: testMessage
+        }
+      };
+
+      console.log(`[WhatsApp Test] URL da API: ${apiUrl}`);
+      console.log(`[WhatsApp Test] Corpo da requisição:`, JSON.stringify(requestBody, null, 2));
+
       // Send test message via Mega API
-      const response = await fetch(`https://${instance.apiHost}/rest/sendMessage/${instance.instanceKey}/text`, {
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${instance.apiToken}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          messageData: {
-            to: phoneNumber + '@s.whatsapp.net',
-            text: message || `Mensagem de teste do ${store.name}! 🚀\n\nSeu sistema de WhatsApp está funcionando perfeitamente!\n\nCardápio digital: https://dominiomenu-app.replit.app/menu/${store.slug}`
-          }
-        })
+        body: JSON.stringify(requestBody)
       });
 
       const result = await response.json();
+      console.log(`[WhatsApp Test] Status da resposta: ${response.status}`);
+      console.log(`[WhatsApp Test] Resposta da API:`, JSON.stringify(result, null, 2));
       
       if (response.ok && !result.error) {
+        console.log(`[WhatsApp Test] Mensagem enviada com sucesso!`);
         res.json({
           success: true,
           message: "Mensagem de teste enviada com sucesso",
-          data: result
+          data: result,
+          debug: {
+            url: apiUrl,
+            phoneNumber: phoneNumber + '@s.whatsapp.net',
+            status: response.status
+          }
         });
       } else {
+        console.log(`[WhatsApp Test] Erro no envio:`, result);
         res.status(400).json({
           success: false,
           message: "Erro ao enviar mensagem de teste",
-          error: result
+          error: result,
+          debug: {
+            url: apiUrl,
+            phoneNumber: phoneNumber + '@s.whatsapp.net',
+            status: response.status
+          }
         });
       }
     } catch (error) {
-      console.error('Erro ao enviar mensagem de teste:', error);
+      console.error('[WhatsApp Test] Erro ao enviar mensagem de teste:', error);
       res.status(500).json({ 
         success: false,
-        message: "Erro interno do servidor" 
+        message: "Erro interno do servidor",
+        error: error.message
       });
     }
   });

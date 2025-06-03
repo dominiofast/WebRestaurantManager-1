@@ -1,0 +1,420 @@
+# Envio de arquivos (URL)
+
+> <br>
+## <Icon icon="material-outline-description"/> Envio de arquivos (mediaURL)
+
+Este método permite o envio de arquivos para seus chats de uma forma distinta:
+
+- Através de um Link: Caso o arquivo já esteja disponível online, você pode simplesmente enviar seu URL.
+
+
+Quanto ao tamanho e aos formatos dos arquivos, as diretrizes do WhatsApp mudam com frequência. Por isso, é sempre uma boa prática consultar o site oficial do WhatsApp para as informações mais recentes. Encontre orientações detalhadas sobre tamanhos e formatos de arquivo [aqui](https://developers.facebook.com/docs/whatsapp/on-premises/reference/media).
+
+| **Atributos** | **Tipo** | **Descrição** |
+| --- | --- | --- |
+| **to** | string | Contato que vai receber a mensagem |
+| **url** | string | URL da mídia a ser enviada |
+| **fileName** | string | Nome do arquivo |
+| **type** | string | É o tipo de mídia a ser enviada  <br>**image<br>video<br>audio (formato compartilhado)<br>ptt (audio formato gravado)<br>document** |
+| **caption** | string | É a legenda da mídia a ser enviada (Funciona somente em imagem e vídeo) |
+| **mineType** | string | **MineTypes:**  <br>**imagem** = image/jpeg  <br>**video** = video/mp4  <br>**audio** = audio/ogg; codecs=opus  <br>**pdf** = application/pdf  <br>**xlsx** = application/vnd.openxmlformats-officedocument.spreadsheetml.sheet  <br>**word** = application/vnd.openxmlformats-officedocument.wordprocessingml.document  <br>**php, bin, html** = application/octet-stream  <br>**sql** = application/x-sql |
+
+## Exemplo
+
+![mediaurl.jpg](https://api.apidog.com/api/v1/projects/706630/resources/346939/image-preview)
+
+<br>
+
+:::info[]
+**Fique atento!**
+Para enviar para contatos privados, o contato deve conter o @s.whatsapp.net. Para envios em grupo, você precisará coletar os ID's dos grupos utilizando o endpoint listGroup, os ID's devem conter @g.us
+:::
+
+
+:::danger[]
+⚠️ **Atenção**
+Tenha em mente que o envio de mensagens para um grande número de contatos simultaneamente pode ser interpretado pelo WhatsApp como comportamento de spam. Esta prática aumenta significativamente o risco de ter sua conta banida ou restrita. Recomendamos fortemente moderar a frequência e o volume dos envios para evitar tais consequências.
+:::
+
+## OpenAPI
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ''
+  description: ''
+  version: 1.0.0
+paths:
+  /rest/sendMessage/instance_key/mediaUrl:
+    post:
+      summary: Envio de arquivos (URL)
+      deprecated: false
+      description: >-
+        <br>
+
+        ## <Icon icon="material-outline-description"/> Envio de arquivos
+        (mediaURL)
+
+
+        Este método permite o envio de arquivos para seus chats de uma forma
+        distinta:
+
+
+        - Através de um Link: Caso o arquivo já esteja disponível online, você
+        pode simplesmente enviar seu URL.
+
+
+
+        Quanto ao tamanho e aos formatos dos arquivos, as diretrizes do WhatsApp
+        mudam com frequência. Por isso, é sempre uma boa prática consultar o
+        site oficial do WhatsApp para as informações mais recentes. Encontre
+        orientações detalhadas sobre tamanhos e formatos de arquivo
+        [aqui](https://developers.facebook.com/docs/whatsapp/on-premises/reference/media).
+
+
+        | **Atributos** | **Tipo** | **Descrição** |
+
+        | --- | --- | --- |
+
+        | **to** | string | Contato que vai receber a mensagem |
+
+        | **url** | string | URL da mídia a ser enviada |
+
+        | **fileName** | string | Nome do arquivo |
+
+        | **type** | string | É o tipo de mídia a ser enviada 
+        <br>**image<br>video<br>audio (formato compartilhado)<br>ptt (audio
+        formato gravado)<br>document** |
+
+        | **caption** | string | É a legenda da mídia a ser enviada (Funciona
+        somente em imagem e vídeo) |
+
+        | **mineType** | string | **MineTypes:**  <br>**imagem** = image/jpeg 
+        <br>**video** = video/mp4  <br>**audio** = audio/ogg; codecs=opus 
+        <br>**pdf** = application/pdf  <br>**xlsx** =
+        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet 
+        <br>**word** =
+        application/vnd.openxmlformats-officedocument.wordprocessingml.document 
+        <br>**php, bin, html** = application/octet-stream  <br>**sql** =
+        application/x-sql |
+
+
+        ## Exemplo
+
+
+        ![mediaurl.jpg](https://api.apidog.com/api/v1/projects/706630/resources/346939/image-preview)
+
+
+        <br>
+
+
+        :::info[]
+
+        **Fique atento!**
+
+        Para enviar para contatos privados, o contato deve conter o
+        @s.whatsapp.net. Para envios em grupo, você precisará coletar os ID's
+        dos grupos utilizando o endpoint listGroup, os ID's devem conter @g.us
+
+        :::
+
+
+
+        :::danger[]
+
+        ⚠️ **Atenção**
+
+        Tenha em mente que o envio de mensagens para um grande número de
+        contatos simultaneamente pode ser interpretado pelo WhatsApp como
+        comportamento de spam. Esta prática aumenta significativamente o risco
+        de ter sua conta banida ou restrita. Recomendamos fortemente moderar a
+        frequência e o volume dos envios para evitar tais consequências.
+
+        :::
+      tags:
+        - SendMessageController
+      parameters:
+        - name: Content-Type
+          in: header
+          description: ''
+          required: true
+          example: application/json
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer {{token}}
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                messageData:
+                  type: object
+                  properties:
+                    to:
+                      type: string
+                      description: Contato Whatsapp
+                    url:
+                      type: string
+                      description: URL do arquivo
+                    fileName:
+                      type: string
+                      description: Nome do arquivo
+                    type:
+                      type: string
+                      description: |-
+                        Tipo de arquivo
+                        image
+                        video
+                        audio (formato compartilhado)
+                        ptt (audio formato gravado)
+                        document
+                    caption:
+                      type: string
+                      description: Legenda
+                    mimeType:
+                      type: string
+                      description: >-
+                        MineTypes:
+
+                        imagem = image/jpeg,
+
+                        video = video/mp4,
+
+                        ptt = audio/ogg; codecs=opus,
+
+                        audio = audio/ogg; codecs=opus,
+
+                        pdf = application/pdf,
+
+                        xlsx =
+                        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
+
+                        word =
+                        application/vnd.openxmlformats-officedocument.wordprocessingml.document,
+
+                        php, bin, html = application/octet-stream,
+
+                        sql = application/x-sql
+                  required:
+                    - to
+                    - url
+                    - fileName
+                    - type
+                    - caption
+                    - mimeType
+                  x-apidog-orders:
+                    - to
+                    - url
+                    - fileName
+                    - type
+                    - caption
+                    - mimeType
+              required:
+                - messageData
+              x-apidog-orders:
+                - messageData
+            example:
+              messageData:
+                to: 556195562618@s.whatsapp.net
+                url: https://www.thecampusqdl.com/uploads/files/pdf_sample_2.pdf
+                fileName: pdfExemplo.pdf
+                type: document
+                caption: string
+                mimeType: application/pdf
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                  message:
+                    type: string
+                  messageData:
+                    type: object
+                    properties:
+                      key:
+                        type: object
+                        properties:
+                          remoteJid:
+                            type: string
+                          fromMe:
+                            type: boolean
+                          id:
+                            type: string
+                        required:
+                          - remoteJid
+                          - fromMe
+                          - id
+                      message:
+                        type: object
+                        properties:
+                          audioMessage:
+                            type: object
+                            properties:
+                              url:
+                                type: string
+                              mimetype:
+                                type: string
+                              fileSha256:
+                                type: string
+                              fileLength:
+                                type: string
+                              seconds:
+                                type: integer
+                              ptt:
+                                type: boolean
+                              mediaKey:
+                                type: string
+                              fileEncSha256:
+                                type: string
+                              directPath:
+                                type: string
+                              mediaKeyTimestamp:
+                                type: string
+                              waveform:
+                                type: string
+                            required:
+                              - url
+                              - mimetype
+                              - fileSha256
+                              - fileLength
+                              - seconds
+                              - ptt
+                              - mediaKey
+                              - fileEncSha256
+                              - directPath
+                              - mediaKeyTimestamp
+                              - waveform
+                        required:
+                          - audioMessage
+                      messageTimestamp:
+                        type: string
+                      status:
+                        type: string
+                    required:
+                      - key
+                      - message
+                      - messageTimestamp
+                      - status
+                required:
+                  - error
+                  - message
+                  - messageData
+          headers: {}
+          x-apidog-name: Sucesso
+        x-200:Whatsapp inválido:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                  name:
+                    type: string
+                  message:
+                    type: string
+                    description: Mensagem de erro
+                  statusCode:
+                    type: integer
+                    description: Status Code
+                required:
+                  - error
+                  - name
+                  - message
+                  - statusCode
+                x-apidog-orders:
+                  - error
+                  - name
+                  - message
+                  - statusCode
+          headers: {}
+          x-apidog-name: Whatsapp inválido
+        x-200:Error Arquivo:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                  name:
+                    type: string
+                  message:
+                    type: string
+                    description: Mensagem de erro
+                  statusCode:
+                    type: integer
+                    description: Status Code
+                required:
+                  - error
+                  - name
+                  - message
+                  - statusCode
+                x-apidog-orders:
+                  - error
+                  - name
+                  - message
+                  - statusCode
+          headers: {}
+          x-apidog-name: Error Arquivo
+        x-200:Não autorizado:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                  name:
+                    type: string
+                  message:
+                    type: string
+                    description: Mensagem de erro
+                  statusCode:
+                    type: integer
+                    description: Status Code
+                required:
+                  - error
+                  - name
+                  - message
+                  - statusCode
+                x-apidog-orders:
+                  - error
+                  - name
+                  - message
+                  - statusCode
+          headers: {}
+          x-apidog-name: Não autorizado
+      security:
+        - bearer: []
+      x-apidog-folder: SendMessageController
+      x-apidog-status: released
+      x-run-in-apidog: https://app.apidog.com/web/project/706630/apis/api-10974912-run
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://apinocode01.megaapi.com.br
+    description: apinocode01.megaapi.com.br
+security:
+  - bearer: []
+
+```
