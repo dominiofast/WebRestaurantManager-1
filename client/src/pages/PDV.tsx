@@ -172,7 +172,7 @@ export default function PDV() {
     return (
       <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => addToCart(product)}>
         <CardContent className="p-1.5">
-          <div className="aspect-square h-20 bg-gray-100 rounded-md mb-1.5 overflow-hidden">
+          <div className="w-full h-20 bg-gray-100 rounded-md mb-1.5 overflow-hidden">
             {product.imageUrl ? (
               <img 
                 src={product.imageUrl} 

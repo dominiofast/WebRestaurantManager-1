@@ -13,6 +13,7 @@ import OrderManagement from "@/pages/OrderManagement";
 import SuperAdmin from "@/pages/SuperAdmin";
 import StoreManagement from "@/pages/StoreManagement";
 import StoreDashboard from "@/pages/StoreDashboard";
+import ManagerStoreDashboard from "@/pages/ManagerStoreDashboard";
 import DigitalMenu from "@/pages/DigitalMenu";
 import ModernDigitalMenu from "@/pages/ModernDigitalMenu";
 import MenuManager from "@/pages/MenuManager";
@@ -51,10 +52,6 @@ function AuthenticatedApp() {
 
 // Manager-specific app with only store management
 function ManagerApp({ user }: { user: any }) {
-  // Para managers, vamos usar a loja ID 11 (Domínio Pizzas Centro) por padrão
-  // Isso pode ser ajustado posteriormente quando o sistema de autenticação for resolvido
-  const storeId = 11;
-
   return (
     <div className="flex h-screen bg-background">
       <Sidebar />
@@ -62,10 +59,10 @@ function ManagerApp({ user }: { user: any }) {
         <TopBar />
         <main className="flex-1 overflow-x-hidden overflow-y-auto">
           <Switch>
-            <Route path="/" component={() => <StoreDashboard storeId={storeId} />} />
+            <Route path="/" component={ManagerStoreDashboard} />
             <Route path="/pdv" component={PDV} />
-            <Route path="/store/:id/dashboard" component={() => <StoreDashboard storeId={storeId} />} />
-            <Route component={() => <StoreDashboard storeId={storeId} />} />
+            <Route path="/dashboard" component={ManagerStoreDashboard} />
+            <Route component={ManagerStoreDashboard} />
           </Switch>
         </main>
       </div>
