@@ -20,6 +20,7 @@ import MenuManager from "@/pages/MenuManager";
 import MenuIndex from "@/pages/MenuIndex";
 import PDV from "@/pages/PDV";
 import AIAgent from "@/pages/AIAgent";
+import AIAgentNew from "@/pages/AIAgentNew";
 import Integrations from "@/pages/Integrations";
 import Profile from "@/pages/Profile";
 import Sidebar from "@/components/Sidebar";
@@ -65,7 +66,7 @@ function ManagerApp({ user }: { user: any }) {
             <Route path="/" component={ManagerStoreDashboard} />
             <Route path="/pdv" component={PDV} />
             <Route path="/dashboard" component={ManagerStoreDashboard} />
-            <Route path="/ai-agent" component={AIAgent} />
+            <Route path="/ai-agent" component={AIAgentNew} />
             <Route path="/config/profile" component={Profile} />
             <Route path="/config/integrations" component={Integrations} />
             <Route component={ManagerStoreDashboard} />
