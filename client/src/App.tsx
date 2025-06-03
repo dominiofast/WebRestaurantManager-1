@@ -97,6 +97,9 @@ function SuperAdminApp({ user }: { user: any }) {
             <Route path="/stores" component={StoreManagement} />
             <Route path="/store-management" component={StoreManagement} />
             <Route path="/store/:id/dashboard" component={StoreDashboard} />
+            <Route path="/config/integrations" component={IntegrationsNew} />
+            <Route path="/config/ai-agent" component={AIAgentNew} />
+            <Route path="/profile" component={Profile} />
             <Route component={NotFound} />
           </Switch>
         </main>
@@ -123,6 +126,9 @@ function OwnerApp({ user }: { user: any }) {
             <Route path="/stores" component={StoreManagement} />
             <Route path="/store-management" component={StoreManagement} />
             <Route path="/store/:id/dashboard" component={StoreDashboard} />
+            <Route path="/config/integrations" component={IntegrationsNew} />
+            <Route path="/config/ai-agent" component={AIAgentNew} />
+            <Route path="/profile" component={Profile} />
             <Route component={NotFound} />
           </Switch>
         </main>

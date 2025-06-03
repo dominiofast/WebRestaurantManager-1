@@ -75,6 +75,8 @@ export default function IntegrationsNew() {
   // Fetch QR Code from Mega API
   const fetchQRCode = async () => {
     try {
+      console.log('Fetching QR Code from:', `https://${integrations.whatsapp.host}/rest/instance/qrcode_base64/${integrations.whatsapp.instanceId}`);
+      
       const response = await fetch(`https://${integrations.whatsapp.host}/rest/instance/qrcode_base64/${integrations.whatsapp.instanceId}`, {
         method: 'GET',
         headers: {
@@ -83,16 +85,42 @@ export default function IntegrationsNew() {
         }
       });
 
+      console.log('QR Code response status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('QR Code response data:', data);
+        
         if (data.qrcode) {
-          updateIntegration('whatsapp', 'qrCode', `data:image/png;base64,${data.qrcode}`);
+          const qrCodeDataURL = `data:image/png;base64,${data.qrcode}`;
+          updateIntegration('whatsapp', 'qrCode', qrCodeDataURL);
+          console.log('QR Code set successfully');
           return true;
+        } else {
+          console.log('No QR code in response');
+          toast({
+            title: "QR Code não disponível",
+            description: "Instância pode já estar conectada ou sem QR code disponível",
+            variant: "destructive"
+          });
         }
+      } else {
+        const errorData = await response.text();
+        console.error('Error response:', errorData);
+        toast({
+          title: "Erro ao buscar QR Code",
+          description: `Status: ${response.status}`,
+          variant: "destructive"
+        });
       }
       return false;
     } catch (error) {
       console.error('Erro ao buscar QR Code:', error);
+      toast({
+        title: "Erro de conexão",
+        description: "Não foi possível conectar com a API Mega",
+        variant: "destructive"
+      });
       return false;
     }
   };
