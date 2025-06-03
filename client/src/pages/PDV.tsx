@@ -43,14 +43,27 @@ export default function PDV() {
   const [customerName, setCustomerName] = useState("");
   const [activeSection, setActiveSection] = useState<string>("all");
 
-  // Buscar a loja do usuário logado
-  const { data: userStore } = useQuery({
+  // Buscar a loja do usuário logado (apenas para managers)
+  const { data: userStore, isLoading: storeLoading } = useQuery({
     queryKey: ['/api/manager/store'],
     enabled: !!user?.id && user?.role === 'manager'
   });
 
-  // Para managers, usar a loja específica; para outros, usar loja padrão 11
-  const storeId = user?.role === 'manager' && userStore ? String((userStore as any)?.id || "11") : "11";
+  // Determinar o storeId baseado no role do usuário
+  let storeId: string;
+  if (user?.role === 'manager') {
+    if (storeLoading) {
+      storeId = ""; // Aguardar carregamento
+    } else if (userStore && (userStore as any)?.id) {
+      storeId = String((userStore as any).id);
+    } else {
+      // Manager sem loja atribuída - mostrar erro
+      storeId = "";
+    }
+  } else {
+    // Super admin e owners podem usar loja padrão 11
+    storeId = "11";
+  }
   
   const { data: menuSections = [] } = useQuery({
     queryKey: [`/api/stores/${storeId}/menu-sections`],
