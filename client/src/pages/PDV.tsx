@@ -340,19 +340,15 @@ export default function PDV() {
         </ScrollArea>
 
         <div className="p-4 border-t border-gray-200 space-y-4">
-          <div>
-            <Input
-              placeholder="Nome do cliente (opcional)"
-              value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
-              className="w-full"
-            />
-          </div>
-
+          {/* Totais */}
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span>Subtotal:</span>
               <span>R$ {subtotal.toFixed(2).replace('.', ',')}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span>Entrega:</span>
+              <span className="text-blue-600">Grátis</span>
             </div>
             <Separator />
             <div className="flex justify-between text-lg font-bold">
@@ -361,24 +357,61 @@ export default function PDV() {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Button 
-              onClick={finalizePurchase}
-              className="w-full bg-orange-600 hover:bg-orange-700"
-              disabled={cart.length === 0}
-            >
-              <CreditCard className="w-4 h-4 mr-2" />
-              Finalizar Pedido
-            </Button>
-            <Button 
-              variant="outline" 
-              onClick={() => setCart([])}
-              className="w-full"
-              disabled={cart.length === 0}
-            >
-              Limpar Carrinho
-            </Button>
+          {/* Campos do cliente */}
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-2">
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  placeholder="(XX) X XXXX-XXXX"
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  placeholder="Nome do cliente"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <Select value={deliveryType} onValueChange={setDeliveryType}>
+                <SelectTrigger className="w-full">
+                  <Truck className="w-4 h-4 mr-2" />
+                  <SelectValue placeholder="Entrega" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="entrega">[ E ] Entrega</SelectItem>
+                  <SelectItem value="balcao">[ B ] Balcão</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                <SelectTrigger className="w-full">
+                  <DollarSign className="w-4 h-4 mr-2" />
+                  <SelectValue placeholder="Pagamento" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="dinheiro">[ R ] Pagamentos</SelectItem>
+                  <SelectItem value="ajustar">[ Y ] Ajustar valor</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
+
+          <Button 
+            onClick={finalizePurchase}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3"
+            disabled={cart.length === 0}
+          >
+            [ ENTER ] Gerar pedido
+          </Button>
         </div>
       </div>
     </div>
