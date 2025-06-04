@@ -323,37 +323,7 @@ export default function OrderManagement() {
         />
       </div>
 
-      {/* Estatísticas de Pedidos - Apenas 3 Cards */}
-      <div className="flex justify-center">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl w-full">
-          <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200">
-            <CardContent className="p-6 text-center">
-              <div className="text-3xl font-bold text-red-600 mb-2">
-                {groupedOrders.pending.length}
-              </div>
-              <div className="text-sm font-medium text-red-700">Aguardando Entrega</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
-            <CardContent className="p-6 text-center">
-              <div className="text-3xl font-bold text-orange-600 mb-2">
-                {groupedOrders.in_delivery.length}
-              </div>
-              <div className="text-sm font-medium text-orange-700">Saiu para Entrega</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-            <CardContent className="p-6 text-center">
-              <div className="text-3xl font-bold text-green-600 mb-2">
-                {groupedOrders.delivered.length}
-              </div>
-              <div className="text-sm font-medium text-green-700">Entregue</div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+
 
       {/* Kanban Board */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
