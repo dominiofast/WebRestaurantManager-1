@@ -107,7 +107,7 @@ function OrderCard({ order, onStatusChange }: { order: Order; onStatusChange: (o
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Icon className={cn("h-4 w-4", config.iconColor)} />
+            <Icon className={cn("h-3 w-3", config.iconColor)} />
             <Badge variant="secondary" className={config.badge}>
               #{order.id} - {order.customerName}
             </Badge>
@@ -291,12 +291,12 @@ export default function OrderManagement() {
         </div>
         
         <div className="flex items-center gap-3">
-          <Button className="bg-blue-600 hover:bg-blue-700">
-            <Plus className="h-4 w-4 mr-2" />
+          <Button className="bg-blue-600 hover:bg-blue-700 text-sm">
+            <Plus className="h-3 w-3 mr-2" />
             $ VENDA DE BALCÃO SEM CLIENTE
           </Button>
           
-          <Button className="bg-green-600 hover:bg-green-700">
+          <Button className="bg-green-600 hover:bg-green-700 text-sm">
             REGISTRAR ENTREGA
           </Button>
         </div>
@@ -361,7 +361,7 @@ export default function OrderManagement() {
           return (
             <div key={status} className="space-y-4">
               <div className="flex items-center gap-2 p-3 rounded-lg bg-card border">
-                <Icon className={cn("h-5 w-5", config.iconColor)} />
+                <Icon className={cn("h-4 w-4", config.iconColor)} />
                 <h3 className="font-semibold">{config.label}</h3>
                 <Badge variant="secondary" className="ml-auto">
                   {statusOrders.length}
