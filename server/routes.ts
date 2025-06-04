@@ -1385,6 +1385,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Test endpoint para diagnosticar webhook
+  app.get('/api/webhook/test', (req, res) => {
+    console.log('[Webhook Test] Endpoint de teste acessado');
+    res.json({ 
+      success: true, 
+      message: 'Webhook endpoint está funcionando',
+      timestamp: new Date().toISOString()
+    });
+  });
+
   // WhatsApp webhook for processing messages
   app.post('/api/webhook/whatsapp/:storeId', async (req, res) => {
     try {
@@ -1394,7 +1404,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('=== WEBHOOK RECEIVED ===');
       console.log('Timestamp:', new Date().toISOString());
       console.log('Store ID:', storeId);
-      console.log('Headers:', req.headers);
+      console.log('Headers:', JSON.stringify(req.headers, null, 2));
       console.log('Body:', JSON.stringify(webhookData, null, 2));
       console.log('========================');
       
