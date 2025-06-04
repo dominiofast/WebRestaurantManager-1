@@ -168,7 +168,7 @@ function Router() {
       {!isAuthenticated ? (
         <>
           <Route path="/" component={Landing} />
-          <Route path="/login" component={SimpleLogin} />
+          <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
           <Route component={NotFound} />
         </>
