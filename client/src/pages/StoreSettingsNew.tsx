@@ -66,10 +66,7 @@ export default function StoreSettingsNew() {
   const updateStoreMutation = useMutation({
     mutationFn: async (updates: any) => {
       if (!store?.id) throw new Error("ID da loja não encontrado");
-      return apiRequest(`/api/stores/${store.id}`, {
-        method: 'PUT',
-        body: JSON.stringify(updates)
-      });
+      return apiRequest(`/api/stores/${store.id}`, 'PUT', updates);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/manager/store'] });

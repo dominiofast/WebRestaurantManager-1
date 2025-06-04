@@ -78,7 +78,7 @@ function ManagerApp({ user }: { user: any }) {
             <Route path="/ai-agent" component={AIAgentSimple} />
             <Route path="/config/profile" component={Profile} />
             <Route path="/config/integrations" component={IntegrationsNew} />
-            <Route path="/config/store-settings" component={StoreSettings} />
+            <Route path="/config/store-settings" component={StoreSettingsNew} />
             <Route component={OrderManagement} />
           </Switch>
         </main>
@@ -109,6 +109,7 @@ function SuperAdminApp({ user }: { user: any }) {
             <Route path="/customers" component={Customers} />
             <Route path="/config/integrations" component={IntegrationsNew} />
             <Route path="/config/ai-agent" component={AIAgent} />
+            <Route path="/config/store-settings" component={StoreSettingsNew} />
             <Route path="/profile" component={Profile} />
             <Route component={NotFound} />
           </Switch>
@@ -139,6 +140,7 @@ function OwnerApp({ user }: { user: any }) {
             <Route path="/customers" component={Customers} />
             <Route path="/config/integrations" component={IntegrationsNew} />
             <Route path="/config/ai-agent" component={AIAgent} />
+            <Route path="/config/store-settings" component={StoreSettingsNew} />
             <Route path="/profile" component={Profile} />
             <Route component={NotFound} />
           </Switch>
