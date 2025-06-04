@@ -252,6 +252,35 @@ export const aiAgents = pgTable("ai_agents", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Customers table - each store manages its own customers
+export const customers = pgTable("customers", {
+  id: serial("id").primaryKey(),
+  storeId: integer("store_id").notNull().references(() => stores.id, { onDelete: "cascade" }),
+  name: varchar("name", { length: 255 }).notNull(),
+  phone: varchar("phone", { length: 20 }).notNull(),
+  email: varchar("email", { length: 255 }),
+  address: text("address"),
+  notes: text("notes"),
+  totalOrders: integer("total_orders").default(0),
+  totalSpent: decimal("total_spent", { precision: 10, scale: 2 }).default("0.00"),
+  lastOrderAt: timestamp("last_order_at", { withTimezone: true }),
+  isActive: boolean("is_active").default(true),
+  tags: text("tags"), // JSON array of tags
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// Customer interactions table - track all interactions with customers
+export const customerInteractions = pgTable("customer_interactions", {
+  id: serial("id").primaryKey(),
+  customerId: integer("customer_id").notNull().references(() => customers.id, { onDelete: "cascade" }),
+  storeId: integer("store_id").notNull().references(() => stores.id, { onDelete: "cascade" }),
+  type: varchar("type", { length: 50 }).notNull(), // 'whatsapp', 'order', 'call', 'email', 'note'
+  message: text("message"),
+  metadata: jsonb("metadata"), // additional data specific to interaction type
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   createdAt: true,
@@ -340,6 +369,17 @@ export const insertAiAgentSchema = createInsertSchema(aiAgents).omit({
   updatedAt: true,
 });
 
+export const insertCustomerSchema = createInsertSchema(customers).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertCustomerInteractionSchema = createInsertSchema(customerInteractions).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -371,6 +411,10 @@ export type InsertWhatsappInstance = z.infer<typeof insertWhatsappInstanceSchema
 export type WhatsappInstance = typeof whatsappInstances.$inferSelect;
 export type InsertAiAgent = z.infer<typeof insertAiAgentSchema>;
 export type AiAgent = typeof aiAgents.$inferSelect;
+export type InsertCustomer = z.infer<typeof insertCustomerSchema>;
+export type Customer = typeof customers.$inferSelect;
+export type InsertCustomerInteraction = z.infer<typeof insertCustomerInteractionSchema>;
+export type CustomerInteraction = typeof customerInteractions.$inferSelect;
 
 // Extended types for API responses
 export type MenuItemWithCategory = MenuItem & {
@@ -422,4 +466,14 @@ export type DigitalOrderWithItems = DigitalOrder & {
     specialInstructions?: string;
     subtotal: string;
   }[];
+};
+
+// Customer extended types
+export type CustomerWithInteractions = Customer & {
+  interactions: CustomerInteraction[];
+};
+
+export type CustomerWithStats = Customer & {
+  recentInteractions: CustomerInteraction[];
+  orderHistory: any[];
 };
