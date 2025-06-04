@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { queryClient } from "@/lib/queryClient";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -201,6 +202,7 @@ function OrderCard({ order, onStatusChange }: { order: Order; onStatusChange: (o
 }
 
 export default function OrderManagement() {
+  const [, setLocation] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
@@ -297,6 +299,7 @@ export default function OrderManagement() {
             <Button
               variant="default"
               className="bg-green-600 hover:bg-green-700 text-white text-sm"
+              onClick={() => setLocation('/pdv')}
             >
               <Plus className="h-3 w-3 mr-1" />
               Adicionar Pedidos
@@ -304,6 +307,7 @@ export default function OrderManagement() {
             <Button
               variant="outline"
               className="border-blue-600 text-blue-600 hover:bg-blue-50 text-sm"
+              onClick={() => setLocation('/pdv')}
             >
               <ShoppingCart className="h-3 w-3 mr-1" />
               Venda de Balcão sem Clientes
