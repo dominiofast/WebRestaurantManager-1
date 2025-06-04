@@ -1227,6 +1227,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
             messageText = webhookData.message.extendedTextMessage.text;
           } else if (webhookData.messageType === 'ephemeralMessage' && webhookData.message?.ephemeralMessage?.message?.extendedTextMessage?.text) {
             messageText = webhookData.message.ephemeralMessage.message.extendedTextMessage.text;
+          } else if (webhookData.messageType === 'audioMessage') {
+            messageText = 'áudio';
+          } else if (webhookData.messageType === 'imageMessage') {
+            messageText = 'imagem';
+          } else if (webhookData.messageType === 'videoMessage') {
+            messageText = 'vídeo';
+          } else if (webhookData.messageType === 'documentMessage') {
+            messageText = 'documento';
+          } else if (webhookData.messageType === 'stickerMessage') {
+            messageText = 'figurinha';
           }
           
           console.log('[Webhook] Extracted - From:', fromNumber, 'Text:', messageText, 'FromMe:', isFromMe);
@@ -1318,6 +1328,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         responseText = `🚚 Sim, fazemos delivery!\n\nTaxa de entrega: R$ 5,00\nTempo estimado: 30-45 minutos\n\nFaça seu pedido através do nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}`;
       } else if (messageText.toLowerCase().includes('oi') || messageText.toLowerCase().includes('olá') || messageText.toLowerCase().includes('bom dia') || messageText.toLowerCase().includes('boa tarde') || messageText.toLowerCase().includes('boa noite')) {
         responseText = `Olá! 👋 Bem-vindo ao ${store.name}!\n\nComo posso ajudá-lo hoje?\n\n📱 Cardápio digital: https://dominiomenu-app.replit.app/menu/${store.slug}\n\nDigite "cardápio" para ver nossas opções ou "horário" para saber quando funcionamos!`;
+      } else if (messageText.toLowerCase().includes('áudio')) {
+        responseText = `🎵 Recebi seu áudio!\n\nPara atendê-lo melhor, por favor envie sua mensagem em texto ou acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas opções!`;
+      } else if (messageText.toLowerCase().includes('imagem')) {
+        responseText = `📷 Recebi sua imagem!\n\nComo posso ajudá-lo? Acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas deliciosas opções!`;
+      } else if (messageText.toLowerCase().includes('vídeo')) {
+        responseText = `🎥 Recebi seu vídeo!\n\nPara fazer seu pedido, acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas opções!`;
+      } else if (messageText.toLowerCase().includes('documento')) {
+        responseText = `📄 Recebi seu documento!\n\nPara fazer seu pedido, acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas opções!`;
       } else {
         responseText = `Obrigado pela sua mensagem! 😊\n\nPara fazer seu pedido, acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite:\n• "cardápio" - ver opções\n• "horário" - horário de funcionamento\n• "delivery" - informações de entrega`;
       }
