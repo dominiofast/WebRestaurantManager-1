@@ -32,6 +32,7 @@ export default function StoreSettings() {
   // Atualizar dados quando a loja for carregada
   useEffect(() => {
     if (store) {
+      console.log('Store data received:', store);
       setStoreInfo({
         name: (store as any).name || "",
         address: (store as any).address || "",
@@ -40,13 +41,11 @@ export default function StoreSettings() {
         description: (store as any).description || ""
       });
       
-      // Limpar previews quando novos dados chegam
-      setLogoPreview("");
-      setBannerPreview("");
-      setLogoFile(null);
-      setBannerFile(null);
+      // Limpar apenas previews após novos dados, não arquivos selecionados
+      if (!logoFile) setLogoPreview("");
+      if (!bannerFile) setBannerPreview("");
     }
-  }, [store]);
+  }, [store, logoFile, bannerFile]);
 
   // Upload de imagem
   const uploadMutation = useMutation({
@@ -180,8 +179,8 @@ export default function StoreSettings() {
   };
 
   // Usar preview se existe, senão usar dados salvos do banco
-  const currentLogo = logoPreview || (store as any)?.logoUrl || (store as any)?.logo_url;
-  const currentBanner = bannerPreview || (store as any)?.bannerUrl || (store as any)?.banner_url;
+  const currentLogo = logoPreview || (store as any)?.logoUrl;
+  const currentBanner = bannerPreview || (store as any)?.bannerUrl;
 
   if (isLoading) {
     return (
