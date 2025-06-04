@@ -1129,17 +1129,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Check if it's an incoming message
       if (webhookData.event === 'onMessage' || webhookData.event === 'messages.upsert') {
+        console.log('[Webhook] Message event detected');
         const message = webhookData.data || webhookData.message;
+        console.log('[Webhook] Message object:', message);
         
         if (message && !message.fromMe && message.body) {
+          console.log('[Webhook] Valid incoming message found');
           // Get WhatsApp instance and AI agent for this store
           const instance = await storage.getWhatsappInstance(storeId);
+          console.log('[Webhook] Instance found:', instance);
           
           if (instance && instance.isActive) {
+            console.log('[Webhook] Instance is active, processing message');
             // Process message with AI agent
             await processWhatsAppMessage(storeId, message, instance);
+          } else {
+            console.log('[Webhook] Instance not active or not found');
           }
+        } else {
+          console.log('[Webhook] Message does not meet criteria - fromMe:', message?.fromMe, 'body:', message?.body);
         }
+      } else {
+        console.log('[Webhook] Not a message event:', webhookData.event);
       }
       
       res.status(200).json({ success: true });
@@ -1152,11 +1163,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Function to process WhatsApp messages with AI
   async function processWhatsAppMessage(storeId: number, message: any, instance: any) {
     try {
+      console.log('[WhatsApp AI] Processing message for store:', storeId);
+      console.log('[WhatsApp AI] Message data:', message);
+      console.log('[WhatsApp AI] Instance data:', instance);
+
       const store = await storage.getStoreById(storeId);
-      if (!store) return;
+      if (!store) {
+        console.log('[WhatsApp AI] Store not found');
+        return;
+      }
 
       const customerPhone = message.from || message.participant;
       const messageText = message.body || message.text;
+      
+      console.log('[WhatsApp AI] Customer phone:', customerPhone);
+      console.log('[WhatsApp AI] Message text:', messageText);
       
       // Basic AI responses for common scenarios
       let responseText = '';
@@ -1173,24 +1194,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
         responseText = `Obrigado pela sua mensagem! 😊\n\nPara fazer seu pedido, acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite:\n• "cardápio" - ver opções\n• "horário" - horário de funcionamento\n• "delivery" - informações de entrega`;
       }
 
+      console.log('[WhatsApp AI] Generated response:', responseText);
+
       // Send response via Mega API
       if (responseText) {
-        await fetch(`https://${instance.apiHost}/rest/sendMessage/${instance.instanceKey}/text`, {
+        const apiUrl = `https://${instance.apiHost}/rest/sendMessage/${instance.instanceKey}/text`;
+        const requestBody = {
+          messageData: {
+            to: customerPhone,
+            text: responseText
+          }
+        };
+
+        console.log('[WhatsApp AI] Sending to API URL:', apiUrl);
+        console.log('[WhatsApp AI] Request body:', JSON.stringify(requestBody, null, 2));
+
+        const response = await fetch(apiUrl, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${instance.apiToken}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            messageData: {
-              to: customerPhone,
-              text: responseText
-            }
-          })
+          body: JSON.stringify(requestBody)
         });
+
+        console.log('[WhatsApp AI] API Response status:', response.status);
+        
+        if (response.ok) {
+          const result = await response.json();
+          console.log('[WhatsApp AI] API Response success:', result);
+        } else {
+          const errorText = await response.text();
+          console.error('[WhatsApp AI] API Response error:', errorText);
+        }
       }
     } catch (error) {
-      console.error('Error processing WhatsApp message:', error);
+      console.error('[WhatsApp AI] Error processing message:', error);
     }
   }
 
