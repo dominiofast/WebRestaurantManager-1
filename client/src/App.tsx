@@ -22,6 +22,7 @@ import PDV from "@/pages/PDV";
 import AIAgent from "@/pages/AIAgent";
 import AIAgentNew from "@/pages/AIAgentNew";
 import AIAgentSimple from "@/pages/AIAgentSimple";
+import SimpleLogin from "@/pages/SimpleLogin";
 import Integrations from "@/pages/Integrations";
 import IntegrationsNew from "@/pages/IntegrationsNew";
 import Customers from "@/pages/Customers";
@@ -164,10 +165,13 @@ function Router() {
       <Route path="/cardapios" component={MenuIndex} />
       <Route path="/menu/:storeSlug" component={ModernDigitalMenu} />
       
+      {/* Rota pública para configuração do AI Agent */}
+      <Route path="/ai-agent" component={AIAgentSimple} />
+      
       {!isAuthenticated ? (
         <>
           <Route path="/" component={Landing} />
-          <Route path="/login" component={Login} />
+          <Route path="/login" component={SimpleLogin} />
           <Route path="/register" component={Register} />
           <Route component={NotFound} />
         </>
