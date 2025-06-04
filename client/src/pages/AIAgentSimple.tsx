@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,16 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Bot, Settings, Save, MessageCircle, Activity } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
 
-export default function AIAgent() {
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  
-  // Estados para configuração do agente
+export default function AIAgentSimple() {
   const [agentConfig, setAgentConfig] = useState({
     nome: "Assistente",
     tom: "amigavel",
@@ -34,81 +25,33 @@ export default function AIAgent() {
     }
   ]);
   const [testInput, setTestInput] = useState("");
-
-  // Fetch manager's store info
-  const { data: store, isLoading: storeLoading } = useQuery({
-    queryKey: ['/api/manager/store'],
-  });
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
 
   // Load config from localStorage on mount
   useEffect(() => {
-    if (store?.id) {
-      const savedConfig = localStorage.getItem(`ai-agent-config-${store.id}`);
-      if (savedConfig) {
-        try {
-          const config = JSON.parse(savedConfig);
-          setAgentConfig(config);
-        } catch (error) {
-          console.error('Error loading saved config:', error);
-        }
+    const savedConfig = localStorage.getItem('ai-agent-config');
+    if (savedConfig) {
+      try {
+        const config = JSON.parse(savedConfig);
+        setAgentConfig(config);
+      } catch (error) {
+        console.error('Error loading saved config:', error);
       }
     }
-  }, [store?.id]);
+  }, []);
 
-  // Save configuration mutation
-  const saveConfigMutation = useMutation({
-    mutationFn: async (config: any) => {
-      // Save to localStorage for now
-      if (store?.id) {
-        localStorage.setItem(`ai-agent-config-${store.id}`, JSON.stringify(config));
-      }
-      
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      return { success: true };
-    },
-    onSuccess: () => {
-      toast({
-        title: "Configurações salvas",
-        description: "As configurações do agente foram atualizadas com sucesso.",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Erro ao salvar",
-        description: "Não foi possível salvar as configurações. Tente novamente.",
-        variant: "destructive",
-      });
-    }
-  });
-
-  const handleSave = () => {
-    saveConfigMutation.mutate(agentConfig);
+  const handleSave = async () => {
+    setSaveStatus('saving');
+    
+    // Save to localStorage
+    localStorage.setItem('ai-agent-config', JSON.stringify(agentConfig));
+    
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    setSaveStatus('saved');
+    setTimeout(() => setSaveStatus('idle'), 2000);
   };
-
-  if (storeLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Carregando configurações...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!store) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <Bot className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-lg font-semibold text-gray-900">Loja não encontrada</h3>
-          <p className="mt-1 text-gray-500">Você não tem uma loja associada para configurar o agente de IA.</p>
-        </div>
-      </div>
-    );
-  }
 
   const handleTestMessage = () => {
     if (!testInput.trim()) return;
@@ -171,9 +114,16 @@ export default function AIAgent() {
                 <div className={`w-2 h-2 rounded-full ${agentConfig.isActive ? 'bg-green-400' : 'bg-gray-400'}`}></div>
                 <span>{agentConfig.isActive ? 'Ativo' : 'Inativo'}</span>
               </Badge>
-              <Button onClick={handleSave} disabled={saveConfigMutation.isPending} className="flex items-center space-x-2">
+              <Button 
+                onClick={handleSave} 
+                disabled={saveStatus === 'saving'} 
+                className="flex items-center space-x-2"
+              >
                 <Save className="h-4 w-4" />
-                <span>{saveConfigMutation.isPending ? 'Salvando...' : 'Salvar'}</span>
+                <span>
+                  {saveStatus === 'saving' ? 'Salvando...' : 
+                   saveStatus === 'saved' ? 'Salvo!' : 'Salvar'}
+                </span>
               </Button>
             </div>
           </div>

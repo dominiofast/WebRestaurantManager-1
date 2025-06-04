@@ -21,6 +21,7 @@ import MenuIndex from "@/pages/MenuIndex";
 import PDV from "@/pages/PDV";
 import AIAgent from "@/pages/AIAgent";
 import AIAgentNew from "@/pages/AIAgentNew";
+import AIAgentSimple from "@/pages/AIAgentSimple";
 import Integrations from "@/pages/Integrations";
 import IntegrationsNew from "@/pages/IntegrationsNew";
 import Customers from "@/pages/Customers";
@@ -72,7 +73,7 @@ function ManagerApp({ user }: { user: any }) {
             <Route path="/dashboard" component={ManagerStoreDashboard} />
             <Route path="/customers" component={Customers} />
             <Route path="/analytics" component={Analytics} />
-            <Route path="/ai-agent" component={AIAgent} />
+            <Route path="/ai-agent" component={AIAgentSimple} />
             <Route path="/config/profile" component={Profile} />
             <Route path="/config/integrations" component={IntegrationsNew} />
             <Route component={OrderManagement} />
@@ -105,7 +106,7 @@ function SuperAdminApp({ user }: { user: any }) {
             <Route path="/analytics" component={Analytics} />
             <Route path="/customers" component={Customers} />
             <Route path="/config/integrations" component={IntegrationsNew} />
-            <Route path="/config/ai-agent" component={AIAgentNew} />
+            <Route path="/config/ai-agent" component={AIAgent} />
             <Route path="/profile" component={Profile} />
             <Route component={NotFound} />
           </Switch>
@@ -136,7 +137,7 @@ function OwnerApp({ user }: { user: any }) {
             <Route path="/analytics" component={Analytics} />
             <Route path="/customers" component={Customers} />
             <Route path="/config/integrations" component={IntegrationsNew} />
-            <Route path="/config/ai-agent" component={AIAgentNew} />
+            <Route path="/config/ai-agent" component={AIAgent} />
             <Route path="/profile" component={Profile} />
             <Route component={NotFound} />
           </Switch>
