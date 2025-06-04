@@ -71,6 +71,7 @@ function ManagerApp({ user }: { user: any }) {
             <Route path="/pdv" component={PDV} />
             <Route path="/dashboard" component={ManagerStoreDashboard} />
             <Route path="/customers" component={Customers} />
+            <Route path="/analytics" component={Analytics} />
             <Route path="/ai-agent" component={AIAgentNew} />
             <Route path="/config/profile" component={Profile} />
             <Route path="/config/integrations" component={IntegrationsNew} />
@@ -101,6 +102,8 @@ function SuperAdminApp({ user }: { user: any }) {
             <Route path="/stores" component={StoreManagement} />
             <Route path="/store-management" component={StoreManagement} />
             <Route path="/store/:id/dashboard" component={StoreDashboard} />
+            <Route path="/analytics" component={Analytics} />
+            <Route path="/customers" component={Customers} />
             <Route path="/config/integrations" component={IntegrationsNew} />
             <Route path="/config/ai-agent" component={AIAgentNew} />
             <Route path="/profile" component={Profile} />
@@ -130,6 +133,8 @@ function OwnerApp({ user }: { user: any }) {
             <Route path="/stores" component={StoreManagement} />
             <Route path="/store-management" component={StoreManagement} />
             <Route path="/store/:id/dashboard" component={StoreDashboard} />
+            <Route path="/analytics" component={Analytics} />
+            <Route path="/customers" component={Customers} />
             <Route path="/config/integrations" component={IntegrationsNew} />
             <Route path="/config/ai-agent" component={AIAgentNew} />
             <Route path="/profile" component={Profile} />
