@@ -50,9 +50,12 @@ export default function TopBar() {
   };
 
   const handleOpenDigitalMenu = () => {
-    // Usar slug da loja se disponível, senão usar um padrão
-    const slug = store?.slug || 'don-giuseppe-paulista';
-    window.open(`/menu/${slug}`, '_blank');
+    // Usar slug da loja se disponível
+    if (store?.slug) {
+      window.open(`/menu/${store.slug}`, '_blank');
+    } else {
+      alert('Slug da loja não encontrado. Verifique as configurações da loja.');
+    }
   };
 
   const { time, date } = getCurrentDateTime();
