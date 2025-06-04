@@ -67,7 +67,7 @@ export default function MenuManager() {
 
   // Buscar grupos de adicionais para produto selecionado
   const { data: addonGroups = [] } = useQuery({
-    queryKey: ["/api/menu-products", selectedProductForAddons?.id, "addon-groups"],
+    queryKey: [`/api/menu-products/${selectedProductForAddons?.id}/addon-groups`],
     enabled: !!selectedProductForAddons
   });
 
