@@ -1240,6 +1240,83 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Sync WhatsApp instance status with Mega API
+  app.post('/api/whatsapp/:storeId/sync-status', async (req, res) => {
+    try {
+      const storeId = parseInt(req.params.storeId);
+      
+      if (isNaN(storeId)) {
+        return res.status(400).json({ message: 'ID da loja inválido' });
+      }
+
+      // Get WhatsApp instance
+      const instance = await storage.getWhatsappInstance(storeId);
+      
+      if (!instance) {
+        return res.status(404).json({ message: 'Instância WhatsApp não encontrada' });
+      }
+
+      // Get status from Mega API
+      const apiUrl = `https://${instance.apiHost}/rest/instance/${instance.instanceKey}`;
+      
+      console.log('[Sync Status] Checking status at:', apiUrl);
+      
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${instance.apiToken}`
+        }
+      });
+
+      if (!response.ok) {
+        console.log('[Sync Status] API Response error:', response.status, response.statusText);
+        return res.status(response.status).json({ 
+          message: 'Erro ao buscar status da instância',
+          error: response.statusText 
+        });
+      }
+
+      const data = await response.json();
+      console.log('[Sync Status] API Response:', data);
+
+      // Update instance status in database
+      let newStatus = 'disconnected';
+      let phoneNumber = instance.phoneNumber;
+
+      if (data.instance && data.instance.status === 'connected' && data.instance.user) {
+        newStatus = 'connected';
+        // Extract phone number from user ID (format: 556993910380:31@s.whatsapp.net)
+        const userId = data.instance.user.id;
+        if (userId && userId.includes('@')) {
+          const extractedPhone = userId.split(':')[0].replace('55', '');
+          if (extractedPhone.length >= 10) {
+            phoneNumber = extractedPhone;
+          }
+        }
+      }
+
+      // Update instance in database
+      await storage.updateWhatsappInstance(storeId, {
+        status: newStatus,
+        phoneNumber: phoneNumber
+      });
+
+      console.log('[Sync Status] Updated instance status to:', newStatus);
+
+      res.json({
+        success: true,
+        message: 'Status sincronizado com sucesso',
+        status: newStatus,
+        phoneNumber: phoneNumber,
+        megaApiData: data
+      });
+    } catch (error) {
+      console.error('[Sync Status] Error:', error);
+      res.status(500).json({ message: 'Erro interno do servidor' });
+    }
+  });
+
   // Configure webhook on Mega API
   app.post('/api/whatsapp/:storeId/configure-webhook', async (req, res) => {
     try {
