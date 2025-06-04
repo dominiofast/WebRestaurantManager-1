@@ -106,9 +106,9 @@ function OrderCard({ order, onStatusChange }: { order: Order; onStatusChange: (o
     <Card className={cn("mb-3 shadow-sm", config.color)}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Icon className={cn("h-3 w-3", config.iconColor)} />
-            <Badge variant="secondary" className={config.badge}>
+          <div className="flex items-center gap-1">
+            <Icon className={cn("h-2.5 w-2.5", config.iconColor)} />
+            <Badge variant="secondary" className={cn("text-xs px-1.5 py-0.5", config.badge)}>
               #{order.id} - {order.customerName}
             </Badge>
           </div>
@@ -119,20 +119,20 @@ function OrderCard({ order, onStatusChange }: { order: Order; onStatusChange: (o
       </CardHeader>
       
       <CardContent className="space-y-3">
-        <div className="space-y-2 text-sm">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <MapPin className="h-3 w-3" />
-            <span className="truncate">{order.customerAddress}</span>
+        <div className="space-y-1 text-sm">
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <MapPin className="h-2.5 w-2.5" />
+            <span className="truncate text-xs">{order.customerAddress}</span>
           </div>
           
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Phone className="h-3 w-3" />
-            <span>{order.customerPhone}</span>
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <Phone className="h-2.5 w-2.5" />
+            <span className="text-xs">{order.customerPhone}</span>
           </div>
           
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Package className="h-3 w-3" />
-            <span>{order.items?.length || 0} itens</span>
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <Package className="h-2.5 w-2.5" />
+            <span className="text-xs">{order.items?.length || 0} itens</span>
           </div>
         </div>
 
@@ -152,22 +152,22 @@ function OrderCard({ order, onStatusChange }: { order: Order; onStatusChange: (o
             Total: R$ {order.total}
           </div>
           
-          <div className="flex gap-1">
+          <div className="flex gap-0.5">
             <Button
               variant="outline"
               size="sm"
-              className="h-7 px-2 text-xs"
+              className="h-6 px-1.5 text-xs"
             >
-              <Eye className="h-3 w-3 mr-1" />
+              <Eye className="h-2.5 w-2.5 mr-0.5" />
               VER
             </Button>
             
             <Button
               variant="outline"
               size="sm"
-              className="h-7 px-2 text-xs"
+              className="h-6 px-1.5 text-xs"
             >
-              <MessageCircle className="h-3 w-3 mr-1" />
+              <MessageCircle className="h-2.5 w-2.5 mr-0.5" />
               CHAT
             </Button>
             
@@ -175,7 +175,7 @@ function OrderCard({ order, onStatusChange }: { order: Order; onStatusChange: (o
               <Button
                 variant="default"
                 size="sm"
-                className="h-7 px-2 text-xs bg-blue-600 hover:bg-blue-700"
+                className="h-6 px-1.5 text-xs bg-blue-600 hover:bg-blue-700"
                 onClick={() => onStatusChange(order.id, getNextStatus(order.status))}
               >
                 {getActionLabel(order.status)}
@@ -304,12 +304,12 @@ export default function OrderManagement() {
 
       {/* Search Bar */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-3 w-3" />
         <Input
           placeholder="Informe o telefone ou nome do cliente e tecle ENTER"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10 max-w-md"
+          className="pl-9 max-w-md text-sm"
         />
       </div>
 
@@ -360,10 +360,10 @@ export default function OrderManagement() {
           
           return (
             <div key={status} className="space-y-4">
-              <div className="flex items-center gap-2 p-3 rounded-lg bg-card border">
-                <Icon className={cn("h-4 w-4", config.iconColor)} />
-                <h3 className="font-semibold">{config.label}</h3>
-                <Badge variant="secondary" className="ml-auto">
+              <div className="flex items-center gap-2 p-2.5 rounded-lg bg-card border">
+                <Icon className={cn("h-3 w-3", config.iconColor)} />
+                <h3 className="font-medium text-sm">{config.label}</h3>
+                <Badge variant="secondary" className="ml-auto text-xs">
                   {statusOrders.length}
                 </Badge>
               </div>
