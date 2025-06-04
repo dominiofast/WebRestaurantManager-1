@@ -72,7 +72,7 @@ function ManagerApp({ user }: { user: any }) {
             <Route path="/dashboard" component={ManagerStoreDashboard} />
             <Route path="/customers" component={Customers} />
             <Route path="/analytics" component={Analytics} />
-            <Route path="/ai-agent" component={AIAgentNew} />
+            <Route path="/ai-agent" component={AIAgent} />
             <Route path="/config/profile" component={Profile} />
             <Route path="/config/integrations" component={IntegrationsNew} />
             <Route component={OrderManagement} />

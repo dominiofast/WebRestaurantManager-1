@@ -1957,6 +1957,62 @@ Responda de forma natural e humana. Se for sobre cardápio, horários, delivery 
     return `Obrigado pela sua mensagem! 😊\n\nPara fazer seu pedido, acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite:\n• "cardápio" - ver opções\n• "horário" - horário de funcionamento\n• "delivery" - informações de entrega`;
   }
 
+  // AI Agent configuration routes
+  app.get('/api/ai-agent/config', isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const store = await storage.getStoreByManagerId(user.id);
+      
+      if (!store) {
+        return res.status(404).json({ message: 'Loja não encontrada' });
+      }
+
+      // Get AI config from store metadata or return defaults
+      const defaultConfig = {
+        nome: "Assistente",
+        tom: "amigavel",
+        customPrompt: "",
+        useEmojis: true,
+        isActive: true
+      };
+
+      const aiConfig = store.metadata?.aiConfig || defaultConfig;
+      res.json(aiConfig);
+    } catch (error) {
+      console.error('Error fetching AI config:', error);
+      res.status(500).json({ message: 'Erro interno do servidor' });
+    }
+  });
+
+  app.post('/api/ai-agent/config', isAuthenticated, async (req, res) => {
+    try {
+      const user = req.user as any;
+      const store = await storage.getStoreByManagerId(user.id);
+      
+      if (!store) {
+        return res.status(404).json({ message: 'Loja não encontrada' });
+      }
+
+      const aiConfig = req.body;
+      
+      // Update store with AI config in metadata
+      const currentMetadata = store.metadata || {};
+      const updatedMetadata = {
+        ...currentMetadata,
+        aiConfig: aiConfig
+      };
+
+      await storage.updateStore(store.id, {
+        metadata: updatedMetadata
+      });
+
+      res.json({ success: true, message: 'Configurações do agente salvas com sucesso' });
+    } catch (error) {
+      console.error('Error saving AI config:', error);
+      res.status(500).json({ message: 'Erro interno do servidor' });
+    }
+  });
+
   // WhatsApp Instance routes for multi-store support
   // Disconnect WhatsApp instance for a specific store
   app.delete('/api/stores/:storeId/whatsapp-instance/disconnect', async (req, res) => {
