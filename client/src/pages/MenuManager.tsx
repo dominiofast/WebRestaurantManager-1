@@ -28,6 +28,7 @@ export default function MenuManager() {
   const [activeTab, setActiveTab] = useState("groups");
   const [editingGroup, setEditingGroup] = useState<any>(null);
   const [newAddons, setNewAddons] = useState<Array<{name: string, price: string, description: string}>>([]);
+  const [editingAddons, setEditingAddons] = useState<Array<{id?: number, name: string, price: string, description: string, isNew?: boolean}>>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -284,7 +285,67 @@ export default function MenuManager() {
     mutationFn: (id: number) => apiRequest('DELETE', `/api/addon-groups/${id}`),
     onSuccess: () => {
       toast({ title: "Sucesso", description: "Grupo deletado!" });
-      queryClient.invalidateQueries({ queryKey: ["/api/menu-products", selectedProductForAddons?.id, "addon-groups"] });
+      queryClient.invalidateQueries({ queryKey: [`/api/menu-products/${selectedProductForAddons?.id}/addon-groups`] });
+    },
+    onError: () => {
+      toast({ 
+        title: "Erro", 
+        description: "Erro ao deletar grupo",
+        variant: "destructive" 
+      });
+    }
+  });
+
+  // Mutation para editar grupo existente
+  const editGroupMutation = useMutation({
+    mutationFn: async (data: {group: typeof groupForm, addons: typeof editingAddons}) => {
+      // Atualizar o grupo
+      await apiRequest('PUT', `/api/addon-groups/${editingGroup.id}`, data.group);
+      
+      // Atualizar/criar/deletar adicionais
+      for (const addon of data.addons) {
+        if (addon.id && !addon.isNew) {
+          // Atualizar adicional existente
+          await apiRequest('PUT', `/api/addons/${addon.id}`, {
+            name: addon.name,
+            description: addon.description,
+            price: addon.price
+          });
+        } else if (addon.isNew) {
+          // Criar novo adicional
+          await apiRequest('POST', '/api/addons', {
+            name: addon.name,
+            description: addon.description,
+            price: addon.price,
+            groupId: editingGroup.id
+          });
+        }
+      }
+      
+      return true;
+    },
+    onSuccess: () => {
+      toast({ title: "Sucesso", description: "Grupo editado com sucesso!" });
+      setEditingGroup(null);
+      setEditingAddons([]);
+      setActiveTab("groups");
+      queryClient.invalidateQueries({ queryKey: [`/api/menu-products/${selectedProductForAddons?.id}/addon-groups`] });
+    },
+    onError: () => {
+      toast({ 
+        title: "Erro", 
+        description: "Erro ao editar grupo",
+        variant: "destructive" 
+      });
+    }
+  });
+
+  // Mutation para deletar adicional
+  const deleteAddonMutation = useMutation({
+    mutationFn: (id: number) => apiRequest('DELETE', `/api/addons/${id}`),
+    onSuccess: () => {
+      toast({ title: "Sucesso", description: "Adicional deletado!" });
+      queryClient.invalidateQueries({ queryKey: [`/api/menu-products/${selectedProductForAddons?.id}/addon-groups`] });
     }
   });
 
@@ -807,9 +868,10 @@ export default function MenuManager() {
           </DialogHeader>
           
           <Tabs value={activeTab} onValueChange={setActiveTab} className="h-[70vh]">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="groups">Grupos Existentes</TabsTrigger>
               <TabsTrigger value="create">Criar Novo Grupo</TabsTrigger>
+              <TabsTrigger value="edit-group" disabled={!editingGroup}>Editar Grupo</TabsTrigger>
               <TabsTrigger value="copy">Copiar Grupos</TabsTrigger>
             </TabsList>
             
@@ -847,6 +909,30 @@ export default function MenuManager() {
                             <Badge variant="outline">
                               Máx: {group.maxSelections}
                             </Badge>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setEditingGroup(group);
+                                setGroupForm({
+                                  name: group.name,
+                                  description: group.description || "",
+                                  isRequired: group.isRequired,
+                                  allowMultiple: group.allowMultiple,
+                                  maxSelections: group.maxSelections?.toString() || ""
+                                });
+                                setEditingAddons(group.addons.map((addon: any) => ({
+                                  id: addon.id,
+                                  name: addon.name,
+                                  description: addon.description || "",
+                                  price: addon.price,
+                                  isNew: false
+                                })));
+                                setActiveTab("edit-group");
+                              }}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
                             <Button
                               variant="outline"
                               size="sm"
