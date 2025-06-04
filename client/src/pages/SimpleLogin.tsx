@@ -51,7 +51,7 @@ export default function SimpleLogin() {
     localStorage.setItem('restaurantUser', JSON.stringify(demoUser));
     
     // Refresh the page to trigger authentication check
-    window.location.href = '/dashboard';
+    window.location.href = '/orders';
   };
 
   return (

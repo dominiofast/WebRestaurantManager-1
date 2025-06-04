@@ -35,9 +35,11 @@ export default function Customers() {
     queryFn: () => apiRequest(`/api/customers${search ? `?search=${encodeURIComponent(search)}` : ''}`),
   });
 
-  const { data: stats } = useQuery({
+  const { data: stats, error: statsError } = useQuery({
     queryKey: ['/api/customers/stats'],
     queryFn: () => apiRequest('/api/customers/stats'),
+    retry: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   const createForm = useForm<CustomerFormData>({

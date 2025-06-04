@@ -71,7 +71,6 @@ function ManagerApp({ user }: { user: any }) {
             <Route path="/" component={OrderManagement} />
             <Route path="/orders" component={OrderManagement} />
             <Route path="/pdv" component={PDV} />
-            <Route path="/dashboard" component={ManagerStoreDashboard} />
             <Route path="/customers" component={Customers} />
             <Route path="/analytics" component={Analytics} />
             <Route path="/ai-agent" component={AIAgentSimple} />
