@@ -184,23 +184,32 @@ export default function ImageUpload({
         </div>
       ) : (
         <div 
-          className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors cursor-pointer"
+          className="border-4 border-dashed border-orange-300 rounded-xl p-12 text-center hover:border-orange-500 hover:bg-orange-50 transition-all cursor-pointer bg-gray-50"
           onClick={() => document.getElementById(`file-${label.replace(/\s+/g, '-')}`)?.click()}
         >
-          <ImageIcon className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-          <p className="text-gray-600 mb-4">Clique para selecionar uma imagem</p>
-          <Button
-            type="button"
-            variant="outline"
-            disabled={uploading}
-            onClick={(e) => {
-              e.stopPropagation();
-              document.getElementById(`file-${label.replace(/\s+/g, '-')}`)?.click();
-            }}
-          >
-            <Upload className="w-4 h-4 mr-2" />
-            {uploading ? "Enviando..." : "Selecionar Arquivo"}
-          </Button>
+          <div className="flex flex-col items-center space-y-4">
+            <div className="w-20 h-20 rounded-full bg-orange-100 flex items-center justify-center">
+              <ImageIcon className="w-10 h-10 text-orange-600" />
+            </div>
+            <div className="space-y-2">
+              <p className="text-lg font-semibold text-gray-800">Adicionar Imagem</p>
+              <p className="text-gray-600">Clique aqui ou no botão abaixo</p>
+            </div>
+            <Button
+              type="button"
+              variant="default"
+              size="lg"
+              disabled={uploading}
+              className="bg-orange-600 hover:bg-orange-700 text-white"
+              onClick={(e) => {
+                e.stopPropagation();
+                document.getElementById(`file-${label.replace(/\s+/g, '-')}`)?.click();
+              }}
+            >
+              <Upload className="w-5 h-5 mr-2" />
+              {uploading ? "Enviando..." : "Escolher Arquivo"}
+            </Button>
+          </div>
         </div>
       )}
 

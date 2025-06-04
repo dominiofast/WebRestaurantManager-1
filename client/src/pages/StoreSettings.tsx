@@ -385,35 +385,59 @@ export default function StoreSettings() {
 
             {/* Imagens */}
             <TabsContent value="images" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <ImageIcon className="w-5 h-5" />
-                    Identidade Visual
+              <Card className="border-2 border-orange-200">
+                <CardHeader className="bg-orange-50">
+                  <CardTitle className="flex items-center gap-2 text-orange-800">
+                    <ImageIcon className="w-6 h-6" />
+                    📸 ADICIONAR IMAGENS DA LOJA
                   </CardTitle>
-                  <CardDescription>
-                    Configure o logo e banner que representam sua loja
+                  <CardDescription className="text-orange-700 font-medium">
+                    Clique nas áreas abaixo para adicionar logo e banner da sua loja
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <ImageUpload
-                      label="Logo da Loja"
-                      currentImageUrl={store?.logoUrl || ""}
-                      onImageChange={handleLogoChange}
-                      storeId={store?.id}
-                    />
-                    <ImageUpload
-                      label="Banner da Loja"
-                      currentImageUrl={store?.bannerUrl || ""}
-                      onImageChange={handleBannerChange}
-                      storeId={store?.id}
-                    />
+                <CardContent className="p-8 space-y-8">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                        🏪 Logo da Loja
+                      </h3>
+                      <ImageUpload
+                        label="Logo da Loja"
+                        currentImageUrl={store?.logoUrl || ""}
+                        onImageChange={handleLogoChange}
+                        storeId={store?.id}
+                        className="min-h-[250px]"
+                      />
+                      <p className="text-sm text-gray-600">
+                        <strong>Recomendado:</strong> 200x200px, formato quadrado
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                        🖼️ Banner da Loja
+                      </h3>
+                      <ImageUpload
+                        label="Banner da Loja"
+                        currentImageUrl={store?.bannerUrl || ""}
+                        onImageChange={handleBannerChange}
+                        storeId={store?.id}
+                        className="min-h-[250px]"
+                      />
+                      <p className="text-sm text-gray-600">
+                        <strong>Recomendado:</strong> 1200x400px, formato retangular
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-600">
-                    <p><strong>Logo:</strong> Recomendado 200x200px, formato quadrado</p>
-                    <p><strong>Banner:</strong> Recomendado 1200x400px, formato retangular</p>
-                    <p>Tamanho máximo: 5MB por imagem</p>
+                  
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <h4 className="font-semibold text-blue-800 mb-2">📋 Instruções:</h4>
+                    <ul className="text-sm text-blue-700 space-y-1">
+                      <li>• Clique na área tracejada para selecionar uma imagem</li>
+                      <li>• Para remover uma imagem, passe o mouse sobre ela e clique no X</li>
+                      <li>• Tamanho máximo: 5MB por imagem</li>
+                      <li>• Formatos aceitos: JPG, PNG, GIF</li>
+                    </ul>
                   </div>
                 </CardContent>
               </Card>
