@@ -1,430 +1,454 @@
 import { useState, useEffect } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, Image as ImageIcon, Save, Store, Globe, ExternalLink } from "lucide-react";
-import { queryClient } from "@/lib/queryClient";
+import { Save, Store, Clock, Truck, DollarSign, Settings, Image as ImageIcon, Globe } from "lucide-react";
+import ImageUpload from "@/components/ImageUpload";
+import { apiRequest } from "@/lib/queryClient";
+
+interface StoreData {
+  id: number;
+  name: string;
+  address: string;
+  phone: string;
+  email: string | null;
+  description: string | null;
+  deliveryFee: string;
+  minimumOrder: string;
+  estimatedDeliveryTime: string;
+  logoUrl: string | null;
+  bannerUrl: string | null;
+  status: string;
+  slug: string;
+  openingHours: string | null;
+  company?: {
+    id: number;
+    name: string;
+    description: string | null;
+  };
+}
 
 export default function StoreSettings() {
   const { toast } = useToast();
-  const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [bannerFile, setBannerFile] = useState<File | null>(null);
-  const [logoPreview, setLogoPreview] = useState<string>("");
-  const [bannerPreview, setBannerPreview] = useState<string>("");
+  const queryClient = useQueryClient();
   
-  const [storeInfo, setStoreInfo] = useState({
+  const [formData, setFormData] = useState({
     name: "",
     address: "",
     phone: "",
     email: "",
-    description: ""
+    description: "",
+    deliveryFee: "",
+    minimumOrder: "",
+    estimatedDeliveryTime: "",
+    openingHours: "",
+    status: "active"
   });
 
-  // Buscar dados da loja
-  const { data: store, isLoading } = useQuery({
+  const [logoData, setLogoData] = useState({ file: null as File | null, url: "" });
+  const [bannerData, setBannerData] = useState({ file: null as File | null, url: "" });
+
+  // Buscar dados da loja do manager
+  const { data: store, isLoading, error } = useQuery<StoreData>({
     queryKey: ['/api/manager/store'],
+    retry: 3,
+    staleTime: 30000
   });
 
-  // Atualizar dados quando a loja for carregada
+  // Atualizar formulário quando dados carregarem
   useEffect(() => {
-    if (store) {
-      console.log('Store data received:', store);
-      setStoreInfo({
-        name: (store as any).name || "",
-        address: (store as any).address || "",
-        phone: (store as any).phone || "",
-        email: (store as any).email || "",
-        description: (store as any).description || ""
+    if (store && store.id) {
+      setFormData({
+        name: store.name || "",
+        address: store.address || "",
+        phone: store.phone || "",
+        email: store.email || "",
+        description: store.description || "",
+        deliveryFee: store.deliveryFee || "0",
+        minimumOrder: store.minimumOrder || "0",
+        estimatedDeliveryTime: store.estimatedDeliveryTime || "30-45 min",
+        openingHours: store.openingHours || "",
+        status: store.status || "active"
       });
-      
-      // Limpar apenas previews após novos dados, não arquivos selecionados
-      if (!logoFile) setLogoPreview("");
-      if (!bannerFile) setBannerPreview("");
     }
-  }, [store, logoFile, bannerFile]);
+  }, [store]);
 
-  // Upload de imagem
-  const uploadMutation = useMutation({
-    mutationFn: async (file: File) => {
-      const formData = new FormData();
-      formData.append('image', file);
-      
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-      
-      if (!response.ok) {
-        throw new Error('Erro no upload da imagem');
-      }
-      
-      return response.json();
-    }
-  });
-
-  // Atualizar loja
+  // Mutation para atualizar loja
   const updateStoreMutation = useMutation({
-    mutationFn: async (storeData: any) => {
-      const response = await fetch(`/api/stores/${(store as any)?.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(storeData),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Erro ao atualizar loja');
-      }
-      
-      return response.json();
+    mutationFn: async (updates: any) => {
+      if (!store?.id) throw new Error("ID da loja não encontrado");
+      return apiRequest(`/api/stores/${store.id}`, 'PUT', updates);
     },
-    onSuccess: async (data) => {
-      // Force refresh the store data
-      await queryClient.invalidateQueries({ queryKey: ['/api/manager/store'] });
-      await queryClient.refetchQueries({ queryKey: ['/api/manager/store'] });
-      
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/manager/store'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/stores'] });
       toast({
         title: "Sucesso",
-        description: "Configurações da loja atualizadas com sucesso!",
+        description: "Configurações da loja atualizadas com sucesso"
       });
-      
-      // Limpar apenas os previews e arquivos selecionados
-      setLogoFile(null);
-      setBannerFile(null);
-      setLogoPreview("");
-      setBannerPreview("");
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error('Update error:', error);
       toast({
         title: "Erro",
-        description: "Erro ao atualizar configurações da loja.",
+        description: error?.message || "Erro ao atualizar configurações",
         variant: "destructive"
       });
     }
   });
 
-  const handleFileSelect = (file: File, type: 'logo' | 'banner') => {
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        if (type === 'logo') {
-          setLogoFile(file);
-          setLogoPreview(result);
-        } else {
-          setBannerFile(file);
-          setBannerPreview(result);
-        }
-      };
-      reader.readAsDataURL(file);
-    } else {
-      toast({
-        title: "Erro",
-        description: "Por favor, selecione um arquivo de imagem válido.",
-        variant: "destructive"
-      });
-    }
+  const handleInputChange = (field: string, value: string | boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
-  const handleSaveImages = async () => {
-    try {
-      const updates: any = {};
-
-      // Upload logo se selecionado
-      if (logoFile) {
-        const logoResult = await uploadMutation.mutateAsync(logoFile);
-        updates.logo_url = logoResult.imageUrl;
-      }
-
-      // Upload banner se selecionado
-      if (bannerFile) {
-        const bannerResult = await uploadMutation.mutateAsync(bannerFile);
-        updates.banner_url = bannerResult.imageUrl;
-      }
-
-      // Atualizar loja se há mudanças
-      if (Object.keys(updates).length > 0) {
-        await updateStoreMutation.mutateAsync(updates);
-        
-        // Invalidar cache para recarregar dados primeiro
-        await queryClient.invalidateQueries({ queryKey: ['/api/manager/store'] });
-        
-        // Aguardar um pouco para os dados carregarem, depois limpar previews
-        setTimeout(() => {
-          setLogoFile(null);
-          setBannerFile(null);
-          setLogoPreview("");
-          setBannerPreview("");
-        }, 500);
-        
-        toast({
-          title: "Sucesso",
-          description: "Imagens salvas com sucesso!",
-        });
-      } else {
-        toast({
-          title: "Aviso",
-          description: "Nenhuma imagem selecionada para upload.",
-          variant: "destructive"
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Erro",
-        description: "Erro ao salvar imagens.",
-        variant: "destructive"
-      });
-    }
+  const handleLogoChange = (file: File | null, url: string) => {
+    setLogoData({ file, url });
   };
 
-  const handleSaveInfo = async () => {
-    try {
-      await updateStoreMutation.mutateAsync(storeInfo);
-    } catch (error) {
-      toast({
-        title: "Erro",
-        description: "Erro ao salvar informações da loja.",
-        variant: "destructive"
-      });
-    }
+  const handleBannerChange = (file: File | null, url: string) => {
+    setBannerData({ file, url });
   };
 
-  // Mostrar preview durante upload, senão mostrar imagem salva no banco
-  const currentLogo = logoPreview || store?.logoUrl;
-  const currentBanner = bannerPreview || store?.bannerUrl;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const updates: any = { ...formData };
+    
+    // Adicionar URLs das imagens se foram alteradas
+    if (logoData.url) {
+      updates.logo_url = logoData.url;
+    }
+    if (bannerData.url) {
+      updates.banner_url = bannerData.url;
+    }
+
+    await updateStoreMutation.mutateAsync(updates);
+  };
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Carregando configurações...</p>
+      <div className="container mx-auto py-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="animate-pulse space-y-6">
+            <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+            <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="h-64 bg-gray-200 rounded"></div>
+              <div className="h-64 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto py-8">
+        <div className="max-w-6xl mx-auto">
+          <Card className="border-red-200">
+            <CardContent className="p-6">
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-red-600 mb-2">Erro ao carregar dados</h3>
+                <p className="text-gray-600">Não foi possível carregar as informações da loja.</p>
+                <Button 
+                  onClick={() => queryClient.invalidateQueries({ queryKey: ['/api/manager/store'] })}
+                  className="mt-4"
+                >
+                  Tentar Novamente
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="container mx-auto px-6 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center">
-                <Store className="h-7 w-7 text-white" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">Configurações da Loja</h1>
-                <p className="text-gray-600">Gerencie as informações e imagens da sua loja</p>
-              </div>
+    <div className="container mx-auto py-8">
+      <div className="max-w-6xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Store className="w-8 h-8 text-blue-600" />
+            <div>
+              <h1 className="text-3xl font-bold">{store?.name || "Configurações da Loja"}</h1>
+              <p className="text-gray-600 mt-1">
+                Gerencie todas as configurações e informações da sua loja
+              </p>
             </div>
-            <Button
-              variant="outline"
-              onClick={() => window.open(`/menu/${(store as any)?.slug}`, '_blank')}
-              className="bg-green-50 hover:bg-green-100 text-green-700 border-green-200"
-            >
-              <Globe className="h-4 w-4 mr-2" />
-              Ver Cardápio Digital
-              <ExternalLink className="h-3 h-3 ml-2" />
-            </Button>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant={store?.status === 'active' ? 'default' : 'secondary'}>
+              {store?.status === 'active' ? 'Ativa' : 'Inativa'}
+            </Badge>
+            {store?.slug && (
+              <Badge variant="outline" className="flex items-center gap-1">
+                <Globe className="w-3 h-3" />
+                {store.slug}
+              </Badge>
+            )}
           </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="container mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          
-          {/* Logo e Banner */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <ImageIcon className="h-5 w-5 text-orange-600" />
-                Logo e Banner da Loja
-              </CardTitle>
-              <CardDescription>
-                Atualize as imagens que aparecerão no cardápio digital
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Logo Upload */}
-              <div className="space-y-3">
-                <Label>Logo da Loja</Label>
-                <div className="flex items-center gap-4">
-                  <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center overflow-hidden bg-gray-50">
-                    {currentLogo ? (
-                      <img src={currentLogo} alt="Logo" className="w-full h-full object-cover" />
-                    ) : (
-                      <ImageIcon className="w-8 h-8 text-gray-400" />
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => document.getElementById('logo-input')?.click()}
-                      disabled={uploadMutation.isPending}
-                    >
-                      <Upload className="w-4 h-4 mr-2" />
-                      Selecionar Logo
-                    </Button>
-                    <p className="text-xs text-gray-500">200x200px recomendado</p>
-                    <input
-                      id="logo-input"
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleFileSelect(file, 'logo');
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Banner Upload */}
-              <div className="space-y-3">
-                <Label>Banner da Loja</Label>
-                <div className="space-y-3">
-                  <div className="w-full h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center overflow-hidden bg-gray-50">
-                    {currentBanner ? (
-                      <img src={currentBanner} alt="Banner" className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="text-center">
-                        <ImageIcon className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                        <p className="text-sm text-gray-500">Nenhum banner selecionado</p>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => document.getElementById('banner-input')?.click()}
-                      disabled={uploadMutation.isPending}
-                    >
-                      <Upload className="w-4 h-4 mr-2" />
-                      Selecionar Banner
-                    </Button>
-                    <p className="text-xs text-gray-500">1200x400px recomendado</p>
-                    <input
-                      id="banner-input"
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleFileSelect(file, 'banner');
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Save Images Button */}
-              {(logoFile || bannerFile) && (
-                <div className="pt-4 border-t">
-                  <Button 
-                    onClick={handleSaveImages}
-                    disabled={uploadMutation.isPending || updateStoreMutation.isPending}
-                    className="w-full bg-orange-600 hover:bg-orange-700"
-                  >
-                    <Save className="w-4 h-4 mr-2" />
-                    {uploadMutation.isPending || updateStoreMutation.isPending ? "Salvando..." : "Salvar Imagens"}
-                  </Button>
-                </div>
-              )}
-
-              <p className="text-xs text-gray-500">
-                Formatos aceitos: JPG, PNG, GIF. Tamanho máximo: 5MB
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Informações da Loja */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Store className="h-5 w-5 text-orange-600" />
-                Informações da Loja
-              </CardTitle>
-              <CardDescription>
-                Atualize as informações básicas da sua loja
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Nome da Loja</Label>
-                <Input
-                  id="name"
-                  value={storeInfo.name}
-                  onChange={(e) => setStoreInfo(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="Nome da sua loja"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="address">Endereço</Label>
-                <Input
-                  id="address"
-                  value={storeInfo.address}
-                  onChange={(e) => setStoreInfo(prev => ({ ...prev, address: e.target.value }))}
-                  placeholder="Endereço completo"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="phone">Telefone</Label>
-                <Input
-                  id="phone"
-                  value={storeInfo.phone}
-                  onChange={(e) => setStoreInfo(prev => ({ ...prev, phone: e.target.value }))}
-                  placeholder="(11) 99999-9999"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email">E-mail</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={storeInfo.email}
-                  onChange={(e) => setStoreInfo(prev => ({ ...prev, email: e.target.value }))}
-                  placeholder="contato@loja.com"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="description">Descrição</Label>
-                <Textarea
-                  id="description"
-                  value={storeInfo.description}
-                  onChange={(e) => setStoreInfo(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Descreva sua loja..."
-                  rows={3}
-                />
-              </div>
-
-              <div className="pt-4 border-t">
-                <Button 
-                  onClick={handleSaveInfo}
-                  disabled={updateStoreMutation.isPending}
-                  className="w-full bg-blue-600 hover:bg-blue-700"
-                >
-                  <Save className="w-4 h-4 mr-2" />
-                  {updateStoreMutation.isPending ? "Salvando..." : "Salvar Informações"}
-                </Button>
+        {/* Company Info */}
+        {store?.company && (
+          <Card className="border-blue-200 bg-blue-50/50">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2">
+                <Settings className="w-4 h-4 text-blue-600" />
+                <span className="font-medium">Empresa:</span>
+                <span className="text-blue-700">{store.company.name}</span>
+                {store.company.description && (
+                  <span className="text-gray-600">- {store.company.description}</span>
+                )}
               </div>
             </CardContent>
           </Card>
-        </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <Tabs defaultValue="basic" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="basic">Informações Básicas</TabsTrigger>
+              <TabsTrigger value="delivery">Entrega & Preços</TabsTrigger>
+              <TabsTrigger value="images">Imagens</TabsTrigger>
+              <TabsTrigger value="advanced">Avançado</TabsTrigger>
+            </TabsList>
+
+            {/* Informações Básicas */}
+            <TabsContent value="basic" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Store className="w-5 h-5" />
+                    Informações da Loja
+                  </CardTitle>
+                  <CardDescription>
+                    Configure as informações principais que aparecem para os clientes
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="name">Nome da Loja *</Label>
+                      <Input
+                        id="name"
+                        value={formData.name}
+                        onChange={(e) => handleInputChange('name', e.target.value)}
+                        placeholder="Nome da sua loja"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="phone">Telefone</Label>
+                      <Input
+                        id="phone"
+                        value={formData.phone}
+                        onChange={(e) => handleInputChange('phone', e.target.value)}
+                        placeholder="(11) 99999-9999"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="address">Endereço Completo</Label>
+                    <Input
+                      id="address"
+                      value={formData.address}
+                      onChange={(e) => handleInputChange('address', e.target.value)}
+                      placeholder="Rua, número, bairro, cidade - CEP"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="email">Email de Contato</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      placeholder="contato@loja.com"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="description">Descrição da Loja</Label>
+                    <Textarea
+                      id="description"
+                      value={formData.description}
+                      onChange={(e) => handleInputChange('description', e.target.value)}
+                      placeholder="Descreva sua loja, especialidades, diferenciais..."
+                      rows={4}
+                    />
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="status"
+                      checked={formData.status === 'active'}
+                      onCheckedChange={(checked) => 
+                        handleInputChange('status', checked ? 'active' : 'inactive')
+                      }
+                    />
+                    <Label htmlFor="status">Loja Ativa (visível para clientes)</Label>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Entrega & Preços */}
+            <TabsContent value="delivery" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Truck className="w-5 h-5" />
+                      Configurações de Entrega
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label htmlFor="deliveryFee">Taxa de Entrega (R$)</Label>
+                      <Input
+                        id="deliveryFee"
+                        value={formData.deliveryFee}
+                        onChange={(e) => handleInputChange('deliveryFee', e.target.value)}
+                        placeholder="0.00"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="estimatedDeliveryTime">Tempo de Entrega</Label>
+                      <Input
+                        id="estimatedDeliveryTime"
+                        value={formData.estimatedDeliveryTime}
+                        onChange={(e) => handleInputChange('estimatedDeliveryTime', e.target.value)}
+                        placeholder="30-45 min"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <DollarSign className="w-5 h-5" />
+                      Configurações de Preço
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <Label htmlFor="minimumOrder">Pedido Mínimo (R$)</Label>
+                      <Input
+                        id="minimumOrder"
+                        value={formData.minimumOrder}
+                        onChange={(e) => handleInputChange('minimumOrder', e.target.value)}
+                        placeholder="0.00"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            {/* Imagens */}
+            <TabsContent value="images" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <ImageIcon className="w-5 h-5" />
+                    Identidade Visual
+                  </CardTitle>
+                  <CardDescription>
+                    Configure o logo e banner que representam sua loja
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <ImageUpload
+                      label="Logo da Loja"
+                      currentImageUrl={store?.logoUrl || ""}
+                      onImageChange={handleLogoChange}
+                    />
+                    <ImageUpload
+                      label="Banner da Loja"
+                      currentImageUrl={store?.bannerUrl || ""}
+                      onImageChange={handleBannerChange}
+                    />
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    <p><strong>Logo:</strong> Recomendado 200x200px, formato quadrado</p>
+                    <p><strong>Banner:</strong> Recomendado 1200x400px, formato retangular</p>
+                    <p>Tamanho máximo: 5MB por imagem</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Avançado */}
+            <TabsContent value="advanced" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Clock className="w-5 h-5" />
+                    Horário de Funcionamento
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div>
+                    <Label htmlFor="openingHours">Horário de Funcionamento</Label>
+                    <Textarea
+                      id="openingHours"
+                      value={formData.openingHours}
+                      onChange={(e) => handleInputChange('openingHours', e.target.value)}
+                      placeholder="Ex: Segunda a Sexta: 11:00 - 22:00&#10;Sábado e Domingo: 12:00 - 23:00"
+                      rows={3}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+
+          <Separator />
+
+          {/* Botão de Salvar */}
+          <div className="flex justify-end gap-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => window.location.reload()}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              disabled={updateStoreMutation.isPending}
+              className="min-w-[140px]"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              {updateStoreMutation.isPending ? "Salvando..." : "Salvar Alterações"}
+            </Button>
+          </div>
+        </form>
       </div>
     </div>
   );
