@@ -90,10 +90,10 @@ function SuperAdminApp({ user }: { user: any }) {
         <TopBar />
         <main className="flex-1 overflow-x-hidden overflow-y-auto">
           <Switch>
-            <Route path="/" component={Dashboard} />
+            <Route path="/" component={OrderManagement} />
+            <Route path="/orders" component={OrderManagement} />
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/menu" component={MenuManagement} />
-            <Route path="/orders" component={OrderManagement} />
             <Route path="/pdv" component={PDV} />
             <Route path="/menu-manager" component={MenuManager} />
             <Route path="/admin" component={SuperAdmin} />
@@ -120,10 +120,10 @@ function OwnerApp({ user }: { user: any }) {
         <TopBar />
         <main className="flex-1 overflow-x-hidden overflow-y-auto">
           <Switch>
-            <Route path="/" component={Dashboard} />
+            <Route path="/" component={OrderManagement} />
+            <Route path="/orders" component={OrderManagement} />
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/menu" component={MenuManagement} />
-            <Route path="/orders" component={OrderManagement} />
             <Route path="/pdv" component={PDV} />
             <Route path="/menu-manager" component={MenuManager} />
             <Route path="/stores" component={StoreManagement} />
