@@ -527,8 +527,13 @@ export class DatabaseStorage implements IStorage {
     if (result.length === 0) return undefined;
 
     const row = result[0];
+    const store = row.store;
+    
+    // Convert snake_case to camelCase for frontend compatibility
     return {
-      ...row.store,
+      ...store,
+      logoUrl: store.logo_url,
+      bannerUrl: store.banner_url,
       company: row.company!,
     };
   }
