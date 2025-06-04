@@ -561,9 +561,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Menu sections routes for stores
-  app.get('/api/menu-sections', isAuthenticated, async (req: any, res) => {
+  app.get('/api/menu-sections', requireAuth, async (req: any, res) => {
     try {
-      const store = await storage.getStoreByManagerId(req.session.userId);
+      const userId = req.user?.id || req.session?.userId;
+      const store = await storage.getStoreByManagerId(userId);
       if (!store) {
         return res.status(404).json({ message: "Loja não encontrada" });
       }
@@ -576,9 +577,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/menu-sections', isAuthenticated, async (req: any, res) => {
+  app.post('/api/menu-sections', requireAuth, async (req: any, res) => {
     try {
-      const store = await storage.getStoreByManagerId(req.session.userId);
+      const userId = req.user?.id || req.session?.userId;
+      const store = await storage.getStoreByManagerId(userId);
       if (!store) {
         return res.status(404).json({ message: "Loja não encontrada" });
       }
@@ -597,9 +599,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Menu products routes for stores
-  app.get('/api/menu-products', isAuthenticated, async (req: any, res) => {
+  app.get('/api/menu-products', requireAuth, async (req: any, res) => {
     try {
-      const store = await storage.getStoreByManagerId(req.session.userId);
+      const userId = req.user?.id || req.session?.userId;
+      const store = await storage.getStoreByManagerId(userId);
       if (!store) {
         return res.status(404).json({ message: "Loja não encontrada" });
       }
@@ -613,9 +616,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/menu-products', isAuthenticated, async (req: any, res) => {
+  app.post('/api/menu-products', requireAuth, async (req: any, res) => {
     try {
-      const store = await storage.getStoreByManagerId(req.session.userId);
+      const userId = req.user?.id || req.session?.userId;
+      const store = await storage.getStoreByManagerId(userId);
       if (!store) {
         return res.status(404).json({ message: "Loja não encontrada" });
       }
@@ -633,9 +637,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/menu-products/:id', isAuthenticated, async (req: any, res) => {
+  app.put('/api/menu-products/:id', requireAuth, async (req: any, res) => {
     try {
-      const store = await storage.getStoreByManagerId(req.session.userId);
+      const userId = req.user?.id || req.session?.userId;
+      const store = await storage.getStoreByManagerId(userId);
       if (!store) {
         return res.status(404).json({ message: "Loja não encontrada" });
       }
@@ -649,9 +654,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/menu-products/:id', isAuthenticated, async (req: any, res) => {
+  app.delete('/api/menu-products/:id', requireAuth, async (req: any, res) => {
     try {
-      const store = await storage.getStoreByManagerId(req.session.userId);
+      const userId = req.user?.id || req.session?.userId;
+      const store = await storage.getStoreByManagerId(userId);
       if (!store) {
         return res.status(404).json({ message: "Loja não encontrada" });
       }
