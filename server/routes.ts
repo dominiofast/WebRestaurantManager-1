@@ -1235,8 +1235,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Nenhum arquivo fornecido" });
       }
 
-      // Gerar URL do arquivo
-      const imageUrl = `/uploads/${req.file.filename}`;
+      // Gerar URL do arquivo usando a rota da API
+      const imageUrl = `/api/image/${req.file.filename}`;
       
       res.json({ 
         imageUrl,
