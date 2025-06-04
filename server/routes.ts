@@ -1395,6 +1395,175 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Sistema de polling automático para verificar mensagens
+  let pollingIntervals = new Map();
+  let lastMessageIds = new Map();
+
+  app.post('/api/whatsapp/:storeId/start-polling', async (req, res) => {
+    try {
+      const storeId = parseInt(req.params.storeId);
+      const instance = await storage.getWhatsappInstance(storeId);
+      
+      if (!instance) {
+        return res.status(404).json({ message: 'Instância WhatsApp não encontrada' });
+      }
+
+      // Parar polling existente se houver
+      if (pollingIntervals.has(storeId)) {
+        clearInterval(pollingIntervals.get(storeId));
+      }
+
+      // Iniciar novo polling
+      const interval = setInterval(async () => {
+        await checkMessagesForStore(storeId, instance);
+      }, 5000); // Verificar a cada 5 segundos
+
+      pollingIntervals.set(storeId, interval);
+      
+      console.log(`[Polling] Iniciado para loja ${storeId}`);
+      res.json({ success: true, message: 'Polling iniciado' });
+
+    } catch (error) {
+      console.error('[Polling Start] Error:', error);
+      res.status(500).json({ message: 'Erro interno do servidor' });
+    }
+  });
+
+  app.post('/api/whatsapp/:storeId/stop-polling', async (req, res) => {
+    try {
+      const storeId = parseInt(req.params.storeId);
+      
+      if (pollingIntervals.has(storeId)) {
+        clearInterval(pollingIntervals.get(storeId));
+        pollingIntervals.delete(storeId);
+        console.log(`[Polling] Parado para loja ${storeId}`);
+      }
+
+      res.json({ success: true, message: 'Polling parado' });
+    } catch (error) {
+      res.status(500).json({ message: 'Erro interno do servidor' });
+    }
+  });
+
+  async function checkMessagesForStore(storeId, instance) {
+    try {
+      const response = await fetch(`https://${instance.apiHost}/rest/chat/findMessages/${instance.instanceKey}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${instance.apiToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          messageData: {
+            limit: 3,
+            where: {
+              fromMe: false
+            }
+          }
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const messages = data.messages || [];
+        
+        for (const message of messages) {
+          if (message.key && !message.key.fromMe && message.message) {
+            const messageId = message.key.id;
+            const lastId = lastMessageIds.get(instance.instanceKey);
+            
+            if (messageId && messageId !== lastId) {
+              console.log(`[Polling] Nova mensagem encontrada para loja ${storeId}:`, message.key.id);
+              
+              // Processar mensagem
+              await processWhatsAppMessage(storeId, {
+                from: message.key.remoteJid,
+                body: message.message.conversation || message.message.extendedTextMessage?.text || 'mensagem',
+                fromMe: message.key.fromMe
+              }, instance);
+              
+              // Atualizar último ID processado
+              lastMessageIds.set(instance.instanceKey, messageId);
+              break; // Processar apenas a mensagem mais recente
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.log(`[Polling] Erro ao verificar mensagens loja ${storeId}:`, error.message);
+    }
+  }
+
+  // Sistema de polling para verificar mensagens quando webhook não funciona
+  app.post('/api/whatsapp/:storeId/check-messages', async (req, res) => {
+    try {
+      const storeId = parseInt(req.params.storeId);
+      const instance = await storage.getWhatsappInstance(storeId);
+      
+      if (!instance) {
+        return res.status(404).json({ message: 'Instância WhatsApp não encontrada' });
+      }
+
+      // Buscar mensagens recentes
+      const response = await fetch(`https://${instance.apiHost}/rest/chat/findMessages/${instance.instanceKey}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${instance.apiToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          messageData: {
+            limit: 5,
+            where: {
+              fromMe: false
+            }
+          }
+        })
+      });
+
+      if (!response.ok) {
+        return res.status(400).json({ message: 'Erro ao buscar mensagens' });
+      }
+
+      const data = await response.json();
+      const messages = data.messages || [];
+      
+      console.log(`[Message Check] Found ${messages.length} recent messages for store ${storeId}`);
+
+      // Processar mensagens encontradas
+      for (const message of messages) {
+        if (message.key && !message.key.fromMe && message.message) {
+          const webhookData = {
+            instance_key: instance.instanceKey,
+            jid: message.key.remoteJid,
+            messageType: message.messageType || 'conversation',
+            key: message.key,
+            message: message.message
+          };
+
+          console.log(`[Message Check] Processing message: ${JSON.stringify(webhookData, null, 2)}`);
+          
+          // Processar mensagem através do sistema de webhook interno
+          await processWhatsAppMessage(storeId, {
+            from: message.key.remoteJid,
+            body: message.message.conversation || message.message.extendedTextMessage?.text || 'mensagem',
+            fromMe: message.key.fromMe
+          }, instance);
+        }
+      }
+
+      res.json({
+        success: true,
+        messagesFound: messages.length,
+        processed: messages.filter(m => m.key && !m.key.fromMe).length
+      });
+
+    } catch (error) {
+      console.error('[Message Check] Error:', error);
+      res.status(500).json({ message: 'Erro interno do servidor' });
+    }
+  });
+
   // WhatsApp webhook for processing messages
   app.post('/api/webhook/whatsapp/:storeId', async (req, res) => {
     try {
