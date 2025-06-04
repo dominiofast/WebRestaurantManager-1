@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -8,9 +8,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, Lock, Bell, Shield, Camera, Save, AlertCircle, CheckCircle } from "lucide-react";
+import { User, Lock, Bell, Shield, Camera, Save, AlertCircle, CheckCircle, Store, Image } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import ImageUpload from "@/components/ImageUpload";
+import { queryClient } from "@/lib/queryClient";
 
 export default function Profile() {
   const { user } = useAuth();
@@ -39,9 +41,57 @@ export default function Profile() {
     pushNotifications: true
   });
 
+  const [storeSettings, setStoreSettings] = useState({
+    logoUrl: "",
+    bannerUrl: ""
+  });
+
   // Fetch manager's store info
   const { data: store, isLoading: storeLoading } = useQuery({
     queryKey: ['/api/manager/store'],
+  });
+
+  // Update store settings quando a loja for carregada
+  useEffect(() => {
+    if (store) {
+      setStoreSettings({
+        logoUrl: (store as any).logoUrl || "",
+        bannerUrl: (store as any).bannerUrl || ""
+      });
+    }
+  }, [store]);
+
+  // Mutation para salvar configurações da loja
+  const updateStoreMutation = useMutation({
+    mutationFn: async (storeData: any) => {
+      const response = await fetch(`/api/stores/${store?.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(storeData),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erro ao atualizar loja');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/manager/store'] });
+      toast({
+        title: "Configurações salvas",
+        description: "As imagens da loja foram atualizadas com sucesso.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erro",
+        description: "Erro ao salvar configurações da loja.",
+        variant: "destructive"
+      });
+    }
   });
 
   const handleProfileUpdate = () => {
