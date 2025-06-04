@@ -1193,6 +1193,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Get webhook data from Mega API
+  app.get('/api/whatsapp/:storeId/webhook-data', async (req: Request, res: Response) => {
+    try {
+      const storeId = parseInt(req.params.storeId);
+      
+      if (isNaN(storeId)) {
+        return res.status(400).json({ message: 'ID da loja inválido' });
+      }
+
+      // Get WhatsApp instance
+      const instance = await storage.getWhatsappInstance(storeId);
+      
+      if (!instance) {
+        return res.status(404).json({ message: 'Instância WhatsApp não encontrada' });
+      }
+
+      // Make request to Mega API to get webhook data
+      const apiUrl = `https://${instance.apiHost}/rest/webhook/${instance.instanceKey}`;
+      
+      console.log('[Webhook Data] Fetching from:', apiUrl);
+      
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${instance.apiToken}`
+        }
+      });
+
+      if (!response.ok) {
+        console.log('[Webhook Data] API Response error:', response.status, response.statusText);
+        return res.status(response.status).json({ 
+          message: 'Erro ao buscar dados do webhook',
+          error: response.statusText 
+        });
+      }
+
+      const data = await response.json();
+      console.log('[Webhook Data] API Response:', data);
+
+      res.json(data);
+    } catch (error) {
+      console.error('[Webhook Data] Error:', error);
+      res.status(500).json({ message: 'Erro interno do servidor' });
+    }
+  });
+
   // WhatsApp webhook for processing messages
   app.post('/api/webhook/whatsapp/:storeId', async (req, res) => {
     try {
