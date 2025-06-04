@@ -1,0 +1,46 @@
+# Código do plano megaAPI
+
+## Documentação
+- [Introdução à megaAPI](https://doc.mega-api.app.br/doc-724956.md):
+- [Componente n8n megaAPI](https://doc.mega-api.app.br/doc-844896.md):
+- InstanceController [Instâncias](https://doc.mega-api.app.br/doc-724962.md):
+- WebhookController [Exemplos de retorno do webhook megaAPI](https://doc.mega-api.app.br/doc-723782.md):
+
+## Documentação da API
+- InstanceController [Status da Conexão](https://doc.mega-api.app.br/api-10974901.md): ## <Icon icon="material-outline-check_circle"/> **Status**
+- InstanceController [Baixar arquivos](https://doc.mega-api.app.br/api-10983731.md): ## <Icon icon="material-outline-arrow_circle_down"/> **Baixar os arquivos de mídias**
+- InstanceController [Número com whatsapp?](https://doc.mega-api.app.br/api-10974903.md): ## <Icon icon="material-outline-mobile_friendly"/> **Validação do número com whatsapp**
+- InstanceController [Qrcode Imagem](https://doc.mega-api.app.br/api-10974904.md): ## <Icon icon="ph-bold-whatsapp-logo"/> **Conectar Whatsapp**
+- InstanceController [Qrcode Base64](https://doc.mega-api.app.br/api-10974905.md): **CONCEITO**
+- InstanceController [Conexão via código](https://doc.mega-api.app.br/api-10974906.md): ## <Icon icon="ph-bold-whatsapp-logo"/> **Conectar whatsapp via codigo**
+- InstanceController [Desconectar do Whatsapp](https://doc.mega-api.app.br/api-10974907.md): ## <Icon icon="material-outline-highlight_off"/> **Desconectar do Whatsapp**
+- InstanceController [Reiniciar uma Conexão](https://doc.mega-api.app.br/api-10974908.md): ## <Icon icon="material-outline-sync"/> **Reiniciar Conexão**
+- WebhookController [Dados do webhook](https://doc.mega-api.app.br/api-10974909.md): ## <Icon icon="material-outline-webhook"/> Buscar dados do webhook
+- WebhookController [Configurar Webhook](https://doc.mega-api.app.br/api-10974910.md): ## <Icon icon="material-outline-webhook"/> Configurar webhook
+- SendMessageController [Envio de Mensagens de Texto](https://doc.mega-api.app.br/api-10974911.md): <br>
+- SendMessageController [Envio de arquivos (URL)](https://doc.mega-api.app.br/api-10974912.md): <br>
+- SendMessageController [Envio de arquivos (BASE64)](https://doc.mega-api.app.br/api-10974913.md): <br>
+- SendMessageController [Envio de localização](https://doc.mega-api.app.br/api-10974914.md): **CONCEITO**
+- SendMessageController [Envio link com pré vizualização](https://doc.mega-api.app.br/api-10974915.md): **CONCEITO**
+- SendMessageController [Envio da lista de opções](https://doc.mega-api.app.br/api-10974918.md): **CONCEITO**
+- SendMessageController [Envio de botões interativos](https://doc.mega-api.app.br/api-11197505.md): ## <Icon icon="material-outline-stay_current_portrait"/> Enviar Botões de Ação
+- SendMessageController [Envio de templates interativos](https://doc.mega-api.app.br/api-11200423.md): ## <Icon icon="material-outline-stay_current_portrait"/> Enviar Templates com Botões de Ação
+- SendMessageController [Reencaminhar mensagem](https://doc.mega-api.app.br/api-10974920.md): Encaminhar mensagem para o usuário
+- SendMessageController [Responder mensagem](https://doc.mega-api.app.br/api-10974921.md): Responder uma mensagem enviada
+- ConfigController [Detalhes de configurações](https://doc.mega-api.app.br/api-11143749.md): ## <Icon icon="material-outline-settings"/> Detalhes de configurações
+- ConfigController [Alterar token](https://doc.mega-api.app.br/api-11143748.md): ## <Icon icon="material-outline-shield"/> Alterar token da instância
+- ConfigController [Bloquear eventos](https://doc.mega-api.app.br/api-11143747.md): ## <Icon icon="material-outline-webhook"/> Bloquear eventos do webhook
+- ConfigController [Adicionar Evento Webhook](https://doc.mega-api.app.br/api-11167771.md): ## <Icon icon="material-outline-webhook"/> Adicionar ou remover eventos do webhook primário e secundário
+- ConfigController [Adicionar Status de Evento](https://doc.mega-api.app.br/api-11170694.md): ## <Icon icon="material-outline-webhook"/> Adicionar e Remover Eventos de Status das Mensagens Enviadas
+- ChatController [Digitando - Gravando Áudio - Online](https://doc.mega-api.app.br/api-10974922.md): ## <Icon icon="material-outline-edit"/> Digitando - Gravando Áudio - Online
+- ChatController [Excluir mensagem](https://doc.mega-api.app.br/api-10974923.md): Esse método é responsável em excluir uma mensagem do chat
+- ChatController [deleteMessageFromMe](https://doc.mega-api.app.br/api-10974924.md): Esse método é responsável em deletar uma mensagem do whatsapp conectado na api no chat
+- GroupController [Listar todos os grupos](https://doc.mega-api.app.br/api-10974925.md): <br>
+- GroupController [Detalhe do grupo](https://doc.mega-api.app.br/api-10974926.md): **CONCEITO**
+- GroupController [Criar grupo](https://doc.mega-api.app.br/api-10974927.md): **CONCEITO**
+- GroupController [Enviar mensagem de texto para grupo](https://doc.mega-api.app.br/api-10974928.md): **CONCEITO**
+- GroupController [Enviar arquivo para grupo (URL)](https://doc.mega-api.app.br/api-10974929.md): **CONCEITO**
+- GroupController [Enviar arquivo para grupo (BASE64)](https://doc.mega-api.app.br/api-10974930.md): **CONCEITO**
+- GroupController [Adicionar participantes no grupo](https://doc.mega-api.app.br/api-10974931.md): **CONCEITO**
+- GroupController [Remover participantes do grupo](https://doc.mega-api.app.br/api-10974932.md): **CONCEITO**
+- GroupController [Sair do Grupo](https://doc.mega-api.app.br/api-10974933.md): **CONCEITO**
