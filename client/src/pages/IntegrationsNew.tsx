@@ -719,7 +719,7 @@ export default function IntegrationsNew() {
                             <h4 className="font-medium text-blue-900 mb-2">📡 Configuração do Webhook</h4>
                             <p className="text-sm text-blue-700 mb-2">Configure esta URL no painel da Mega API:</p>
                             <div className="bg-white p-2 rounded border text-xs font-mono break-all">
-                              https://dominiomenu-app.replit.app/api/webhook/whatsapp
+                              https://dominiomenu-app.replit.app/api/webhook/whatsapp/{store?.id}
                             </div>
                             <div className="mt-2 text-xs text-blue-600">
                               <p>1. Acesse o painel da Mega API</p>

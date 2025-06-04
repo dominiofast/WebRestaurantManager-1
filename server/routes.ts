@@ -1721,7 +1721,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Loja não encontrada" });
       }
 
-      const instance = await storage.getWhatsappInstance(storeId);
+      let instance = await storage.getWhatsappInstance(storeId);
+      
+      // If instance exists, sync status with Mega API
+      if (instance && instance.instanceKey && instance.apiToken) {
+        try {
+          console.log(`[Status Sync] Checking status for store ${storeId}, instance ${instance.instanceKey}`);
+          
+          const statusResponse = await fetch(`https://${instance.apiHost}/rest/instance/${instance.instanceKey}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${instance.apiToken}`
+            },
+            timeout: 5000
+          });
+
+          if (statusResponse.ok) {
+            const statusData = await statusResponse.json();
+            console.log(`[Status Sync] API Response:`, statusData);
+            
+            let newStatus = 'disconnected';
+            let phoneNumber = instance.phoneNumber;
+
+            // Check if connected and has user data
+            if (statusData.instance && statusData.instance.status === 'open' && statusData.instance.user) {
+              newStatus = 'connected';
+              
+              // Extract phone number from user ID (format: 556993910380:31@s.whatsapp.net)
+              const userId = statusData.instance.user.id;
+              if (userId && userId.includes('@')) {
+                const extractedPhone = userId.split(':')[0];
+                if (extractedPhone.length >= 10) {
+                  phoneNumber = extractedPhone;
+                }
+              }
+            }
+
+            // Update instance status if different
+            if (instance.status !== newStatus || instance.phoneNumber !== phoneNumber) {
+              console.log(`[Status Sync] Updating status from ${instance.status} to ${newStatus}`);
+              instance = await storage.updateWhatsappInstance(storeId, {
+                status: newStatus,
+                phoneNumber: phoneNumber
+              });
+            }
+          } else {
+            console.log(`[Status Sync] API Error: ${statusResponse.status} ${statusResponse.statusText}`);
+          }
+        } catch (syncError) {
+          console.log(`[Status Sync] Error syncing status:`, syncError);
+          // Don't fail the request if sync fails, just log it
+        }
+      }
+      
       res.json(instance || null);
     } catch (error) {
       console.error('Erro ao buscar instância WhatsApp:', error);
