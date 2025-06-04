@@ -13,6 +13,8 @@ import {
   cartItems,
   digitalOrders,
   whatsappInstances,
+  customers,
+  customerInteractions,
   type User,
   type UpsertUser,
   type Category,
@@ -45,6 +47,12 @@ import {
   type InsertDigitalOrder,
   type WhatsappInstance,
   type InsertWhatsappInstance,
+  type Customer,
+  type InsertCustomer,
+  type CustomerInteraction,
+  type InsertCustomerInteraction,
+  type CustomerWithInteractions,
+  type CustomerWithStats,
   type MenuProductWithSection,
   type AddonGroupWithAddons,
   type MenuSectionWithProducts,
@@ -52,7 +60,8 @@ import {
   type DigitalOrderWithItems,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, sql } from "drizzle-orm";
+import { eq, desc, and, sql, or, count, ilike, gte } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 
 // Interface for storage operations
 export interface IStorage {
@@ -140,6 +149,24 @@ export interface IStorage {
   createWhatsappInstance(instance: InsertWhatsappInstance): Promise<WhatsappInstance>;
   updateWhatsappInstance(storeId: number, instance: Partial<InsertWhatsappInstance>): Promise<WhatsappInstance>;
   deleteWhatsappInstance(storeId: number): Promise<void>;
+
+  // Customer operations
+  getCustomers(storeId: number, search?: string): Promise<CustomerWithStats[]>;
+  getCustomerById(id: number, storeId: number): Promise<CustomerWithInteractions | undefined>;
+  createCustomer(customer: InsertCustomer): Promise<Customer>;
+  updateCustomer(id: number, customer: Partial<InsertCustomer>, storeId: number): Promise<Customer>;
+  deleteCustomer(id: number, storeId: number): Promise<void>;
+  getCustomerByPhone(phone: string, storeId: number): Promise<Customer | undefined>;
+
+  // Customer interaction operations
+  getCustomerInteractions(customerId: number, storeId: number): Promise<CustomerInteraction[]>;
+  createCustomerInteraction(interaction: InsertCustomerInteraction): Promise<CustomerInteraction>;
+  getCustomerStats(storeId: number): Promise<{
+    totalCustomers: number;
+    newCustomersThisMonth: number;
+    activeCustomers: number;
+    totalInteractions: number;
+  }>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -830,6 +857,173 @@ export class DatabaseStorage implements IStorage {
     await db
       .delete(whatsappInstances)
       .where(eq(whatsappInstances.storeId, storeId));
+  }
+
+  // Customer operations
+  async getCustomers(storeId: number, search?: string): Promise<CustomerWithStats[]> {
+    let query = db
+      .select({
+        id: customers.id,
+        storeId: customers.storeId,
+        name: customers.name,
+        phone: customers.phone,
+        email: customers.email,
+        address: customers.address,
+        notes: customers.notes,
+        totalOrders: customers.totalOrders,
+        totalSpent: customers.totalSpent,
+        lastOrderAt: customers.lastOrderAt,
+        isActive: customers.isActive,
+        tags: customers.tags,
+        createdAt: customers.createdAt,
+        updatedAt: customers.updatedAt,
+      })
+      .from(customers)
+      .where(eq(customers.storeId, storeId));
+
+    if (search) {
+      query = query.where(
+        or(
+          ilike(customers.name, `%${search}%`),
+          ilike(customers.phone, `%${search}%`),
+          ilike(customers.email, `%${search}%`)
+        )
+      );
+    }
+
+    const result = await query.orderBy(desc(customers.createdAt));
+
+    // Get recent interactions for each customer
+    const customersWithStats = await Promise.all(
+      result.map(async (customer) => {
+        const recentInteractions = await db
+          .select()
+          .from(customerInteractions)
+          .where(eq(customerInteractions.customerId, customer.id))
+          .orderBy(desc(customerInteractions.createdAt))
+          .limit(5);
+
+        return {
+          ...customer,
+          recentInteractions,
+          orderHistory: [], // TODO: implement order history
+        };
+      })
+    );
+
+    return customersWithStats;
+  }
+
+  async getCustomerById(id: number, storeId: number): Promise<CustomerWithInteractions | undefined> {
+    const [customer] = await db
+      .select()
+      .from(customers)
+      .where(and(eq(customers.id, id), eq(customers.storeId, storeId)));
+
+    if (!customer) return undefined;
+
+    const interactions = await db
+      .select()
+      .from(customerInteractions)
+      .where(eq(customerInteractions.customerId, id))
+      .orderBy(desc(customerInteractions.createdAt));
+
+    return {
+      ...customer,
+      interactions,
+    };
+  }
+
+  async createCustomer(customer: InsertCustomer): Promise<Customer> {
+    const [newCustomer] = await db
+      .insert(customers)
+      .values(customer)
+      .returning();
+    return newCustomer;
+  }
+
+  async updateCustomer(id: number, customer: Partial<InsertCustomer>, storeId: number): Promise<Customer> {
+    const [updatedCustomer] = await db
+      .update(customers)
+      .set({ ...customer, updatedAt: new Date() })
+      .where(and(eq(customers.id, id), eq(customers.storeId, storeId)))
+      .returning();
+    return updatedCustomer;
+  }
+
+  async deleteCustomer(id: number, storeId: number): Promise<void> {
+    await db
+      .delete(customers)
+      .where(and(eq(customers.id, id), eq(customers.storeId, storeId)));
+  }
+
+  async getCustomerByPhone(phone: string, storeId: number): Promise<Customer | undefined> {
+    const [customer] = await db
+      .select()
+      .from(customers)
+      .where(and(eq(customers.phone, phone), eq(customers.storeId, storeId)));
+    return customer;
+  }
+
+  // Customer interaction operations
+  async getCustomerInteractions(customerId: number, storeId: number): Promise<CustomerInteraction[]> {
+    return await db
+      .select()
+      .from(customerInteractions)
+      .where(and(eq(customerInteractions.customerId, customerId), eq(customerInteractions.storeId, storeId)))
+      .orderBy(desc(customerInteractions.createdAt));
+  }
+
+  async createCustomerInteraction(interaction: InsertCustomerInteraction): Promise<CustomerInteraction> {
+    const [newInteraction] = await db
+      .insert(customerInteractions)
+      .values(interaction)
+      .returning();
+    return newInteraction;
+  }
+
+  async getCustomerStats(storeId: number): Promise<{
+    totalCustomers: number;
+    newCustomersThisMonth: number;
+    activeCustomers: number;
+    totalInteractions: number;
+  }> {
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
+    const [totalCustomers] = await db
+      .select({ count: count() })
+      .from(customers)
+      .where(eq(customers.storeId, storeId));
+
+    const [newCustomersThisMonth] = await db
+      .select({ count: count() })
+      .from(customers)
+      .where(and(
+        eq(customers.storeId, storeId),
+        gte(customers.createdAt, startOfMonth)
+      ));
+
+    const [activeCustomers] = await db
+      .select({ count: count() })
+      .from(customers)
+      .where(and(
+        eq(customers.storeId, storeId),
+        eq(customers.isActive, true)
+      ));
+
+    const [totalInteractions] = await db
+      .select({ count: count() })
+      .from(customerInteractions)
+      .where(eq(customerInteractions.storeId, storeId));
+
+    return {
+      totalCustomers: totalCustomers?.count || 0,
+      newCustomersThisMonth: newCustomersThisMonth?.count || 0,
+      activeCustomers: activeCustomers?.count || 0,
+      totalInteractions: totalInteractions?.count || 0,
+    };
   }
 }
 

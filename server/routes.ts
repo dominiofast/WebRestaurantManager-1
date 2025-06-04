@@ -1,7 +1,15 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertCategorySchema, insertMenuItemSchema, insertOrderSchema, insertCompanySchema, insertStoreSchema } from "@shared/schema";
+import { 
+  insertCategorySchema, 
+  insertMenuItemSchema, 
+  insertOrderSchema, 
+  insertCompanySchema, 
+  insertStoreSchema,
+  insertCustomerSchema,
+  insertCustomerInteractionSchema
+} from "@shared/schema";
 import { isAuthenticated } from "./replitAuth";
 import { z } from "zod";
 import bcrypt from "bcrypt";
