@@ -1103,6 +1103,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Configure webhook automatically for a store
+  app.post('/api/stores/:storeId/configure-webhook', async (req, res) => {
+    try {
+      const storeId = parseInt(req.params.storeId);
+      const instance = await storage.getWhatsappInstance(storeId);
+      
+      if (!instance) {
+        return res.status(404).json({ message: "Instância WhatsApp não encontrada" });
+      }
+
+      const webhookUrl = `https://dominiomenu-app.replit.app/api/webhook/whatsapp/${storeId}`;
+      
+      // Configure webhook in Mega API
+      const response = await fetch(`https://${instance.apiHost}/rest/instance/webhook/${instance.instanceKey}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${instance.apiToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          url: webhookUrl,
+          events: ['message', 'messages.upsert']
+        })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        res.json({
+          success: true,
+          message: "Webhook configurado com sucesso",
+          webhookUrl,
+          result
+        });
+      } else {
+        const errorText = await response.text();
+        res.status(400).json({
+          success: false,
+          message: "Erro ao configurar webhook",
+          error: errorText
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao configurar webhook:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
   // Get webhook URL for configuration
   app.get('/api/webhook/url', (req, res) => {
     const baseUrl = `${req.protocol}://${req.get('host')}`;
