@@ -1987,12 +1987,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
               }
             }
 
-            // Update instance status if different
+            // Update instance status if different - preserving isActive state
             if (instance.status !== newStatus || instance.phoneNumber !== phoneNumber) {
               console.log(`[Status Sync] Updating status from ${instance.status} to ${newStatus}`);
               instance = await storage.updateWhatsappInstance(storeId, {
                 status: newStatus,
-                phoneNumber: phoneNumber
+                phoneNumber: phoneNumber,
+                isActive: instance.isActive // Preserve current isActive state
               });
             }
           } else {
