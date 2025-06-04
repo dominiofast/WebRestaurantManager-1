@@ -384,17 +384,35 @@ export default function StoreSettings() {
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <SimpleImageUpload
                       label="Logo da Loja"
-                      onImageSelected={(file) => {
-                        console.log('Logo selecionado:', file.name);
-                        // Aqui você pode implementar o upload
+                      storeId={store?.id || 0}
+                      currentImageUrl={store?.logoUrl || ""}
+                      onImageUploaded={(url) => {
+                        // Atualizar o cache da query com a nova URL
+                        queryClient.setQueryData(['/api/manager/store'], (oldData: any) => ({
+                          ...oldData,
+                          logoUrl: url
+                        }));
+                        toast({
+                          title: "Sucesso",
+                          description: "Logo atualizado com sucesso!",
+                        });
                       }}
                     />
                     
                     <SimpleImageUpload
                       label="Banner da Loja"
-                      onImageSelected={(file) => {
-                        console.log('Banner selecionado:', file.name);
-                        // Aqui você pode implementar o upload
+                      storeId={store?.id || 0}
+                      currentImageUrl={store?.bannerUrl || ""}
+                      onImageUploaded={(url) => {
+                        // Atualizar o cache da query com a nova URL
+                        queryClient.setQueryData(['/api/manager/store'], (oldData: any) => ({
+                          ...oldData,
+                          bannerUrl: url
+                        }));
+                        toast({
+                          title: "Sucesso", 
+                          description: "Banner atualizado com sucesso!",
+                        });
                       }}
                     />
                   </div>
