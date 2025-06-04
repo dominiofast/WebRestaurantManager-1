@@ -513,7 +513,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Get store managed by a specific user
-  async getStoreByManagerId(managerId: string): Promise<StoreWithCompany | undefined> {
+  async getStoreByManagerId(managerId: string): Promise<any> {
     const result = await db
       .select({
         store: stores,
