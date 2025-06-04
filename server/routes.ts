@@ -671,6 +671,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Addon groups routes
+  app.get('/api/menu-products/:productId/addon-groups', requireAuth, async (req: any, res) => {
+    try {
+      const productId = parseInt(req.params.productId);
+      const addonGroups = await storage.getAddonGroups(productId);
+      res.json(addonGroups);
+    } catch (error) {
+      console.error("Error fetching addon groups:", error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.post('/api/addon-groups', requireAuth, async (req: any, res) => {
+    try {
+      const addonGroup = await storage.createAddonGroup(req.body);
+      res.status(201).json(addonGroup);
+    } catch (error) {
+      console.error("Error creating addon group:", error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.post('/api/addons', requireAuth, async (req: any, res) => {
+    try {
+      const addon = await storage.createAddon(req.body);
+      res.status(201).json(addon);
+    } catch (error) {
+      console.error("Error creating addon:", error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.put('/api/addon-groups/:id', requireAuth, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const addonGroup = await storage.updateAddonGroup(id, req.body);
+      res.json(addonGroup);
+    } catch (error) {
+      console.error("Error updating addon group:", error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.put('/api/addons/:id', requireAuth, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const addon = await storage.updateAddon(id, req.body);
+      res.json(addon);
+    } catch (error) {
+      console.error("Error updating addon:", error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.delete('/api/addon-groups/:id', requireAuth, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteAddonGroup(id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting addon group:", error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.delete('/api/addons/:id', requireAuth, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteAddon(id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting addon:", error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
   // Order routes
   app.get('/api/orders', requireAuth, async (req: any, res) => {
     try {

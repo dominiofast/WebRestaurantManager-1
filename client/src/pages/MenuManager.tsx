@@ -10,8 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Globe, Search, Eye, EyeOff, Plus, Edit, Trash2, UtensilsCrossed, DollarSign, Upload, ImageIcon } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Globe, Search, Eye, EyeOff, Plus, Edit, Trash2, UtensilsCrossed, DollarSign, Upload, Settings } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -20,10 +20,11 @@ export default function MenuManager() {
   const [selectedSection, setSelectedSection] = useState<string>("all");
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
   const [isSectionDialogOpen, setIsSectionDialogOpen] = useState(false);
+  const [isAddonDialogOpen, setIsAddonDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [editingSection, setEditingSection] = useState<any>(null);
+  const [selectedProductForAddons, setSelectedProductForAddons] = useState<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploadingImage, setUploadingImage] = useState(false);
   const { toast } = useToast();
 
   const [productForm, setProductForm] = useState({
@@ -43,6 +44,21 @@ export default function MenuManager() {
     isActive: true
   });
 
+  const [addonGroupForm, setAddonGroupForm] = useState({
+    name: "",
+    description: "",
+    isRequired: false,
+    maxSelections: 1,
+    productId: 0
+  });
+
+  const [addonForm, setAddonForm] = useState({
+    name: "",
+    description: "",
+    price: "",
+    groupId: 0
+  });
+
   // Buscar seções do cardápio
   const { data: sections = [], isLoading: isLoadingSections } = useQuery({
     queryKey: ["/api/menu-sections"],
@@ -51,6 +67,12 @@ export default function MenuManager() {
   // Buscar produtos do cardápio
   const { data: products = [], isLoading: isLoadingProducts } = useQuery({
     queryKey: ["/api/menu-products"],
+  });
+
+  // Buscar grupos de adicionais para produto selecionado
+  const { data: addonGroups = [] } = useQuery({
+    queryKey: ["/api/menu-products", selectedProductForAddons?.id, "addon-groups"],
+    enabled: !!selectedProductForAddons
   });
 
   // Mutation para upload de imagem
@@ -148,6 +170,26 @@ export default function MenuManager() {
     }
   });
 
+  // Mutation para criar grupo de addon
+  const addonGroupMutation = useMutation({
+    mutationFn: (data: typeof addonGroupForm) => apiRequest('POST', '/api/addon-groups', data),
+    onSuccess: () => {
+      toast({ title: "Sucesso", description: "Grupo de adicionais criado!" });
+      setAddonGroupForm({ name: "", description: "", isRequired: false, maxSelections: 1, productId: 0 });
+      queryClient.invalidateQueries({ queryKey: ["/api/menu-products", selectedProductForAddons?.id, "addon-groups"] });
+    }
+  });
+
+  // Mutation para criar addon
+  const addonMutation = useMutation({
+    mutationFn: (data: typeof addonForm) => apiRequest('POST', '/api/addons', data),
+    onSuccess: () => {
+      toast({ title: "Sucesso", description: "Adicional criado!" });
+      setAddonForm({ name: "", description: "", price: "", groupId: 0 });
+      queryClient.invalidateQueries({ queryKey: ["/api/menu-products", selectedProductForAddons?.id, "addon-groups"] });
+    }
+  });
+
   // Mutation para deletar produto
   const deleteProductMutation = useMutation({
     mutationFn: (id: number) => apiRequest('DELETE', `/api/menu-products/${id}`),
@@ -199,6 +241,11 @@ export default function MenuManager() {
     setIsSectionDialogOpen(true);
   };
 
+  const handleManageAddons = (product: any) => {
+    setSelectedProductForAddons(product);
+    setIsAddonDialogOpen(true);
+  };
+
   const handleSaveProduct = () => {
     if (!productForm.name || !productForm.price || !productForm.sectionId) {
       toast({
@@ -223,6 +270,20 @@ export default function MenuManager() {
     sectionMutation.mutate(sectionForm);
   };
 
+  const handleSaveAddonGroup = () => {
+    if (!addonGroupForm.name || !selectedProductForAddons) return;
+    
+    addonGroupMutation.mutate({
+      ...addonGroupForm,
+      productId: selectedProductForAddons.id
+    });
+  };
+
+  const handleSaveAddon = () => {
+    if (!addonForm.name || !addonForm.groupId || !addonForm.price) return;
+    addonMutation.mutate(addonForm);
+  };
+
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -234,7 +295,6 @@ export default function MenuManager() {
         });
         return;
       }
-      setUploadingImage(true);
       uploadImageMutation.mutate(file);
     }
   };
@@ -256,7 +316,7 @@ export default function MenuManager() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Gestor de Cardápio</h1>
-          <p className="text-gray-600">Gerencie seções e produtos do seu cardápio digital</p>
+          <p className="text-gray-600">Gerencie seções, produtos e adicionais do seu cardápio digital</p>
         </div>
         <div className="flex gap-2">
           {/* Botão Nova Seção */}
@@ -527,79 +587,275 @@ export default function MenuManager() {
         </CardContent>
       </Card>
 
-      {/* Lista de Produtos */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredProducts.length === 0 ? (
-          <div className="col-span-full">
+      {/* Lista de Produtos em Tabela */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Produtos do Cardápio</CardTitle>
+          <CardDescription>Lista completa dos produtos com opções de gerenciamento</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Produto</TableHead>
+                <TableHead>Seção</TableHead>
+                <TableHead>Preço</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Visibilidade</TableHead>
+                <TableHead className="text-right">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredProducts.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-8">
+                    <UtensilsCrossed className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">Nenhum produto encontrado</h3>
+                    <p className="text-muted-foreground">
+                      {searchTerm || selectedSection !== "all" 
+                        ? "Tente ajustar os filtros" 
+                        : "Comece adicionando seu primeiro produto"}
+                    </p>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredProducts.map((product: any) => (
+                  <TableRow key={product.id}>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center space-x-3">
+                        {product.imageUrl && (
+                          <img
+                            src={product.imageUrl}
+                            alt={product.name}
+                            className="w-10 h-10 rounded-md object-cover"
+                          />
+                        )}
+                        <div>
+                          <div className="font-semibold">{product.name}</div>
+                          {product.description && (
+                            <div className="text-sm text-muted-foreground">{product.description}</div>
+                          )}
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {product.section && (
+                        <Badge variant="outline">{product.section.name}</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="font-semibold text-green-600">
+                      R$ {product.price}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={product.isAvailable ? "default" : "secondary"}>
+                        {product.isAvailable ? "Disponível" : "Indisponível"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={product.isPublic ? "default" : "outline"}>
+                        {product.isPublic ? <Eye className="h-3 w-3 mr-1" /> : <EyeOff className="h-3 w-3 mr-1" />}
+                        {product.isPublic ? "Público" : "Privado"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleManageAddons(product)}
+                          title="Gerenciar Adicionais"
+                        >
+                          <Settings className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditProduct(product)}
+                          title="Editar Produto"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => deleteProductMutation.mutate(product.id)}
+                          title="Deletar Produto"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {/* Modal de Gerenciamento de Adicionais */}
+      <Dialog open={isAddonDialogOpen} onOpenChange={setIsAddonDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              Gerenciar Adicionais - {selectedProductForAddons?.name}
+            </DialogTitle>
+            <DialogDescription>
+              Configure grupos de adicionais e seus itens para este produto
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Criar Grupo de Adicionais */}
             <Card>
-              <CardContent className="text-center py-8">
-                <UtensilsCrossed className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Nenhum produto encontrado</h3>
-                <p className="text-muted-foreground mb-4">
-                  {searchTerm || selectedSection !== "all" 
-                    ? "Tente ajustar os filtros" 
-                    : "Comece adicionando seu primeiro produto"}
-                </p>
+              <CardHeader>
+                <CardTitle className="text-lg">Novo Grupo de Adicionais</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="addon-group-name">Nome do Grupo *</Label>
+                  <Input
+                    id="addon-group-name"
+                    value={addonGroupForm.name}
+                    onChange={(e) => setAddonGroupForm(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="Ex: Proteínas Extras"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="addon-group-description">Descrição</Label>
+                  <Textarea
+                    id="addon-group-description"
+                    value={addonGroupForm.description}
+                    onChange={(e) => setAddonGroupForm(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Descrição do grupo"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="addon-group-max">Máximo de Seleções</Label>
+                  <Input
+                    id="addon-group-max"
+                    type="number"
+                    value={addonGroupForm.maxSelections}
+                    onChange={(e) => setAddonGroupForm(prev => ({ ...prev, maxSelections: parseInt(e.target.value) || 1 }))}
+                    placeholder="1"
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="addon-group-required"
+                    checked={addonGroupForm.isRequired}
+                    onCheckedChange={(checked) => setAddonGroupForm(prev => ({ ...prev, isRequired: checked }))}
+                  />
+                  <Label htmlFor="addon-group-required">Obrigatório</Label>
+                </div>
+                <Button onClick={handleSaveAddonGroup} disabled={addonGroupMutation.isPending}>
+                  {addonGroupMutation.isPending ? "Salvando..." : "Criar Grupo"}
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Criar Adicional */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Novo Adicional</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="addon-group-select">Grupo *</Label>
+                  <Select value={addonForm.groupId.toString()} onValueChange={(value) => setAddonForm(prev => ({ ...prev, groupId: parseInt(value) }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione um grupo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {addonGroups.map((group: any) => (
+                        <SelectItem key={group.id} value={group.id.toString()}>
+                          {group.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="addon-name">Nome do Adicional *</Label>
+                  <Input
+                    id="addon-name"
+                    value={addonForm.name}
+                    onChange={(e) => setAddonForm(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="Ex: Bacon Extra"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="addon-description">Descrição</Label>
+                  <Textarea
+                    id="addon-description"
+                    value={addonForm.description}
+                    onChange={(e) => setAddonForm(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Descrição do adicional"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="addon-price">Preço Adicional *</Label>
+                  <Input
+                    id="addon-price"
+                    value={addonForm.price}
+                    onChange={(e) => setAddonForm(prev => ({ ...prev, price: e.target.value }))}
+                    placeholder="5,00"
+                  />
+                </div>
+                <Button onClick={handleSaveAddon} disabled={addonMutation.isPending}>
+                  {addonMutation.isPending ? "Salvando..." : "Criar Adicional"}
+                </Button>
               </CardContent>
             </Card>
           </div>
-        ) : (
-          filteredProducts.map((product: any) => (
-            <Card key={product.id} className="overflow-hidden">
-              {product.imageUrl && (
-                <div className="aspect-video relative">
-                  <img
-                    src={product.imageUrl}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute top-2 right-2 flex gap-1">
-                    <Badge variant={product.isAvailable ? "default" : "secondary"} className="text-xs">
-                      {product.isAvailable ? "Disponível" : "Indisponível"}
-                    </Badge>
-                    <Badge variant={product.isPublic ? "default" : "outline"} className="text-xs">
-                      {product.isPublic ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
-                    </Badge>
-                  </div>
-                </div>
-              )}
-              <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg mb-1">{product.name}</h3>
-                    <p className="text-sm text-gray-600 mb-2">{product.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-lg font-bold text-green-600">R$ {product.price}</span>
-                      {product.section && (
-                        <Badge variant="outline" className="text-xs">
-                          {product.section.name}
+
+          {/* Lista de Grupos e Adicionais Existentes */}
+          <div className="mt-6">
+            <h3 className="text-lg font-semibold mb-4">Grupos de Adicionais Existentes</h3>
+            <div className="space-y-4">
+              {addonGroups.map((group: any) => (
+                <Card key={group.id}>
+                  <CardHeader>
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <CardTitle className="text-base">{group.name}</CardTitle>
+                        {group.description && (
+                          <CardDescription>{group.description}</CardDescription>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <Badge variant={group.isRequired ? "default" : "secondary"}>
+                          {group.isRequired ? "Obrigatório" : "Opcional"}
                         </Badge>
-                      )}
+                        <Badge variant="outline">
+                          Máx: {group.maxSelections}
+                        </Badge>
+                      </div>
                     </div>
-                  </div>
-                </div>
-                <Separator className="my-3" />
-                <div className="flex justify-end gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEditProduct(product)}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => deleteProductMutation.mutate(product.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
-      </div>
+                  </CardHeader>
+                  {group.addons && group.addons.length > 0 && (
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        {group.addons.map((addon: any) => (
+                          <div key={addon.id} className="flex justify-between items-center p-2 border rounded">
+                            <div>
+                              <span className="font-medium">{addon.name}</span>
+                              {addon.description && (
+                                <p className="text-sm text-muted-foreground">{addon.description}</p>
+                              )}
+                            </div>
+                            <span className="font-semibold text-green-600">+R$ {addon.price}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  )}
+                </Card>
+              ))}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Lista de Seções */}
       <Card>
