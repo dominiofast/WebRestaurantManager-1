@@ -10,6 +10,7 @@ interface ImageUploadProps {
   currentImageUrl?: string;
   onImageChange: (file: File | null, url: string) => void;
   className?: string;
+  storeId?: number;
 }
 
 export default function ImageUpload({ 
@@ -91,6 +92,11 @@ export default function ImageUpload({
   const removeImage = () => {
     setPreview("");
     onImageChange(null, "");
+    
+    toast({
+      title: "Imagem removida",
+      description: "A imagem foi removida. Salve as alterações para confirmar."
+    });
   };
 
   const displayImage = preview || currentImageUrl;

@@ -1228,7 +1228,102 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Servir arquivos estáticos da pasta uploads
   app.use('/uploads', express.static(uploadsDir));
 
-  // Rota para upload de imagens
+  // Rota para upload de imagens específica por loja
+  app.post("/api/stores/:storeId/upload", upload.single('image'), async (req: any, res) => {
+    try {
+      if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Não autorizado" });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ message: "Nenhum arquivo fornecido" });
+      }
+
+      const storeId = parseInt(req.params.storeId);
+      if (isNaN(storeId)) {
+        return res.status(400).json({ message: "ID da loja inválido" });
+      }
+
+      // Verificar se o usuário tem acesso a esta loja
+      const userStores = await getUserAccessibleStores(req.session.userId, req.user?.role || 'manager');
+      const hasAccess = userStores.some(store => store.id === storeId);
+      
+      if (!hasAccess) {
+        return res.status(403).json({ message: "Acesso negado a esta loja" });
+      }
+
+      // Renomear arquivo para incluir storeId
+      const originalName = req.file.filename;
+      const extension = path.extname(originalName);
+      const nameWithoutExt = path.basename(originalName, extension);
+      const newFilename = `store_${storeId}_${nameWithoutExt}${extension}`;
+      
+      const oldPath = path.join(uploadsDir, originalName);
+      const newPath = path.join(uploadsDir, newFilename);
+      
+      // Renomear arquivo para incluir ID da loja
+      fs.renameSync(oldPath, newPath);
+
+      // Gerar URL do arquivo usando a rota da API
+      const imageUrl = `/api/image/${newFilename}`;
+      
+      res.json({ 
+        imageUrl,
+        filename: newFilename,
+        originalName: req.file.originalname,
+        size: req.file.size
+      });
+    } catch (error) {
+      console.error("Erro no upload:", error);
+      res.status(500).json({ message: "Erro no upload da imagem" });
+    }
+  });
+
+  // Rota para excluir imagens específica por loja
+  app.delete("/api/stores/:storeId/images/:filename", async (req: any, res) => {
+    try {
+      if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Não autorizado" });
+      }
+
+      const storeId = parseInt(req.params.storeId);
+      const filename = req.params.filename;
+
+      if (isNaN(storeId)) {
+        return res.status(400).json({ message: "ID da loja inválido" });
+      }
+
+      // Verificar se o usuário tem acesso a esta loja
+      const userStores = await getUserAccessibleStores(req.session.userId, req.user?.role || 'manager');
+      const hasAccess = userStores.some(store => store.id === storeId);
+      
+      if (!hasAccess) {
+        return res.status(403).json({ message: "Acesso negado a esta loja" });
+      }
+
+      // Verificar se o arquivo pertence a esta loja (deve começar com store_ID_)
+      if (!filename.startsWith(`store_${storeId}_`)) {
+        return res.status(403).json({ message: "Esta imagem não pertence a esta loja" });
+      }
+
+      const filePath = path.join(uploadsDir, filename);
+      
+      // Verificar se o arquivo existe
+      if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ message: "Arquivo não encontrado" });
+      }
+
+      // Excluir arquivo
+      fs.unlinkSync(filePath);
+      
+      res.json({ message: "Imagem excluída com sucesso" });
+    } catch (error) {
+      console.error("Erro ao excluir imagem:", error);
+      res.status(500).json({ message: "Erro ao excluir imagem" });
+    }
+  });
+
+  // Rota para upload de imagens (fallback para compatibilidade)
   app.post("/api/upload", upload.single('image'), async (req, res) => {
     try {
       if (!req.file) {
