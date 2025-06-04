@@ -11,7 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Globe, Search, Eye, EyeOff, Plus, Edit, Trash2, UtensilsCrossed, DollarSign, Upload, Settings } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Globe, Search, Eye, EyeOff, Plus, Edit, Trash2, UtensilsCrossed, DollarSign, Upload, Settings, Copy, X } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -24,6 +25,9 @@ export default function MenuManager() {
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [editingSection, setEditingSection] = useState<any>(null);
   const [selectedProductForAddons, setSelectedProductForAddons] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState("groups");
+  const [editingGroup, setEditingGroup] = useState<any>(null);
+  const [newAddons, setNewAddons] = useState<Array<{name: string, price: string, description: string}>>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -44,19 +48,11 @@ export default function MenuManager() {
     isActive: true
   });
 
-  const [addonGroupForm, setAddonGroupForm] = useState({
+  const [groupForm, setGroupForm] = useState({
     name: "",
     description: "",
     isRequired: false,
-    maxSelections: 1,
-    productId: 0
-  });
-
-  const [addonForm, setAddonForm] = useState({
-    name: "",
-    description: "",
-    price: "",
-    groupId: 0
+    maxSelections: 1
   });
 
   // Buscar seções do cardápio
@@ -170,23 +166,92 @@ export default function MenuManager() {
     }
   });
 
-  // Mutation para criar grupo de addon
-  const addonGroupMutation = useMutation({
-    mutationFn: (data: typeof addonGroupForm) => apiRequest('POST', '/api/addon-groups', data),
+  // Mutation para criar grupo de addon com adicionais
+  const createGroupWithAddonsMutation = useMutation({
+    mutationFn: async (data: {group: typeof groupForm, addons: typeof newAddons}) => {
+      // Primeiro criar o grupo
+      const groupResponse = await apiRequest('POST', '/api/addon-groups', {
+        ...data.group,
+        productId: selectedProductForAddons?.id
+      });
+      
+      // Depois criar os adicionais um por um com verificação
+      if (data.addons.length > 0) {
+        for (const addon of data.addons) {
+          if (addon.name && addon.price) { // Só criar se tiver nome e preço
+            try {
+              await apiRequest('POST', '/api/addons', {
+                name: addon.name,
+                description: addon.description || "",
+                price: addon.price,
+                groupId: groupResponse.id
+              });
+            } catch (error) {
+              console.error('Erro ao criar adicional:', addon, error);
+              throw error;
+            }
+          }
+        }
+      }
+      
+      return groupResponse;
+    },
     onSuccess: () => {
-      toast({ title: "Sucesso", description: "Grupo de adicionais criado!" });
-      setAddonGroupForm({ name: "", description: "", isRequired: false, maxSelections: 1, productId: 0 });
+      toast({ title: "Sucesso", description: "Grupo e adicionais criados!" });
+      setGroupForm({ name: "", description: "", isRequired: false, maxSelections: 1 });
+      setNewAddons([]);
+      setActiveTab("groups");
       queryClient.invalidateQueries({ queryKey: ["/api/menu-products", selectedProductForAddons?.id, "addon-groups"] });
+    },
+    onError: (error) => {
+      console.error('Erro na criação:', error);
+      toast({ 
+        title: "Erro", 
+        description: "Erro ao criar grupo ou adicionais. Verifique os dados.",
+        variant: "destructive" 
+      });
     }
   });
 
-  // Mutation para criar addon
-  const addonMutation = useMutation({
-    mutationFn: (data: typeof addonForm) => apiRequest('POST', '/api/addons', data),
+  // Mutation para copiar grupo para outro produto
+  const copyGroupMutation = useMutation({
+    mutationFn: async (data: {groupId: number, targetProductId: number}) => {
+      // Buscar grupo original com adicionais
+      const originalGroup = addonGroups.find((g: any) => g.id === data.groupId);
+      if (!originalGroup) throw new Error("Grupo não encontrado");
+      
+      // Criar novo grupo
+      const newGroup = await apiRequest('POST', '/api/addon-groups', {
+        name: originalGroup.name,
+        description: originalGroup.description,
+        isRequired: originalGroup.isRequired,
+        maxSelections: originalGroup.maxSelections,
+        productId: data.targetProductId
+      });
+      
+      // Copiar adicionais
+      if (originalGroup.addons && originalGroup.addons.length > 0) {
+        for (const addon of originalGroup.addons) {
+          await apiRequest('POST', '/api/addons', {
+            name: addon.name,
+            description: addon.description,
+            price: addon.price,
+            groupId: newGroup.id
+          });
+        }
+      }
+      
+      return newGroup;
+    },
     onSuccess: () => {
-      toast({ title: "Sucesso", description: "Adicional criado!" });
-      setAddonForm({ name: "", description: "", price: "", groupId: 0 });
-      queryClient.invalidateQueries({ queryKey: ["/api/menu-products", selectedProductForAddons?.id, "addon-groups"] });
+      toast({ title: "Sucesso", description: "Grupo copiado com sucesso!" });
+    },
+    onError: () => {
+      toast({ 
+        title: "Erro", 
+        description: "Erro ao copiar grupo",
+        variant: "destructive" 
+      });
     }
   });
 
@@ -205,6 +270,15 @@ export default function MenuManager() {
     onSuccess: () => {
       toast({ title: "Sucesso", description: "Seção deletada!" });
       queryClient.invalidateQueries({ queryKey: ["/api/menu-sections"] });
+    }
+  });
+
+  // Mutation para deletar grupo
+  const deleteGroupMutation = useMutation({
+    mutationFn: (id: number) => apiRequest('DELETE', `/api/addon-groups/${id}`),
+    onSuccess: () => {
+      toast({ title: "Sucesso", description: "Grupo deletado!" });
+      queryClient.invalidateQueries({ queryKey: ["/api/menu-products", selectedProductForAddons?.id, "addon-groups"] });
     }
   });
 
@@ -243,6 +317,7 @@ export default function MenuManager() {
 
   const handleManageAddons = (product: any) => {
     setSelectedProductForAddons(product);
+    setActiveTab("groups");
     setIsAddonDialogOpen(true);
   };
 
@@ -270,18 +345,34 @@ export default function MenuManager() {
     sectionMutation.mutate(sectionForm);
   };
 
-  const handleSaveAddonGroup = () => {
-    if (!addonGroupForm.name || !selectedProductForAddons) return;
+  const handleCreateGroupWithAddons = () => {
+    if (!groupForm.name) {
+      toast({
+        title: "Erro",
+        description: "Nome do grupo é obrigatório",
+        variant: "destructive"
+      });
+      return;
+    }
     
-    addonGroupMutation.mutate({
-      ...addonGroupForm,
-      productId: selectedProductForAddons.id
+    createGroupWithAddonsMutation.mutate({
+      group: groupForm,
+      addons: newAddons
     });
   };
 
-  const handleSaveAddon = () => {
-    if (!addonForm.name || !addonForm.groupId || !addonForm.price) return;
-    addonMutation.mutate(addonForm);
+  const handleAddNewAddon = () => {
+    setNewAddons(prev => [...prev, { name: "", price: "", description: "" }]);
+  };
+
+  const handleRemoveAddon = (index: number) => {
+    setNewAddons(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleUpdateAddon = (index: number, field: string, value: string) => {
+    setNewAddons(prev => prev.map((addon, i) => 
+      i === index ? { ...addon, [field]: value } : addon
+    ));
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -297,6 +388,10 @@ export default function MenuManager() {
       }
       uploadImageMutation.mutate(file);
     }
+  };
+
+  const handleCopyGroup = (groupId: number, targetProductId: number) => {
+    copyGroupMutation.mutate({ groupId, targetProductId });
   };
 
   const publicProducts = products.filter((product: any) => product.isPublic);
@@ -693,167 +788,268 @@ export default function MenuManager() {
         </CardContent>
       </Card>
 
-      {/* Modal de Gerenciamento de Adicionais */}
+      {/* Modal de Gerenciamento de Adicionais Melhorado */}
       <Dialog open={isAddonDialogOpen} onOpenChange={setIsAddonDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden">
           <DialogHeader>
             <DialogTitle>
-              Gerenciar Adicionais - {selectedProductForAddons?.name}
+              Adicionais - {selectedProductForAddons?.name}
             </DialogTitle>
             <DialogDescription>
-              Configure grupos de adicionais e seus itens para este produto
+              Gerencie grupos de adicionais e seus itens de forma simples e intuitiva
             </DialogDescription>
           </DialogHeader>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Criar Grupo de Adicionais */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Novo Grupo de Adicionais</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="addon-group-name">Nome do Grupo *</Label>
-                  <Input
-                    id="addon-group-name"
-                    value={addonGroupForm.name}
-                    onChange={(e) => setAddonGroupForm(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Ex: Proteínas Extras"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="addon-group-description">Descrição</Label>
-                  <Textarea
-                    id="addon-group-description"
-                    value={addonGroupForm.description}
-                    onChange={(e) => setAddonGroupForm(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="Descrição do grupo"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="addon-group-max">Máximo de Seleções</Label>
-                  <Input
-                    id="addon-group-max"
-                    type="number"
-                    value={addonGroupForm.maxSelections}
-                    onChange={(e) => setAddonGroupForm(prev => ({ ...prev, maxSelections: parseInt(e.target.value) || 1 }))}
-                    placeholder="1"
-                  />
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="addon-group-required"
-                    checked={addonGroupForm.isRequired}
-                    onCheckedChange={(checked) => setAddonGroupForm(prev => ({ ...prev, isRequired: checked }))}
-                  />
-                  <Label htmlFor="addon-group-required">Obrigatório</Label>
-                </div>
-                <Button onClick={handleSaveAddonGroup} disabled={addonGroupMutation.isPending}>
-                  {addonGroupMutation.isPending ? "Salvando..." : "Criar Grupo"}
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Criar Adicional */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Novo Adicional</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="addon-group-select">Grupo *</Label>
-                  <Select value={addonForm.groupId.toString()} onValueChange={(value) => setAddonForm(prev => ({ ...prev, groupId: parseInt(value) }))}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione um grupo" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {addonGroups.map((group: any) => (
-                        <SelectItem key={group.id} value={group.id.toString()}>
-                          {group.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="addon-name">Nome do Adicional *</Label>
-                  <Input
-                    id="addon-name"
-                    value={addonForm.name}
-                    onChange={(e) => setAddonForm(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Ex: Bacon Extra"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="addon-description">Descrição</Label>
-                  <Textarea
-                    id="addon-description"
-                    value={addonForm.description}
-                    onChange={(e) => setAddonForm(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="Descrição do adicional"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="addon-price">Preço Adicional *</Label>
-                  <Input
-                    id="addon-price"
-                    value={addonForm.price}
-                    onChange={(e) => setAddonForm(prev => ({ ...prev, price: e.target.value }))}
-                    placeholder="5,00"
-                  />
-                </div>
-                <Button onClick={handleSaveAddon} disabled={addonMutation.isPending}>
-                  {addonMutation.isPending ? "Salvando..." : "Criar Adicional"}
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Lista de Grupos e Adicionais Existentes */}
-          <div className="mt-6">
-            <h3 className="text-lg font-semibold mb-4">Grupos de Adicionais Existentes</h3>
-            <div className="space-y-4">
-              {addonGroups.map((group: any) => (
-                <Card key={group.id}>
-                  <CardHeader>
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <CardTitle className="text-base">{group.name}</CardTitle>
-                        {group.description && (
-                          <CardDescription>{group.description}</CardDescription>
-                        )}
-                      </div>
-                      <div className="flex gap-2">
-                        <Badge variant={group.isRequired ? "default" : "secondary"}>
-                          {group.isRequired ? "Obrigatório" : "Opcional"}
-                        </Badge>
-                        <Badge variant="outline">
-                          Máx: {group.maxSelections}
-                        </Badge>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  {group.addons && group.addons.length > 0 && (
-                    <CardContent>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        {group.addons.map((addon: any) => (
-                          <div key={addon.id} className="flex justify-between items-center p-2 border rounded">
-                            <div>
-                              <span className="font-medium">{addon.name}</span>
-                              {addon.description && (
-                                <p className="text-sm text-muted-foreground">{addon.description}</p>
-                              )}
-                            </div>
-                            <span className="font-semibold text-green-600">+R$ {addon.price}</span>
-                          </div>
-                        ))}
-                      </div>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="h-[70vh]">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="groups">Grupos Existentes</TabsTrigger>
+              <TabsTrigger value="create">Criar Novo Grupo</TabsTrigger>
+              <TabsTrigger value="copy">Copiar Grupos</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="groups" className="h-full overflow-y-auto">
+              <div className="space-y-4">
+                {addonGroups.length === 0 ? (
+                  <Card>
+                    <CardContent className="text-center py-8">
+                      <Settings className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold mb-2">Nenhum grupo de adicionais</h3>
+                      <p className="text-muted-foreground mb-4">
+                        Crie o primeiro grupo de adicionais para este produto
+                      </p>
+                      <Button onClick={() => setActiveTab("create")}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Criar Primeiro Grupo
+                      </Button>
                     </CardContent>
+                  </Card>
+                ) : (
+                  addonGroups.map((group: any) => (
+                    <Card key={group.id}>
+                      <CardHeader>
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <CardTitle className="text-base">{group.name}</CardTitle>
+                            {group.description && (
+                              <CardDescription>{group.description}</CardDescription>
+                            )}
+                          </div>
+                          <div className="flex gap-2">
+                            <Badge variant={group.isRequired ? "default" : "secondary"}>
+                              {group.isRequired ? "Obrigatório" : "Opcional"}
+                            </Badge>
+                            <Badge variant="outline">
+                              Máx: {group.maxSelections}
+                            </Badge>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => deleteGroupMutation.mutate(group.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      {group.addons && group.addons.length > 0 && (
+                        <CardContent>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {group.addons.map((addon: any) => (
+                              <div key={addon.id} className="flex justify-between items-center p-3 border rounded-lg bg-gray-50">
+                                <div>
+                                  <span className="font-medium">{addon.name}</span>
+                                  {addon.description && (
+                                    <p className="text-sm text-muted-foreground">{addon.description}</p>
+                                  )}
+                                </div>
+                                <span className="font-semibold text-green-600">+R$ {addon.price}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </CardContent>
+                      )}
+                    </Card>
+                  ))
+                )}
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="create" className="h-full overflow-y-auto">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Criar Novo Grupo de Adicionais</CardTitle>
+                  <CardDescription>Configure o grupo e adicione múltiplos itens de uma vez</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Configurações do Grupo */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="group-name">Nome do Grupo *</Label>
+                      <Input
+                        id="group-name"
+                        value={groupForm.name}
+                        onChange={(e) => setGroupForm(prev => ({ ...prev, name: e.target.value }))}
+                        placeholder="Ex: Proteínas Extras"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="group-max">Máximo de Seleções</Label>
+                      <Input
+                        id="group-max"
+                        type="number"
+                        value={groupForm.maxSelections}
+                        onChange={(e) => setGroupForm(prev => ({ ...prev, maxSelections: parseInt(e.target.value) || 1 }))}
+                        placeholder="1"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="group-description">Descrição</Label>
+                    <Textarea
+                      id="group-description"
+                      value={groupForm.description}
+                      onChange={(e) => setGroupForm(prev => ({ ...prev, description: e.target.value }))}
+                      placeholder="Descrição do grupo de adicionais"
+                    />
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="group-required"
+                      checked={groupForm.isRequired}
+                      onCheckedChange={(checked) => setGroupForm(prev => ({ ...prev, isRequired: checked }))}
+                    />
+                    <Label htmlFor="group-required">Seleção obrigatória</Label>
+                  </div>
+
+                  <Separator />
+
+                  {/* Adicionais */}
+                  <div>
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-semibold">Itens do Grupo</h3>
+                      <Button type="button" onClick={handleAddNewAddon} variant="outline">
+                        <Plus className="mr-2 h-4 w-4" />
+                        Adicionar Item
+                      </Button>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      {newAddons.map((addon, index) => (
+                        <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-3 p-4 border rounded-lg bg-gray-50">
+                          <div>
+                            <Label>Nome *</Label>
+                            <Input
+                              value={addon.name}
+                              onChange={(e) => handleUpdateAddon(index, "name", e.target.value)}
+                              placeholder="Ex: Bacon"
+                            />
+                          </div>
+                          <div>
+                            <Label>Preço *</Label>
+                            <Input
+                              value={addon.price}
+                              onChange={(e) => handleUpdateAddon(index, "price", e.target.value)}
+                              placeholder="5,00"
+                            />
+                          </div>
+                          <div>
+                            <Label>Descrição</Label>
+                            <Input
+                              value={addon.description}
+                              onChange={(e) => handleUpdateAddon(index, "description", e.target.value)}
+                              placeholder="Opcional"
+                            />
+                          </div>
+                          <div className="flex items-end">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleRemoveAddon(index)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {newAddons.length === 0 && (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <p>Nenhum item adicionado ainda.</p>
+                        <p>Clique em "Adicionar Item" para começar.</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex justify-end gap-2">
+                    <Button variant="outline" onClick={() => setActiveTab("groups")}>
+                      Cancelar
+                    </Button>
+                    <Button 
+                      onClick={handleCreateGroupWithAddons} 
+                      disabled={createGroupWithAddonsMutation.isPending || !groupForm.name}
+                    >
+                      {createGroupWithAddonsMutation.isPending ? "Criando..." : "Criar Grupo"}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="copy" className="h-full overflow-y-auto">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Copiar Grupos para Outros Produtos</CardTitle>
+                  <CardDescription>Selecione um grupo para copiar e o produto de destino</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {addonGroups.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <p>Nenhum grupo disponível para copiar.</p>
+                      <p>Crie grupos primeiro na aba "Criar Novo Grupo".</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {addonGroups.map((group: any) => (
+                        <Card key={group.id} className="p-4">
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <h4 className="font-semibold">{group.name}</h4>
+                              <p className="text-sm text-muted-foreground">
+                                {group.addons?.length || 0} itens
+                              </p>
+                            </div>
+                            <div className="flex gap-2">
+                              <Select onValueChange={(productId) => handleCopyGroup(group.id, parseInt(productId))}>
+                                <SelectTrigger className="w-64">
+                                  <SelectValue placeholder="Selecionar produto destino" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {products
+                                    .filter((p: any) => p.id !== selectedProductForAddons?.id)
+                                    .map((product: any) => (
+                                    <SelectItem key={product.id} value={product.id.toString()}>
+                                      {product.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <Button variant="outline" size="sm">
+                                <Copy className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
                   )}
-                </Card>
-              ))}
-            </div>
-          </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </DialogContent>
       </Dialog>
 
