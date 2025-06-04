@@ -1305,10 +1305,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Acesso negado a esta loja" });
       }
 
-      // Verificar se o arquivo pertence a esta loja (deve começar com store_ID_)
-      if (!filename.startsWith(`store_${storeId}_`)) {
-        console.log(`[DELETE IMAGE] File ${filename} does not belong to store ${storeId}`);
-        return res.status(403).json({ message: "Esta imagem não pertence a esta loja" });
+      // Verificar se é uma imagem nova (com prefixo) ou legada
+      const isStoreSpecific = filename.startsWith(`store_${storeId}_`);
+      const isLegacyImage = filename.startsWith('image-');
+      
+      if (!isStoreSpecific && !isLegacyImage) {
+        console.log(`[DELETE IMAGE] File ${filename} is not a valid image file`);
+        return res.status(403).json({ message: "Arquivo não é uma imagem válida" });
+      }
+      
+      // Para imagens legadas, permitir exclusão apenas se o usuário tem acesso à loja
+      if (isLegacyImage) {
+        console.log(`[DELETE IMAGE] Processing legacy image: ${filename}`);
       }
 
       const filePath = path.join(uploadsDir, filename);

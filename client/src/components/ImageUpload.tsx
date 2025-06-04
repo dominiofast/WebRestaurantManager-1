@@ -97,58 +97,54 @@ export default function ImageUpload({
     setDeleting(true);
     
     try {
-      // If there's a current image and we have store ID, try to delete from server
+      // Always clear the preview and notify parent first for immediate UI feedback
+      setPreview("");
+      onImageChange(null, "");
+
+      // If there's a current image from server, try to delete it
       if (currentImageUrl && storeId && currentImageUrl.includes('/api/image/')) {
         const filename = currentImageUrl.split('/api/image/')[1];
+        console.log(`Attempting to delete image: ${filename} for store ${storeId}`);
         
-        // Only try to delete if filename starts with store_ prefix (indicates it's store-specific)
-        if (filename.startsWith(`store_${storeId}_`)) {
-          console.log(`Attempting to delete image: ${filename} for store ${storeId}`);
-          
-          const response = await fetch(`/api/stores/${storeId}/images/${filename}`, {
-            method: 'DELETE',
-          });
+        const response = await fetch(`/api/stores/${storeId}/images/${filename}`, {
+          method: 'DELETE',
+        });
 
-          if (response.ok) {
-            console.log('Image deleted successfully from server');
+        if (response.ok) {
+          console.log('Image deleted successfully from server');
+          toast({
+            title: "Sucesso",
+            description: "Imagem excluída com sucesso."
+          });
+        } else {
+          const errorData = await response.json().catch(() => ({}));
+          console.warn('Failed to delete image from server:', response.status, errorData);
+          
+          // For legacy images (without store prefix), deletion might fail but removal is still valid
+          if (!filename.startsWith(`store_${storeId}_`)) {
             toast({
-              title: "Sucesso",
-              description: "Imagem excluída do servidor com sucesso."
+              title: "Imagem removida",
+              description: "Imagem removida (arquivo legado mantido no servidor)."
             });
           } else {
-            const errorData = await response.json().catch(() => ({}));
-            console.warn('Failed to delete image from server:', response.status, errorData);
             toast({
               title: "Aviso",
-              description: "Não foi possível excluir do servidor, mas a imagem foi removida localmente.",
+              description: "Erro ao excluir do servidor: " + (errorData.message || "Erro desconhecido"),
               variant: "destructive"
             });
           }
-        } else {
-          console.log('Image does not belong to this store, skipping server deletion');
         }
-      }
-
-      // Always clear the preview and notify parent
-      setPreview("");
-      onImageChange(null, "");
-      
-      if (!currentImageUrl || !currentImageUrl.includes('/api/image/')) {
+      } else {
         toast({
           title: "Imagem removida",
-          description: "A imagem foi removida. Salve as alterações para confirmar."
+          description: "Imagem removida com sucesso."
         });
       }
     } catch (error) {
       console.error('Error during image removal:', error);
-      
-      // Still clear the preview and notify parent even if deletion fails
-      setPreview("");
-      onImageChange(null, "");
-      
       toast({
         title: "Erro",
-        description: "Erro ao excluir imagem do servidor, mas foi removida localmente.",
+        description: "Erro durante a remoção: " + error.message,
         variant: "destructive"
       });
     } finally {
@@ -187,14 +183,20 @@ export default function ImageUpload({
           </div>
         </div>
       ) : (
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors">
+        <div 
+          className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors cursor-pointer"
+          onClick={() => document.getElementById(`file-${label.replace(/\s+/g, '-')}`)?.click()}
+        >
           <ImageIcon className="w-12 h-12 mx-auto mb-4 text-gray-400" />
           <p className="text-gray-600 mb-4">Clique para selecionar uma imagem</p>
           <Button
             type="button"
             variant="outline"
             disabled={uploading}
-            onClick={() => document.getElementById(`file-${label}`)?.click()}
+            onClick={(e) => {
+              e.stopPropagation();
+              document.getElementById(`file-${label.replace(/\s+/g, '-')}`)?.click();
+            }}
           >
             <Upload className="w-4 h-4 mr-2" />
             {uploading ? "Enviando..." : "Selecionar Arquivo"}
@@ -203,7 +205,7 @@ export default function ImageUpload({
       )}
 
       <Input
-        id={`file-${label}`}
+        id={`file-${label.replace(/\s+/g, '-')}`}
         type="file"
         accept="image/*"
         onChange={handleFileSelect}
