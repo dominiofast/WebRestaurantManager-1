@@ -560,52 +560,108 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Menu item routes
-  app.get('/api/menu-items', requireAuth, async (req: any, res) => {
+  // Menu sections routes for stores
+  app.get('/api/menu-sections', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.id;
-      const categoryId = req.query.categoryId ? parseInt(req.query.categoryId as string) : undefined;
-      const menuItems = await storage.getMenuItems(userId, categoryId);
-      res.json(menuItems);
+      const store = await storage.getStoreByManagerId(req.session.userId);
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      const sections = await storage.getMenuSections(store.id);
+      res.json(sections);
     } catch (error) {
-      console.error("Error fetching menu items:", error);
-      res.status(500).json({ message: "Failed to fetch menu items" });
+      console.error("Error fetching menu sections:", error);
+      res.status(500).json({ message: "Erro interno do servidor" });
     }
   });
 
-  app.post('/api/menu-items', requireAuth, async (req: any, res) => {
+  app.post('/api/menu-sections', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.id;
-      const itemData = insertMenuItemSchema.parse({ ...req.body, userId });
-      const menuItem = await storage.createMenuItem(itemData);
-      res.status(201).json(menuItem);
+      const store = await storage.getStoreByManagerId(req.session.userId);
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      const sectionData = {
+        ...req.body,
+        storeId: store.id
+      };
+      
+      const section = await storage.createMenuSection(sectionData);
+      res.status(201).json(section);
     } catch (error) {
-      console.error("Error creating menu item:", error);
-      res.status(500).json({ message: "Failed to create menu item" });
+      console.error("Error creating menu section:", error);
+      res.status(500).json({ message: "Erro interno do servidor" });
     }
   });
 
-  app.put('/api/menu-items/:id', requireAuth, async (req: any, res) => {
+  // Menu products routes for stores
+  app.get('/api/menu-products', isAuthenticated, async (req: any, res) => {
     try {
-      const id = parseInt(req.params.id);
-      const itemData = insertMenuItemSchema.partial().parse(req.body);
-      const menuItem = await storage.updateMenuItem(id, itemData);
-      res.json(menuItem);
+      const store = await storage.getStoreByManagerId(req.session.userId);
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      const sectionId = req.query.sectionId ? parseInt(req.query.sectionId as string) : undefined;
+      const products = await storage.getMenuProducts(store.id, sectionId);
+      res.json(products);
     } catch (error) {
-      console.error("Error updating menu item:", error);
-      res.status(500).json({ message: "Failed to update menu item" });
+      console.error("Error fetching menu products:", error);
+      res.status(500).json({ message: "Erro interno do servidor" });
     }
   });
 
-  app.delete('/api/menu-items/:id', requireAuth, async (req: any, res) => {
+  app.post('/api/menu-products', isAuthenticated, async (req: any, res) => {
     try {
-      const id = parseInt(req.params.id);
-      const userId = req.user.id;
-      await storage.deleteMenuItem(id, userId);
+      const store = await storage.getStoreByManagerId(req.session.userId);
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      const productData = {
+        ...req.body,
+        storeId: store.id
+      };
+      
+      const product = await storage.createMenuProduct(productData);
+      res.status(201).json(product);
+    } catch (error) {
+      console.error("Error creating menu product:", error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.put('/api/menu-products/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const store = await storage.getStoreByManagerId(req.session.userId);
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      const productId = parseInt(req.params.id);
+      const product = await storage.updateMenuProduct(productId, req.body);
+      res.json(product);
+    } catch (error) {
+      console.error("Error updating menu product:", error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.delete('/api/menu-products/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const store = await storage.getStoreByManagerId(req.session.userId);
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      const productId = parseInt(req.params.id);
+      await storage.deleteMenuProduct(productId);
       res.status(204).send();
     } catch (error) {
-      console.error("Error deleting menu item:", error);
-      res.status(500).json({ message: "Failed to delete menu item" });
+      console.error("Error deleting menu product:", error);
+      res.status(500).json({ message: "Erro interno do servidor" });
     }
   });
 
