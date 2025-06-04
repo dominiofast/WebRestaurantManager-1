@@ -226,6 +226,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     next();
   };
 
+  // Middleware to check if user can access specific store by slug
+  const canAccessStoreBySlug = async (req: any, res: any, next: any) => {
+    try {
+      const { storeSlug } = req.params;
+      const store = await storage.getStoreBySlug(storeSlug);
+      
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      // Check if user can access this store
+      const accessibleStores = await getUserAccessibleStores(req.user.id, req.user.role);
+      const canAccess = accessibleStores.some(s => s.id === store.id);
+      
+      if (!canAccess) {
+        return res.status(403).json({ message: "Acesso negado - você não tem permissão para acessar esta loja" });
+      }
+
+      // Attach store to request for use in route handler
+      req.store = store;
+      next();
+    } catch (error) {
+      console.error('Error checking store access:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  };
+
   // Helper function to get user's accessible companies
   const getUserAccessibleCompanies = async (userId: string, userRole: string) => {
     if (userRole === 'super_admin') {
@@ -873,7 +900,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/stores/:id/menu-sections', async (req: any, res) => {
+  // Middleware to check if user can access specific store by ID
+  const canAccessStoreById = async (req: any, res: any, next: any) => {
+    try {
+      const storeId = parseInt(req.params.id);
+      if (isNaN(storeId)) {
+        return res.status(400).json({ message: "ID da loja inválido" });
+      }
+
+      // Check if user can access this store
+      const accessibleStores = await getUserAccessibleStores(req.user.id, req.user.role);
+      const canAccess = accessibleStores.some(s => s.id === storeId);
+      
+      if (!canAccess) {
+        return res.status(403).json({ message: "Acesso negado - você não tem permissão para acessar esta loja" });
+      }
+
+      next();
+    } catch (error) {
+      console.error('Error checking store access:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  };
+
+  app.get('/api/stores/:id/menu-sections', requireAuth, canAccessStoreById, async (req: any, res) => {
     try {
       const storeId = parseInt(req.params.id);
       const sections = await storage.getMenuSections(storeId);
@@ -884,7 +934,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/stores/:id/menu-products', async (req: any, res) => {
+  app.get('/api/stores/:id/menu-products', requireAuth, canAccessStoreById, async (req: any, res) => {
     try {
       const storeId = parseInt(req.params.id);
       const products = await storage.getMenuProducts(storeId);
@@ -960,7 +1010,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Public digital menu route - no authentication required
+  // Digital menu route - public access for customers
   app.get('/api/menu/:storeSlug', async (req, res) => {
     try {
       const { storeSlug } = req.params;
@@ -973,6 +1023,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(store);
     } catch (error) {
       console.error('Error fetching store by slug:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  // Protected digital menu route - for authenticated managers to access their own store
+  app.get('/api/manager/menu/:storeSlug', requireAuth, canAccessStoreBySlug, async (req: any, res) => {
+    try {
+      // Store already validated and attached by middleware
+      res.json(req.store);
+    } catch (error) {
+      console.error('Error fetching protected store by slug:', error);
       res.status(500).json({ message: "Erro interno do servidor" });
     }
   });

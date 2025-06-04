@@ -52,6 +52,7 @@ export default function TopBar() {
   const handleOpenDigitalMenu = () => {
     // Usar slug da loja se disponível
     if (store?.slug) {
+      // Abrir cardápio público para clientes
       window.open(`/menu/${store.slug}`, '_blank');
     } else {
       alert('Slug da loja não encontrado. Verifique as configurações da loja.');
