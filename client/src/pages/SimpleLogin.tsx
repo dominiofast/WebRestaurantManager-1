@@ -12,16 +12,41 @@ export default function SimpleLogin() {
   });
 
   const handleLogin = () => {
-    // Simple demo login - set user data in localStorage
-    const demoUser = {
-      id: "demo-user",
-      firstName: "Gerente",
-      lastName: "Demo",
-      email: credentials.email || "demo@restaurant.com",
-      role: "manager",
-      isAuthenticated: true,
-      ownerName: "Gerente Demo"
-    };
+    let demoUser;
+    
+    // Determine user role based on email
+    if (credentials.email === "admin@restaurant.com" || credentials.email === "superadmin") {
+      demoUser = {
+        id: "super-admin-user",
+        firstName: "Super",
+        lastName: "Admin",
+        email: credentials.email,
+        role: "super_admin",
+        isAuthenticated: true,
+        ownerName: "Super Admin"
+      };
+    } else if (credentials.email === "owner@restaurant.com" || credentials.email === "owner") {
+      demoUser = {
+        id: "owner-user",
+        firstName: "Proprietário",
+        lastName: "Demo",
+        email: credentials.email,
+        role: "owner",
+        isAuthenticated: true,
+        ownerName: "Proprietário Demo"
+      };
+    } else {
+      // Default to manager
+      demoUser = {
+        id: "manager-user",
+        firstName: "Gerente",
+        lastName: "Demo",
+        email: credentials.email || "manager@restaurant.com",
+        role: "manager",
+        isAuthenticated: true,
+        ownerName: "Gerente Demo"
+      };
+    }
 
     localStorage.setItem('restaurantUser', JSON.stringify(demoUser));
     
@@ -78,9 +103,17 @@ export default function SimpleLogin() {
               Entrar
             </Button>
             
-            <div className="text-center pt-4">
-              <p className="text-sm text-gray-600">
-                Demo: Use qualquer email/senha para entrar
+            <div className="text-center pt-4 space-y-2">
+              <p className="text-sm text-gray-600 font-medium">
+                Usuários disponíveis:
+              </p>
+              <div className="text-xs text-gray-500 space-y-1">
+                <div><strong>Super Admin:</strong> admin@restaurant.com ou superadmin</div>
+                <div><strong>Proprietário:</strong> owner@restaurant.com ou owner</div>
+                <div><strong>Gerente:</strong> qualquer outro email</div>
+              </div>
+              <p className="text-xs text-gray-400 mt-2">
+                Senha: qualquer valor
               </p>
             </div>
           </CardContent>
