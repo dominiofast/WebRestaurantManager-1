@@ -30,13 +30,7 @@ const getNavigationItems = (userRole: string) => {
     },
   ];
 
-  if (userRole === 'manager') {
-    baseItems.push({
-      href: "/digital-menu",
-      icon: Globe,
-      label: "Cardápio Digital",
-    });
-  }
+
 
   return baseItems;
 };

@@ -32,12 +32,10 @@ export default function Customers() {
 
   const { data: customers = [], isLoading: isLoadingCustomers } = useQuery({
     queryKey: ['/api/customers', search],
-    queryFn: () => apiRequest(`/api/customers${search ? `?search=${encodeURIComponent(search)}` : ''}`),
   });
 
   const { data: stats, error: statsError } = useQuery({
     queryKey: ['/api/customers/stats'],
-    queryFn: () => apiRequest('/api/customers/stats'),
     retry: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -62,10 +60,7 @@ export default function Customers() {
   });
 
   const createCustomerMutation = useMutation({
-    mutationFn: (data: CustomerFormData) => apiRequest('/api/customers', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }),
+    mutationFn: (data: CustomerFormData) => apiRequest('POST', '/api/customers', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/customers'] });
       queryClient.invalidateQueries({ queryKey: ['/api/customers/stats'] });
@@ -80,10 +75,7 @@ export default function Customers() {
 
   const updateCustomerMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: Partial<CustomerFormData> }) =>
-      apiRequest(`/api/customers/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify(data),
-      }),
+      apiRequest('PUT', `/api/customers/${id}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/customers'] });
       setIsEditDialogOpen(false);
@@ -95,7 +87,7 @@ export default function Customers() {
   });
 
   const deleteCustomerMutation = useMutation({
-    mutationFn: (id: number) => apiRequest(`/api/customers/${id}`, { method: 'DELETE' }),
+    mutationFn: (id: number) => apiRequest('DELETE', `/api/customers/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/customers'] });
       queryClient.invalidateQueries({ queryKey: ['/api/customers/stats'] });
