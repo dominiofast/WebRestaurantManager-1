@@ -52,7 +52,7 @@ export default function TopBar() {
   const handleOpenDigitalMenu = () => {
     // Usar slug da loja se disponível, senão usar um padrão
     const slug = store?.slug || 'don-giuseppe-paulista';
-    window.open(`/digital-menu/${slug}`, '_blank');
+    window.open(`/menu/${slug}`, '_blank');
   };
 
   const { time, date } = getCurrentDateTime();
