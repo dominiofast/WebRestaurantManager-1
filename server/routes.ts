@@ -1206,21 +1206,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('Body:', JSON.stringify(webhookData, null, 2));
       console.log('========================');
       
-      // Check if it's an incoming message
-      if (webhookData.event === 'onMessage' || webhookData.event === 'messages.upsert') {
-        console.log('[Webhook] Message event detected');
+      // Process Mega API webhook format
+      let messageText = '';
+      let fromNumber = '';
+      let isFromMe = false;
+
+      // Handle different Mega API message formats
+      if (webhookData.messageType) {
+        console.log('[Webhook] Mega API format detected, messageType:', webhookData.messageType);
+        
+        // Extract sender information
+        if (webhookData.key) {
+          fromNumber = webhookData.key.remoteJid || webhookData.jid;
+          isFromMe = webhookData.key.fromMe;
+          
+          // Extract message text based on messageType
+          if (webhookData.messageType === 'conversation' && webhookData.message?.conversation) {
+            messageText = webhookData.message.conversation;
+          } else if (webhookData.messageType === 'extendedTextMessage' && webhookData.message?.extendedTextMessage?.text) {
+            messageText = webhookData.message.extendedTextMessage.text;
+          } else if (webhookData.messageType === 'ephemeralMessage' && webhookData.message?.ephemeralMessage?.message?.extendedTextMessage?.text) {
+            messageText = webhookData.message.ephemeralMessage.message.extendedTextMessage.text;
+          }
+          
+          console.log('[Webhook] Extracted - From:', fromNumber, 'Text:', messageText, 'FromMe:', isFromMe);
+          
+          if (messageText && !isFromMe) {
+            console.log('[Webhook] Valid incoming message found');
+            // Get WhatsApp instance
+            const instance = await storage.getWhatsappInstance(storeId);
+            console.log('[Webhook] Instance found:', instance);
+            
+            if (instance && instance.isActive) {
+              console.log('[Webhook] Instance is active, processing message');
+              
+              // Create message object for processing
+              const processedMessage = {
+                from: fromNumber,
+                body: messageText,
+                fromMe: isFromMe
+              };
+              
+              await processWhatsAppMessage(storeId, processedMessage, instance);
+            } else {
+              console.log('[Webhook] Instance not active or not found');
+            }
+          } else {
+            console.log('[Webhook] Message criteria not met - Text:', messageText, 'FromMe:', isFromMe);
+          }
+        }
+      } 
+      // Fallback to old format for backward compatibility
+      else if (webhookData.event === 'onMessage' || webhookData.event === 'messages.upsert') {
+        console.log('[Webhook] Legacy format detected');
         const message = webhookData.data || webhookData.message;
         console.log('[Webhook] Message object:', message);
         
         if (message && !message.fromMe && message.body) {
           console.log('[Webhook] Valid incoming message found');
-          // Get WhatsApp instance and AI agent for this store
           const instance = await storage.getWhatsappInstance(storeId);
           console.log('[Webhook] Instance found:', instance);
           
           if (instance && instance.isActive) {
             console.log('[Webhook] Instance is active, processing message');
-            // Process message with AI agent
             await processWhatsAppMessage(storeId, message, instance);
           } else {
             console.log('[Webhook] Instance not active or not found');
@@ -1229,7 +1277,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.log('[Webhook] Message does not meet criteria - fromMe:', message?.fromMe, 'body:', message?.body);
         }
       } else {
-        console.log('[Webhook] Not a message event:', webhookData.event);
+        console.log('[Webhook] Unknown webhook format - checking for messageType:', !!webhookData.messageType);
+        console.log('[Webhook] Available keys:', Object.keys(webhookData));
       }
       
       res.status(200).json({ success: true });

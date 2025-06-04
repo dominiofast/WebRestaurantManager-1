@@ -1,0 +1,722 @@
+# Exemplos dos retorno do webhook megaAPI
+
+<br>
+# Mensagens do tipo texto
+
+📄**Mensagens recebidas tipo texto (messageType: extendedTextMessage)**
+```json
+{
+  "instance_key": "megacode-api",
+  "jid": "556181926137@s.whatsapp.net",
+  "messageType": "extendedTextMessage",
+  "key": {
+    "remoteJid": "556195562618@s.whatsapp.net",
+    "fromMe": false,
+    "id": "9C5B21ADD634874129261EF0189B64D3"
+  },
+  "messageTimestamp": 1730154730,
+  "pushName": "Script7 Software House",
+  "broadcast": false,
+  "message": {
+    "extendedTextMessage": {
+      "text": "megaAPI- a melhor api para whatsapp do Brasil",
+      "previewType": "NONE",
+      "contextInfo": {
+        "expiration": 0,
+        "ephemeralSettingTimestamp": "1728973669",
+        "disappearingMode": {
+          "initiator": "CHANGED_IN_CHAT",
+          "trigger": "UNKNOWN",
+          "initiatedByMe": false
+        }
+      },
+      "inviteLinkGroupTypeV2": "DEFAULT"
+    },
+    "messageContextInfo": {
+      "deviceListMetadata": {
+        "senderKeyHash": "ycK+vKEEeW1ovw==",
+        "senderTimestamp": "1728944040",
+        "recipientKeyHash": "PWrJrmLSRSG4qg==",
+        "recipientTimestamp": "1730123372"
+      },
+      "deviceListMetadataVersion": 2,
+      "messageSecret": "bmn1HoVsx8Q+oRJ8VZtVaiC+Brx2zZ9wJ/yct94UhtQ="
+    }
+  }
+}
+```
+
+📄**Mensagens recebidas tipo texto (messageType: conversation)**
+
+```json
+{
+  "instance_key": "megacode-api",
+  "jid": "556182796341@s.whatsapp.net",
+  "isBusiness": false,
+  "messageType": "conversation",
+  "key": {
+	"remoteJid": "556195562618@s.whatsapp.net",
+	"fromMe": false,
+	"id": "ED8D5F177503C2F317DDAAA63635B06C"
+  },
+  "messageTimestamp": 1704815264,
+  "pushName": "Megaapi",
+  "broadcast": false,
+  "message": {
+	"conversation": "megaAPI- a melhor api para whatsapp do Brasil",
+	"messageContextInfo": {
+	  "deviceListMetadata": {
+		"senderKeyHash": "mkzk2kJzmE7+/Q==",
+		"senderTimestamp": "1704719930",
+		"recipientKeyHash": "5225lp0hE2wpPQ==",
+		"recipientTimestamp": "1704813552"
+	  },
+	  "deviceListMetadataVersion": 2
+	}
+  },
+  "verifiedBizName": "Megaapi"
+}
+```
+
+📄**Mensagens recebidas tipo texto (messageType: ephemeralMessage)**
+
+
+```json
+{
+    "instance_key": "megacode-api",
+    "jid": "5511999999999@s.whatsapp.net",
+    "isBusiness": true,
+    "messageType": "ephemeralMessage",
+    "key": {
+        "remoteJid": "556195562618@s.whatsapp.net",
+        "fromMe": false,
+        "id": "D2042AF1FC6CD1CE28"
+    },
+    "messageTimestamp": 1705607198,
+    "pushName": "Megaapi",
+    "broadcast": false,
+    "message": {
+        "messageContextInfo": {
+            "deviceListMetadata": {
+                "senderKeyHash": "zdsXt16gneppKQ==",
+                "senderTimestamp": "1705578467",
+                "recipientKeyHash": "4/XmyrdO+9At+A==",
+                "recipientTimestamp": "1705526548"
+            },
+            "deviceListMetadataVersion": 2
+        },
+        "ephemeralMessage": {
+            "message": {
+                "extendedTextMessage": {
+                    "text": "ola",
+                    "contextInfo": {
+                        "expiration": 86400,
+                        "ephemeralSettingTimestamp": "1705526476",
+                        "disappearingMode": {
+                            "initiator": "INITIATED_BY_OTHER"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+```
+# Mensagens do tipo arquivos
+
+📄**Mensagens recebidas tipo arquivo (messageType: audioMessage)**
+
+```json
+{
+  "instance_key": "megacode-api",
+  "jid": "556181926137@s.whatsapp.net",
+  "messageType": "audioMessage",
+  "key": {
+    "remoteJid": "556195562618@s.whatsapp.net",
+    "fromMe": false,
+    "id": "4005589B84590C6282F04197F8C9BA8A"
+  },
+  "messageTimestamp": 1730155359,
+  "pushName": "Script7 Software House",
+  "broadcast": false,
+  "message": {
+    "audioMessage": {
+      "url": "https://mmg.whatsapp.net/v/t62.7117-24/35296433_903780548361634_1935954541919485522_n.enc?ccb=11-4&oh=01_Q5AaIBR8Nn4clQhms3wBfR16XPKRLw5bkakBx1vKmD_jayj_&oe=67477D50&_nc_sid=5e03e0&mms3=true",
+      "mimetype": "audio/ogg; codecs=opus",
+      "fileSha256": "Cm7nhpDJJ7dU6n1a9bideUprLFzu6zZLYWfw202GcCo=",
+      "fileLength": "2881",
+      "seconds": 3,
+      "ptt": true,
+      "mediaKey": "P3Ww9GploUDS7ip6sAjoWEWuy4EHHOO29RpUVoMPoFI=",
+      "fileEncSha256": "dgMdYh+GggRovYCMsZ8ittPH/hItfCh1X3Kn4PqcfFg=",
+      "directPath": "/v/t62.7117-24/35296433_903780548361634_1935954541919485522_n.enc?ccb=11-4&oh=01_Q5AaIBR8Nn4clQhms3wBfR16XPKRLw5bkakBx1vKmD_jayj_&oe=67477D50&_nc_sid=5e03e0",
+      "mediaKeyTimestamp": "1730155359",
+      "contextInfo": {
+        "expiration": 0,
+        "ephemeralSettingTimestamp": "1728973669",
+        "disappearingMode": {
+          "initiator": "CHANGED_IN_CHAT",
+          "trigger": "UNKNOWN",
+          "initiatedByMe": false
+        }
+      },
+      "waveform": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
+    },
+    "messageContextInfo": {
+      "deviceListMetadata": {
+        "senderKeyHash": "ycK+vKEEeW1ovw==",
+        "senderTimestamp": "1728944040",
+        "recipientKeyHash": "PWrJrmLSRSG4qg==",
+        "recipientTimestamp": "1730123372"
+      },
+      "deviceListMetadataVersion": 2,
+      "messageSecret": "Zf8OwFX11ku/ss3TRIMCOH1+fs4i4FDPe3ZTXmitvTo="
+    }
+  }
+}
+```
+
+📄**Mensagens recebidas tipo arquivo (messageType: videoMessage)**
+
+```json
+{
+  "instance_key": "megacode-api",
+  "jid": "556181926137@s.whatsapp.net",
+  "messageType": "videoMessage",
+  "key": {
+    "remoteJid": "556195562618@s.whatsapp.net",
+    "fromMe": false,
+    "id": "34B2EA1371646D72ECF8BD82EDD58087"
+  },
+  "messageTimestamp": 1730155566,
+  "pushName": "Script7 Software House",
+  "broadcast": false,
+  "message": {
+    "videoMessage": {
+      "url": "https://mmg.whatsapp.net/v/t62.7161-24/12100394_880658200461908_2656555109503613464_n.enc?ccb=11-4&oh=01_Q5AaIAdedlswzfcwJml_JY_TWRhS0kB0N4Fgd-4oCh0uE7pK&oe=674776F8&_nc_sid=5e03e0&mms3=true",
+      "mimetype": "video/mp4",
+      "fileSha256": "ow6R2cirEmLVt9kyQs/Adr6GmVUSNsUS2CWhG9P0/hs=",
+      "fileLength": "881861",
+      "seconds": 3,
+      "mediaKey": "wiNsjXDFdBhAAOvH04P9PZbYKtnSgKky4sNlZZZrKmA=",
+      "height": 850,
+      "width": 474,
+      "fileEncSha256": "R7pbH8PXUNJ1hSW/G+L3B9XhLvw0i4xSLL7Nftlb3x4=",
+      "directPath": "/v/t62.7161-24/12100394_880658200461908_2656555109503613464_n.enc?ccb=11-4&oh=01_Q5AaIAdedlswzfcwJml_JY_TWRhS0kB0N4Fgd-4oCh0uE7pK&oe=674776F8&_nc_sid=5e03e0",
+      "mediaKeyTimestamp": "1730155565",
+      "jpegThumbnail": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEABsbGxscGx4hIR4qLSgtKj04MzM4PV1CR0JHQl2NWGdYWGdYjX2Xe3N7l33gsJycsOD/2c7Z//////////////8BGxsbGxwbHiEhHiotKC0qPTgzMzg9XUJHQkdCXY1YZ1hYZ1iNfZd7c3uXfeCwnJyw4P/Zztn////////////////CABEIAEgAKAMBIgACEQEDEQH/xAAsAAADAQEBAAAAAAAAAAAAAAAAAgMEAQUBAQEAAAAAAAAAAAAAAAAAAAAB/9oADAMBAAIQAxAAAADG1KpPtOLIcjrypZ0BVGJctMtE0EulSQuZs0zdzI5ckCqCW9MFxgH/xAAhEAACAgICAQUAAAAAAAAAAAAAAQIRAxITICEQIjFRcf/aAAgBAQABPwD3MULFBIoZGIolDQ0R6NCYn0UhSNjdEZpiEhIo+DdCyr6OX8OY3bumM8+nHkq9GYrtqicZRdSVMoww2mQzY6p+DK4OVxP/xAAYEQACAwAAAAAAAAAAAAAAAAAAARAwMf/aAAgBAgEBPwCxYOP/xAAWEQADAAAAAAAAAAAAAAAAAAABEDD/2gAIAQMBAT8AqF//2Q==",
+      "contextInfo": {
+        "expiration": 0,
+        "ephemeralSettingTimestamp": "1728973669",
+        "disappearingMode": {
+          "initiator": "CHANGED_IN_CHAT",
+          "trigger": "UNKNOWN",
+          "initiatedByMe": false
+        }
+      },
+      "streamingSidecar": "cl1ypzQR6royJbe5JFg6viCsCOFjjc/Eyp/GvfKQP5hMaiV0vX3I1TKMeJL04vz9xNjgzJc9+DpvEcrVTFRBk5lGS6jXCySVNetsriOMC88FJZOK6sPnGw5ciM3bjU4WCG/ieeSnHd9qoQuWawPutzDh7PK0xh77xkG0CN8zR7E5urXzhEH+u/QNWkw="
+    },
+    "messageContextInfo": {
+      "deviceListMetadata": {
+        "senderKeyHash": "ycK+vKEEeW1ovw==",
+        "senderTimestamp": "1728944040",
+        "recipientKeyHash": "PWrJrmLSRSG4qg==",
+        "recipientTimestamp": "1730123372"
+      },
+      "deviceListMetadataVersion": 2,
+      "messageSecret": "fQRoXcWFERjY3wbm9cFCR77nNaMPoFN+6/JhTZmjkRE="
+    }
+  }
+}
+```
+
+📄**Mensagens recebidas tipo arquivo (messageType: videoMessage(GIF))**
+
+```json
+{
+  "instance_key": "megacode-api",
+  "jid": "556181926137@s.whatsapp.net",
+  "messageType": "videoMessage",
+  "key": {
+    "remoteJid": "556195562618@s.whatsapp.net",
+    "fromMe": false,
+    "id": "B0750BFD36D2C811E606D565881B067C"
+  },
+  "messageTimestamp": 1730155932,
+  "pushName": "Script7 Software House",
+  "broadcast": false,
+  "message": {
+    "videoMessage": {
+      "url": "https://mmg.whatsapp.net/o1/v/t62.9505-24/f1/m232/up-oil-gif-558e0ab1-37a4-4c24-9cd2-6923a52d8012?ccb=9-4&oh=01_Q5AaIB-bppl-l-eGKt4qf9cHCQKNIdj1X_h_nvqZXAVk3ZUA&oe=6747A100&_nc_sid=e6ed6c&mms3=true",
+      "mimetype": "video/mp4",
+      "fileSha256": "ixPmPJoOi9JqFaOhhCQk07Y6TkbicJgJ7T2hewx8I/U=",
+      "fileLength": "116726",
+      "seconds": 10,
+      "mediaKey": "+y7QYV0U9Vdyg6lEqPEd1ylz/6Kb/aK74r5lvZFoc8M=",
+      "gifPlayback": true,
+      "height": 100,
+      "width": 118,
+      "fileEncSha256": "R/Re3GfTKsiQlaodXb31iCqW1tfHoAmiWjHnH5SaLTk=",
+      "directPath": "/o1/v/t62.9505-24/f1/m232/up-oil-gif-558e0ab1-37a4-4c24-9cd2-6923a52d8012?ccb=9-4&oh=01_Q5AaIB-bppl-l-eGKt4qf9cHCQKNIdj1X_h_nvqZXAVk3ZUA&oe=6747A100&_nc_sid=e6ed6c",
+      "mediaKeyTimestamp": "1730155931",
+      "jpegThumbnail": "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",
+      "contextInfo": {
+        "expiration": 0,
+        "ephemeralSettingTimestamp": "1728973669",
+        "disappearingMode": {
+          "initiator": "CHANGED_IN_CHAT",
+          "trigger": "UNKNOWN",
+          "initiatedByMe": false
+        }
+      },
+      "gifAttribution": "TENOR",
+      "accessibilityLabel": "a map of the united states filled with chocolates and candy"
+    },
+    "messageContextInfo": {
+      "deviceListMetadata": {
+        "senderKeyHash": "ycK+vKEEeW1ovw==",
+        "senderTimestamp": "1728944040",
+        "recipientKeyHash": "PWrJrmLSRSG4qg==",
+        "recipientTimestamp": "1730123372"
+      },
+      "deviceListMetadataVersion": 2,
+      "messageSecret": "BOtX2YSKO5rvFa6GSW1DjR0fqsNSDq9AIu7hJFq8y50="
+    }
+  }
+}
+```
+
+📄**Mensagens recebidas tipo arquivo (messageType: imageMessage)**
+```json
+{
+  "instance_key": "megacode-api",
+  "jid": "556181926137@s.whatsapp.net",
+  "messageType": "imageMessage",
+  "key": {
+    "remoteJid": "556195562618@s.whatsapp.net",
+    "fromMe": false,
+    "id": "C0BB2793A662CB7C288DA240E1F46853"
+  },
+  "messageTimestamp": 1730155655,
+  "pushName": "Script7 Software House",
+  "broadcast": false,
+  "message": {
+    "imageMessage": {
+      "url": "https://mmg.whatsapp.net/v/t62.7118-24/29988624_513525821512879_7617516785007954852_n.enc?ccb=11-4&oh=01_Q5AaIFkJVSxLLtuARjZcRBku4e-raiKJcu9rKumZrDV0ylOy&oe=674770BA&_nc_sid=5e03e0&mms3=true",
+      "mimetype": "image/jpeg",
+      "fileSha256": "WaqMCWZjGwbPp9eVmQryIzUCMtX29WkbYamYqCPQeE0=",
+      "fileLength": "249989",
+      "height": 1280,
+      "width": 1280,
+      "mediaKey": "KFqxmUg7qbmdo9+4hTIshxiavPwYRhEzOaPpirimJ1w=",
+      "fileEncSha256": "UAxv2KFgiH+8XugZSsDTaUwwj63raXRKfORfmT1eipQ=",
+      "directPath": "/v/t62.7118-24/29988624_513525821512879_7617516785007954852_n.enc?ccb=11-4&oh=01_Q5AaIFkJVSxLLtuARjZcRBku4e-raiKJcu9rKumZrDV0ylOy&oe=674770BA&_nc_sid=5e03e0",
+      "mediaKeyTimestamp": "1730155654",
+      "jpegThumbnail": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEABsbGxscGx4hIR4qLSgtKj04MzM4PV1CR0JHQl2NWGdYWGdYjX2Xe3N7l33gsJycsOD/2c7Z//////////////8BGxsbGxwbHiEhHiotKC0qPTgzMzg9XUJHQkdCXY1YZ1hYZ1iNfZd7c3uXfeCwnJyw4P/Zztn////////////////CABEIAEgASAMBIgACEQEDEQH/xAAwAAADAQEBAQAAAAAAAAAAAAAAAgMEAQUGAQADAQEAAAAAAAAAAAAAAAAAAgMBBP/aAAwDAQACEAMQAAAA+dt6eKkKPajSys9Kyn53r4pW849cSzLLXblx06I66I2dMztxWmKK0rTHNUkfFfvcYbcbKbEcldNPnvjbprnCtVjuV7BMbURMIgDaOBqtlAO0DSQC7//EACIQAAICAgICAwEBAAAAAAAAAAECABEDEiExBEETIjIQof/aAAgBAQABPwALFSzV1MWFObBNTTEbKpGx4jVJUHj429RvBQL+6mTCVau4Vh8cYxTAVHTU0PXU8dN1LBoo0sV3CaJ4mMkR3K2f9gU5CR7PZj4vGQDZrmNieS0fEGXa+ZjYo0OUXYu4GszbGFrYzI75CFuxAmid8mfF7Y0ILMTIqjniMtm6oQIrGgZ8epq46IqAgm4m6ncgQsp6bmZVqvvBkK9dxD7abL6NymQ2REstwRGazz1PkFR7YkrPs0x01sBz6jFq6g2ADVFZslg8whAOGGw9TYiAlpeNbs3GyrdqpqIzIQIc6/kiHItbLFyIFPNExFQmzdzIFubjYDq46Kt2bjZFGOgsUmbAm7mLJ8fGoNzJauRMa0pYmjMjsSG2gKVZPMJJaZClAQPUX9AwOGezM1PkDL1MrHWh/GFTZSBY6hNmf//EABwRAQEAAgMBAQAAAAAAAAAAAAEAAhEQEiFRQf/aAAgBAgEBPwDrqHBUPyA+WQfJxteQab3hzxIzJbtORdnjc+W7fGpdrz//xAAfEQEAAgIBBQEAAAAAAAAAAAABAAIREhAhMUFCUWH/2gAIAQMBAT8A32lmwRtb7KWtjLaF52YokdcxVIVX2YnjEDE1yytMTE0JofIJZfyakKhwvSVAqc//2Q==",
+      "contextInfo": {
+        "expiration": 0,
+        "ephemeralSettingTimestamp": "1728973669",
+        "disappearingMode": {
+          "initiator": "CHANGED_IN_CHAT",
+          "trigger": "UNKNOWN",
+          "initiatedByMe": false
+        }
+      },
+      "scansSidecar": "FY2bmwaYliVILRXt1EcKmJM1MT8=",
+      "scanLengths": [
+        21891,
+        228098
+      ]
+    },
+    "messageContextInfo": {
+      "deviceListMetadata": {
+        "senderKeyHash": "ycK+vKEEeW1ovw==",
+        "senderTimestamp": "1728944040",
+        "recipientKeyHash": "PWrJrmLSRSG4qg==",
+        "recipientTimestamp": "1730123372"
+      },
+      "deviceListMetadataVersion": 2,
+      "messageSecret": "is9rdIRhou6Vu+Za5xlt8iJLhYUqRNV9QCmSahI1u2U="
+    }
+  }
+}
+```
+
+📄**Mensagens recebidas tipo arquivo (messageType: stickerMessage)**
+```json
+{
+  "instance_key": "megacode-api",
+  "jid": "556181926137@s.whatsapp.net",
+  "messageType": "stickerMessage",
+  "key": {
+    "remoteJid": "556195562618@s.whatsapp.net",
+    "fromMe": false,
+    "id": "C33911123FC0F31C3C6A506E3F0BDE27"
+  },
+  "messageTimestamp": 1730155742,
+  "pushName": "Script7 Software House",
+  "broadcast": false,
+  "message": {
+    "stickerMessage": {
+      "url": "https://mmg.whatsapp.net/v/t62.15575-24/13810872_558684390144084_1179557163018922191_n.enc?ccb=11-4&oh=01_Q5AaII0JdmsvQ5o5BANh4hLHrQRfYlWJ1P27o8i9sEHbB7Xp&oe=6747A182&_nc_sid=5e03e0",
+      "fileSha256": "K5Io5iGp0uGNyUxpLCm/91zvcM/5PalOQ/znMi7RjLo=",
+      "fileEncSha256": "ub+m4d5cWk6Wv4eBOlySbfpc8I95jQrv9f6qCEX+dmg=",
+      "mediaKey": "uJ1eX+R3QdbTAyZx5HzqwYeazNsh33mIGG8Vh2+uS6k=",
+      "mimetype": "image/webp",
+      "directPath": "/v/t62.15575-24/13810872_558684390144084_1179557163018922191_n.enc?ccb=11-4&oh=01_Q5AaII0JdmsvQ5o5BANh4hLHrQRfYlWJ1P27o8i9sEHbB7Xp&oe=6747A182&_nc_sid=5e03e0",
+      "fileLength": "94750",
+      "mediaKeyTimestamp": "1730155741",
+      "isAnimated": false,
+      "contextInfo": {
+        "expiration": 0,
+        "ephemeralSettingTimestamp": "1728973669",
+        "disappearingMode": {
+          "initiator": "CHANGED_IN_CHAT",
+          "trigger": "UNKNOWN",
+          "initiatedByMe": false
+        }
+      },
+      "stickerSentTs": "1730155741813",
+      "isAvatar": false,
+      "isAiSticker": false,
+      "isLottie": false
+    },
+    "messageContextInfo": {
+      "deviceListMetadata": {
+        "senderKeyHash": "ycK+vKEEeW1ovw==",
+        "senderTimestamp": "1728944040",
+        "recipientKeyHash": "PWrJrmLSRSG4qg==",
+        "recipientTimestamp": "1730123372"
+      },
+      "deviceListMetadataVersion": 2,
+      "messageSecret": "BsRR34wrciEf2Lvrw8bSrecArFyzWXv12gMqwtia7ww="
+    }
+  }
+}
+```
+
+📄**Mensagens recebidas tipo arquivo (messageType: documentMessage)**
+
+```json
+{
+  "instance_key": "megacode-api",
+  "jid": "556181926137@s.whatsapp.net",
+  "messageType": "documentMessage",
+  "key": {
+    "remoteJid": "556195562618@s.whatsapp.net",
+    "fromMe": false,
+    "id": "6B8FCD4772DB7DABE94BC1CF615903FE"
+  },
+  "messageTimestamp": 1730156011,
+  "pushName": "Script7 Software House",
+  "broadcast": false,
+  "message": {
+    "documentMessage": {
+      "url": "https://mmg.whatsapp.net/v/t62.7119-24/19058084_1601064390767002_4079774746444997786_n.enc?ccb=11-4&oh=01_Q5AaIDNkIMGmRw-2dUR2FLPsq7LDsV9SUtPxAlWVJ-OxOPb_&oe=67477CA3&_nc_sid=5e03e0&mms3=true",
+      "mimetype": "application/pdf",
+      "fileSha256": "NOw6/zCb33IZFUusxXGnejT2iNscny06BgMuirkSHNY=",
+      "fileLength": "1985112",
+      "pageCount": 9,
+      "mediaKey": "qx+KRq2asx+3W59YPDNIOGijENEWW6yyKsLggolhWKI=",
+      "fileName": "[ REAL ] WHATSAPP INBANÍVEL EM 3 HORAS.pdf",
+      "fileEncSha256": "YoJZMJujv1glj19EnKDoDiYbCIjHjCDT416hhJqSqxA=",
+      "directPath": "/v/t62.7119-24/19058084_1601064390767002_4079774746444997786_n.enc?ccb=11-4&oh=01_Q5AaIDNkIMGmRw-2dUR2FLPsq7LDsV9SUtPxAlWVJ-OxOPb_&oe=67477CA3&_nc_sid=5e03e0",
+      "mediaKeyTimestamp": "1730156009",
+      "thumbnailDirectPath": "/v/t62.36145-24/25224532_2618277171713836_5980308850610534603_n.enc?ccb=11-4&oh=01_Q5AaIForCgA822ifGqRRzZBADQvd7XW0l18VIiKGHr0oI1MY&oe=67476C37&_nc_sid=5e03e0",
+      "thumbnailSha256": "CzHfTfA/Uyi63d+s3d97As8lTwe2vXXl4XC1croPT6U=",
+      "thumbnailEncSha256": "kPQaag30BhvMJC5Q9A2yc82Y0rH6S/d2+4z94Tf6sq8=",
+      "jpegThumbnail": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEABERERESERMVFRMaHBkcGiYjICAjJjoqLSotKjpYN0A3N0A3WE5fTUhNX06MbmJiboyiiIGIosWwsMX46/j///8BERERERIRExUVExocGRwaJiMgICMmOiotKi0qOlg3QDc3QDdYTl9NSE1fToxuYmJujKKIgYiixbCwxfjr+P/////CABEIAGAARAMBIgACEQEDEQH/xAAxAAACAgMBAAAAAAAAAAAAAAAABgEEAgMHBQEBAQEBAQAAAAAAAAAAAAAAAAECAwT/2gAMAwEAAhADEAAAAPcoV1gY9C/psZhZBm3KYdnJJUhPbVSzE151JaCqW6J2oDNQ1xqW95raLkW2irhzWPOsxXYSSVN8D31HPC+UBi/FEL2NMXr5Jr0pCyyqtm2xSxL+iuFjVgHZAJUdT6F4aLMssC1LGIuDGHQCBr//xAA3EAABAwICBgkDAgcBAAAAAAABAAIDBBEFEgZRUpGSshMVFiExNEFTczVidCKBECAjMkRhcaH/2gAIAQEAAT8AxjEqqixCmpYclpYwbuT9IcUp5p4WxQP6M97sj0/SLFh/js4XLtViGxEu1WIbES7VYhsRLtViHtxKHSrEs5tDAqeQywQyEAF8bXH9wtLvqlL8A5ipJZY5Hlk7zmNy4Ei6NRUEEGaSx8f1H+ai8lS/CzlWlxy4pT/jKxVirH+FjqVirFUXkqX4Wcq0xJGJ0wAuTTqYTQPcyWJ7XAXI1LpiRfK6yje+YkMaSQLlGirrkGndcDWEKStc7KIHE/8AQjQ14tenfvCe90byx7XNcDYgqi8lS/CzlWmTXnFKQs8RAFLNiDql84PRveB4LpsSDj/VdchQx1dO4ujNiRZRV9ZGwNMQJBuSnV1U7xhHipKyvdYRgMsTf1UrKmWTpJTdyovJUvws5VpaSMUp/wAYcxRdMe9zb21krO7ZXSHUs5WZ2srMdZRJI7yqLyVL8LOVaU0z6jE4Qwjyo5iuranbjXVtTtxrqup240cKqduJdWVO3GurKnbjT8NqGsc4ujsASqLyVL8LOVaVsJxGIh5balHMVnk9x/EVnk9x/EVnk9x/EVnk9x/EVnk9x/EVnk9x/EUXvsbyP3lUXkqX4Wcq0v8AqcH4w5iunf8AbwhdM/v/ALe/7QuniPiHcLUJoh4h3C1Omd3gWy/7aEZnk+DOEJ7i7vNvD0FlReSpfhZyrS/6lB+MELH1bvCFjbvbvCLgPUbws42v/VnbrG9Z26xvWYFUXkqX4Wcq0w+owfjKwGrev0geiLQdW9ADWN6s3w7t4WUa27wiBb0VF5Kl+FnKsfwmsr66OWCwDYQxdnMW2xxFdm8V2xxFHRrFHCxeOIrsviWtu8rsxiX2rsxiX2LsviWtipmGOngY7xbG1p/YL//EACARAAEDBAIDAAAAAAAAAAAAAAEAAhEDMFKREFEhQZL/2gAIAQIBAT8AtANjyTKhnZRp0+3fRQDQIE8EO9OCipkNKKmQ0ofkNXP/xAAkEQABAwEIAwEAAAAAAAAAAAABAAIREgMEECJRU2GSIDBBYv/aAAgBAwEBPwCDEyImPUQ6oQAsw+Kp3Ck4Pbbl2S0aBpCovW83qqLzut6qi87revhIUjCBooGij8hRwMP/2Q==",
+      "contextInfo": {
+        "expiration": 0,
+        "ephemeralSettingTimestamp": "1728973669",
+        "disappearingMode": {
+          "initiator": "CHANGED_IN_CHAT",
+          "trigger": "UNKNOWN",
+          "initiatedByMe": false
+        }
+      },
+      "thumbnailHeight": 480,
+      "thumbnailWidth": 339
+    },
+    "messageContextInfo": {
+      "deviceListMetadata": {
+        "senderKeyHash": "ycK+vKEEeW1ovw==",
+        "senderTimestamp": "1728944040",
+        "recipientKeyHash": "PWrJrmLSRSG4qg==",
+        "recipientTimestamp": "1730123372"
+      },
+      "deviceListMetadataVersion": 2,
+      "messageSecret": "NoFeCdTIPWC4/6QtdE8taQhSIVGfCK/p9xWRwen63Bk="
+    }
+  }
+}
+```
+
+📄**Mensagens recebidas tipo arquivo (messageType: documentWithCaptionMessage)**
+
+```json
+{
+  "instance_key": "megacode-api",
+  "jid": "556181926137@s.whatsapp.net",
+  "messageType": "documentWithCaptionMessage",
+  "key": {
+    "remoteJid": "556195562618@s.whatsapp.net",
+    "fromMe": false,
+    "id": "3EB0A441454DB81F66D419"
+  },
+  "messageTimestamp": 1730156182,
+  "pushName": "Script7 Software House",
+  "broadcast": false,
+  "message": {
+    "messageContextInfo": {
+      "deviceListMetadata": {
+        "senderKeyHash": "ycK+vKEEeW1ovw==",
+        "senderTimestamp": "1728944040",
+        "senderAccountType": "E2EE",
+        "receiverAccountType": "E2EE",
+        "recipientKeyHash": "PWrJrmLSRSG4qg==",
+        "recipientTimestamp": "1730123372"
+      },
+      "deviceListMetadataVersion": 2,
+      "messageSecret": "d6C9v2WSV1GXoDJ7oQ9v6OPTrSVD41VeI1EUtj4ubWE="
+    },
+    "documentWithCaptionMessage": {
+      "message": {
+        "documentMessage": {
+          "url": "https://mmg.whatsapp.net/v/t62.7119-24/30702935_1609924572893197_8673618234141275962_n.enc?ccb=11-4&oh=01_Q5AaIIO8Rj0LEurmck0CA2UL3c7twIO-sDo2gQPqNSDxZjvF&oe=67477FEF&_nc_sid=5e03e0&mms3=true",
+          "mimetype": "application/pdf",
+          "title": "Script7 Chatbot.pdf",
+          "fileSha256": "3On5vFYmndFS+OvvA2rqdNJIGxBVgYREEiUyRybYOA0=",
+          "fileLength": "18188327",
+          "pageCount": 17,
+          "mediaKey": "fKLRntn6Hs4pAZ/dRSfyNCdgRuyFZtc3zXgj+PaWZcg=",
+          "fileName": "Script7 Chatbot.pdf",
+          "fileEncSha256": "UbCSvUKVrxktfvwcqRryQGhB3LBkxmzHn7LRlkBYmsc=",
+          "directPath": "/v/t62.7119-24/30702935_1609924572893197_8673618234141275962_n.enc?ccb=11-4&oh=01_Q5AaIIO8Rj0LEurmck0CA2UL3c7twIO-sDo2gQPqNSDxZjvF&oe=67477FEF&_nc_sid=5e03e0",
+          "mediaKeyTimestamp": "1730156179",
+          "contactVcard": false,
+          "thumbnailDirectPath": "/v/t62.36145-24/40168392_2956768317821603_3399594473192547430_n.enc?ccb=11-4&oh=01_Q5AaIMOcFMbAyGVMO45vVeAeOv_zyURu_7S2fT8EdShoeH_w&oe=6747743F&_nc_sid=5e03e0",
+          "thumbnailSha256": "1H3Lwu1+nKo1U1c1bh1PCl8CIbU/T3CY0w8iO9inEaU=",
+          "thumbnailEncSha256": "vgo75ZhlzSSzhmMqPhDksNb2I482Lig+WShTda33IvI=",
+          "jpegThumbnail": "/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAMCAgICAgMCAgIDAwMDBAYEBAQEBAgGBgUGCQgKCgkICQkKDA8MCgsOCwkJDRENDg8QEBEQCgwSExIQEw8QEBD/2wBDAQMDAwQDBAgEBAgQCwkLEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBD/wAARCAAMABYDASIAAhEBAxEB/8QAGAAAAwEBAAAAAAAAAAAAAAAAAAgJBAf/xAAjEAADAAICAgICAwAAAAAAAAABAgMEBRESAAYHIQhxCRMx/8QAFgEBAQEAAAAAAAAAAAAAAAAABAIG/8QAIREAAgEDBAMBAAAAAAAAAAAAAQIRAAMEBSFBcRMxUWH/2gAMAwEAAhEDEQA/AKh7Km2jjI2owsTKubwV0ycloIIGqCzhlm5LrI0dE6gO6qhaYY0VOfz5+Z8HEnH4f0mcIbHIgtdpkvlO2JGDOtEhWEg7GnaUrFugokwAnZbuPGxwvXNynsc/YLfIG/yMJcasTpaRwBhM72ei2LLjDI7orLJQLdOk1LKz9naVH8j+fnar8jNtXX5lof3tMUVHIV+NbiD7H6o4/TEf4T5SsEbcSeO6Dlo+RaVUMKSJ+xHod1yy3wpOE8XIOy1+4GZg42YDg1fjHNA/aNFZQ4orIefrr9ggkMp8PMvo3untG89TXF2m3e8tdknHxuZTDpPryFNOvdwOeAGYhQAF4Hh4+zj+VAx5rO6jrdrT8hscKTEbz+Cv/9k=",
+          "contextInfo": {
+            "ephemeralSettingTimestamp": "1728973669",
+            "disappearingMode": {
+              "initiator": "CHANGED_IN_CHAT"
+            }
+          },
+          "thumbnailHeight": 12,
+          "thumbnailWidth": 22,
+          "caption": "Script7 Chatbot.pdf"
+        },
+        "messageContextInfo": {
+          "messageSecret": "d6C9v2WSV1GXoDJ7oQ9v6OPTrSVD41VeI1EUtj4ubWE="
+        }
+      }
+    }
+  }
+}
+```
+<br>
+# Mensagens do tipo botões / listas / enquetes
+
+📄**Mensagens recebidas tipo botões / listas / enquetes (messageType: pollCreationMessageV3 (Enquetes))**
+
+```json
+{
+  "instance_key": "megacode-api",
+  "jid": "556181926137@s.whatsapp.net",
+  "messageType": "pollCreationMessageV3",
+  "key": {
+    "remoteJid": "556195562618@s.whatsapp.net",
+    "fromMe": false,
+    "id": "3227C449842F99CAA3A16C3EB4F55624"
+  },
+  "messageTimestamp": 1730156419,
+  "pushName": "Script7 Software House",
+  "broadcast": false,
+  "message": {
+    "messageContextInfo": {
+      "deviceListMetadata": {
+        "senderKeyHash": "ycK+vKEEeW1ovw==",
+        "senderTimestamp": "1728944040",
+        "recipientKeyHash": "PWrJrmLSRSG4qg==",
+        "recipientTimestamp": "1730123372"
+      },
+      "deviceListMetadataVersion": 2,
+      "messageSecret": "Au+egxhy9b5s5Jk6pWEZB8Mnlzl/J2xR97xeIFdYkEQ="
+    },
+    "pollCreationMessageV3": {
+      "name": "megaAPI - Já testou a megaAPI?",
+      "options": [
+        {
+          "optionName": "Sim, testei a megaAPI"
+        },
+        {
+          "optionName": "Sim, adorei a megaAPI"
+        },
+        {
+          "optionName": "Não testei ainda"
+        }
+      ],
+      "selectableOptionsCount": 0,
+      "contextInfo": {
+        "expiration": 0,
+        "ephemeralSettingTimestamp": "1728973669",
+        "disappearingMode": {
+          "initiator": "CHANGED_IN_CHAT",
+          "trigger": "UNKNOWN",
+          "initiatedByMe": false
+        }
+      }
+    }
+  }
+}
+```
+
+📄**Mensagens recebidas tipo botões / listas / enquetes (messageType: listResponseMessage)**
+
+<TipInfo>Opção escolhida a partir da lista enviada via WhatsApp.</TipInfo>
+
+```json
+{
+  "instance_key": "megacode-api",
+  "jid": "556181926137@s.whatsapp.net",
+  "messageType": "listResponseMessage",
+  "key": {
+    "remoteJid": "556195562618@s.whatsapp.net",
+    "fromMe": false,
+    "id": "CCF04FF5B25612F229E131AB450ABBDB"
+  },
+  "messageTimestamp": 1730156740,
+  "pushName": "Script7 Software House",
+  "broadcast": false,
+  "message": {
+    "messageContextInfo": {
+      "deviceListMetadata": {
+        "senderKeyHash": "ycK+vKEEeW1ovw==",
+        "senderTimestamp": "1728944040",
+        "recipientKeyHash": "PWrJrmLSRSG4qg==",
+        "recipientTimestamp": "1730123372"
+      },
+      "deviceListMetadataVersion": 2,
+      "messageSecret": "RTVwx7yngvNsGlNR2KvurpU2dhEO0YwUHzgSJeaNG14="
+    },
+    "listResponseMessage": {
+      "title": "A melhor api do Brasil",
+      "listType": "SINGLE_SELECT",
+      "singleSelectReply": {
+        "selectedRowId": "01"
+      },
+      "contextInfo": {
+        "stanzaId": "3EB0C6AE35B5C3CCA326B1",
+        "participant": "556181926137@s.whatsapp.net",
+        "quotedMessage": {
+          "listMessage": {
+            "title": "megaAPI",
+            "description": "megaAPI - A melhor api whatsapp do Brasil",
+            "buttonText": "Clique aqui",
+            "listType": "SINGLE_SELECT",
+            "sections": [
+              {
+                "title": "Selecione",
+                "rows": [
+                  {
+                    "title": "A melhor api do Brasil",
+                    "description": "A mais estável api do Brasil",
+                    "rowId": "01"
+                  }
+                ]
+              }
+            ],
+            "footerText": "Teste dos envios de lista de opções"
+          }
+        },
+        "expiration": 0,
+        "ephemeralSettingTimestamp": "1728973669",
+        "disappearingMode": {
+          "initiator": "CHANGED_IN_CHAT",
+          "trigger": "UNKNOWN",
+          "initiatedByMe": false
+        }
+      },
+      "description": "A mais estável api do Brasil"
+    }
+  }
+}
+```
+
+📄**Mensagens recebidas tipo botões / listas / enquetes (messageType: templateButtonReplyMessage)**
+
+<TipInfo>Opção escolhida a partir do botão enviado via WhatsApp.</TipInfo>
+
+```json
+{
+  "instance_key": "megacode-api",
+  "jid": "556181926137@s.whatsapp.net",
+  "messageType": "templateButtonReplyMessage",
+  "key": {
+    "remoteJid": "556195562618@s.whatsapp.net",
+    "fromMe": false,
+    "id": "CD52460CE9A1E7DCA37AD42CF8235168"
+  },
+  "messageTimestamp": 1730157297,
+  "pushName": "Script7 Software House",
+  "broadcast": false,
+  "message": {
+    "templateButtonReplyMessage": {
+      "selectedId": "id1",
+      "selectedDisplayText": "Sim, a melhor",
+      "contextInfo": {
+        "stanzaId": "3EB08CFD790F8D149F0CE2",
+        "participant": "556181926137@s.whatsapp.net",
+        "quotedMessage": {
+          "interactiveMessage": {
+            "header": {
+              "title": "megaAPI- A melhor api whatsapp do Brasil",
+              "subtitle": " "
+            },
+            "body": {
+              "text": "Você ja testou a megaAPI?"
+            },
+            "footer": {
+              "text": "Teste botoes whatsaap"
+            },
+            "nativeFlowMessage": {
+              "buttons": [
+                {
+                  "name": "quick_reply",
+                  "buttonParamsJson": "{\"display_text\":\"Sim, a melhor\",\"id\":\"id1\"}"
+                },
+                {
+                  "name": "quick_reply",
+                  "buttonParamsJson": "{\"display_text\":\"Não\",\"id\":\"id2\"}"
+                }
+              ],
+              "messageParamsJson": ""
+            }
+          }
+        },
+        "expiration": 0,
+        "ephemeralSettingTimestamp": "1728973669",
+        "disappearingMode": {
+          "initiator": "CHANGED_IN_CHAT",
+          "trigger": "UNKNOWN",
+          "initiatedByMe": false
+        }
+      },
+      "selectedIndex": 0
+    },
+    "messageContextInfo": {
+      "deviceListMetadata": {
+        "senderKeyHash": "ycK+vKEEeW1ovw==",
+        "senderTimestamp": "1728944040",
+        "recipientKeyHash": "PWrJrmLSRSG4qg==",
+        "recipientTimestamp": "1730123372"
+      },
+      "deviceListMetadataVersion": 2,
+      "messageSecret": "LuVgO0ZbSZRfSFaOV4O0Oob0N/1lkKmhYmMl1TxaTDw="
+    }
+  }
+}
+```
