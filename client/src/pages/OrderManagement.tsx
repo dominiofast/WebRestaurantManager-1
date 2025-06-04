@@ -323,9 +323,9 @@ export default function OrderManagement() {
         />
       </div>
 
-      {/* Order Statistics - 3 Cards Only */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
+      {/* Order Statistics - Only 3 Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <Card className="border-2">
           <CardContent className="p-4">
             <div className="text-2xl font-bold text-red-600">
               {groupedOrders.pending.length}
@@ -334,7 +334,7 @@ export default function OrderManagement() {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="border-2">
           <CardContent className="p-4">
             <div className="text-2xl font-bold text-orange-600">
               {groupedOrders.in_delivery.length}
@@ -343,7 +343,7 @@ export default function OrderManagement() {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="border-2">
           <CardContent className="p-4">
             <div className="text-2xl font-bold text-green-600">
               {groupedOrders.delivered.length}
