@@ -94,44 +94,66 @@ export default function ImageUpload({
   };
 
   const removeImage = async () => {
-    // If there's a current image and we have store ID, try to delete from server
-    if (currentImageUrl && storeId && currentImageUrl.includes('/api/image/')) {
-      setDeleting(true);
-      
-      try {
+    setDeleting(true);
+    
+    try {
+      // If there's a current image and we have store ID, try to delete from server
+      if (currentImageUrl && storeId && currentImageUrl.includes('/api/image/')) {
         const filename = currentImageUrl.split('/api/image/')[1];
         
         // Only try to delete if filename starts with store_ prefix (indicates it's store-specific)
         if (filename.startsWith(`store_${storeId}_`)) {
+          console.log(`Attempting to delete image: ${filename} for store ${storeId}`);
+          
           const response = await fetch(`/api/stores/${storeId}/images/${filename}`, {
             method: 'DELETE',
           });
 
           if (response.ok) {
+            console.log('Image deleted successfully from server');
             toast({
-              title: "Imagem excluída",
-              description: "A imagem foi excluída do servidor."
+              title: "Sucesso",
+              description: "Imagem excluída do servidor com sucesso."
             });
           } else {
-            console.warn('Failed to delete image from server, but continuing with removal');
+            const errorData = await response.json().catch(() => ({}));
+            console.warn('Failed to delete image from server:', response.status, errorData);
+            toast({
+              title: "Aviso",
+              description: "Não foi possível excluir do servidor, mas a imagem foi removida localmente.",
+              variant: "destructive"
+            });
           }
+        } else {
+          console.log('Image does not belong to this store, skipping server deletion');
         }
-      } catch (error) {
-        console.error('Error deleting image:', error);
-        // Continue with removal even if server deletion fails
-      } finally {
-        setDeleting(false);
       }
-    }
 
-    // Always clear the preview and notify parent
-    setPreview("");
-    onImageChange(null, "");
-    
-    toast({
-      title: "Imagem removida",
-      description: "A imagem foi removida. Salve as alterações para confirmar."
-    });
+      // Always clear the preview and notify parent
+      setPreview("");
+      onImageChange(null, "");
+      
+      if (!currentImageUrl || !currentImageUrl.includes('/api/image/')) {
+        toast({
+          title: "Imagem removida",
+          description: "A imagem foi removida. Salve as alterações para confirmar."
+        });
+      }
+    } catch (error) {
+      console.error('Error during image removal:', error);
+      
+      // Still clear the preview and notify parent even if deletion fails
+      setPreview("");
+      onImageChange(null, "");
+      
+      toast({
+        title: "Erro",
+        description: "Erro ao excluir imagem do servidor, mas foi removida localmente.",
+        variant: "destructive"
+      });
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const displayImage = preview || currentImageUrl;
@@ -157,10 +179,10 @@ export default function ImageUpload({
               variant="destructive"
               size="sm"
               onClick={removeImage}
-              disabled={uploading}
+              disabled={uploading || deleting}
             >
               <X className="w-4 h-4 mr-1" />
-              Remover
+              {deleting ? "Excluindo..." : "Remover"}
             </Button>
           </div>
         </div>
