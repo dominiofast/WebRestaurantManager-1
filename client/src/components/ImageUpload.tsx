@@ -152,7 +152,7 @@ export default function ImageUpload({
     }
   };
 
-  const displayImage = preview || currentImageUrl;
+  const displayImage = preview || (currentImageUrl && currentImageUrl.trim() !== "" ? currentImageUrl : null);
 
   return (
     <div className={`space-y-4 ${className}`}>

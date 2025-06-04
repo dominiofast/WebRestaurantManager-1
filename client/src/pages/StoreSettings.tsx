@@ -403,7 +403,7 @@ export default function StoreSettings() {
                       </h3>
                       <ImageUpload
                         label="Logo da Loja"
-                        currentImageUrl={store?.logoUrl || ""}
+                        currentImageUrl={store?.logoUrl || null}
                         onImageChange={handleLogoChange}
                         storeId={store?.id}
                         className="min-h-[250px]"
@@ -419,7 +419,7 @@ export default function StoreSettings() {
                       </h3>
                       <ImageUpload
                         label="Banner da Loja"
-                        currentImageUrl={store?.bannerUrl || ""}
+                        currentImageUrl={store?.bannerUrl || null}
                         onImageChange={handleBannerChange}
                         storeId={store?.id}
                         className="min-h-[250px]"
