@@ -1240,6 +1240,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Configure webhook on Mega API
+  app.post('/api/whatsapp/:storeId/configure-webhook', async (req, res) => {
+    try {
+      const storeId = parseInt(req.params.storeId);
+      
+      if (isNaN(storeId)) {
+        return res.status(400).json({ message: 'ID da loja inválido' });
+      }
+
+      // Get WhatsApp instance
+      const instance = await storage.getWhatsappInstance(storeId);
+      
+      if (!instance) {
+        return res.status(404).json({ message: 'Instância WhatsApp não encontrada' });
+      }
+
+      // Configure webhook using Mega API
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      const webhookUrl = `${baseUrl}/api/webhook/whatsapp/${storeId}`;
+      
+      const apiUrl = `https://${instance.apiHost}/rest/webhook/${instance.instanceKey}/configWebhook`;
+      
+      console.log('[Configure Webhook] Configuring webhook:', webhookUrl);
+      console.log('[Configure Webhook] API URL:', apiUrl);
+      
+      const requestBody = {
+        messageData: {
+          webhookUrl: webhookUrl,
+          webhookEnabled: true,
+          webhookSecondaryUrl: "",
+          webhookSecondaryEnabled: false
+        }
+      };
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${instance.apiToken}`
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      console.log('[Configure Webhook] API Response status:', response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log('[Configure Webhook] API Response error:', errorText);
+        return res.status(response.status).json({ 
+          message: 'Erro ao configurar webhook',
+          error: errorText 
+        });
+      }
+
+      const data = await response.json();
+      console.log('[Configure Webhook] API Response success:', data);
+
+      res.json({
+        success: true,
+        message: 'Webhook configurado com sucesso',
+        data: data
+      });
+    } catch (error) {
+      console.error('[Configure Webhook] Error:', error);
+      res.status(500).json({ message: 'Erro interno do servidor' });
+    }
+  });
+
   // WhatsApp webhook for processing messages
   app.post('/api/webhook/whatsapp/:storeId', async (req, res) => {
     try {
