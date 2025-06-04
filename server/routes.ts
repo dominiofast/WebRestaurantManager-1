@@ -1515,6 +1515,153 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Customer management routes
+  app.get('/api/customers', isAuthenticated, async (req: any, res) => {
+    try {
+      const store = await storage.getStoreByManagerId(req.session.userId);
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      const search = req.query.search as string;
+      const customers = await storage.getCustomers(store.id, search);
+      res.json(customers);
+    } catch (error) {
+      console.error('Error fetching customers:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.get('/api/customers/stats', isAuthenticated, async (req: any, res) => {
+    try {
+      const store = await storage.getStoreByManagerId(req.session.userId);
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      const stats = await storage.getCustomerStats(store.id);
+      res.json(stats);
+    } catch (error) {
+      console.error('Error fetching customer stats:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.get('/api/customers/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const store = await storage.getStoreByManagerId(req.session.userId);
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      const customerId = parseInt(req.params.id);
+      const customer = await storage.getCustomerById(customerId, store.id);
+      
+      if (!customer) {
+        return res.status(404).json({ message: "Cliente não encontrado" });
+      }
+
+      res.json(customer);
+    } catch (error) {
+      console.error('Error fetching customer:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.post('/api/customers', isAuthenticated, async (req: any, res) => {
+    try {
+      const store = await storage.getStoreByManagerId(req.session.userId);
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      const customerData = insertCustomerSchema.parse({
+        ...req.body,
+        storeId: store.id
+      });
+
+      const customer = await storage.createCustomer(customerData);
+      res.status(201).json(customer);
+    } catch (error) {
+      console.error('Error creating customer:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.put('/api/customers/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const store = await storage.getStoreByManagerId(req.session.userId);
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      const customerId = parseInt(req.params.id);
+      const updateData = req.body;
+
+      const customer = await storage.updateCustomer(customerId, updateData, store.id);
+      res.json(customer);
+    } catch (error) {
+      console.error('Error updating customer:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.delete('/api/customers/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const store = await storage.getStoreByManagerId(req.session.userId);
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      const customerId = parseInt(req.params.id);
+      await storage.deleteCustomer(customerId, store.id);
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error('Error deleting customer:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.post('/api/customers/:id/interactions', isAuthenticated, async (req: any, res) => {
+    try {
+      const store = await storage.getStoreByManagerId(req.session.userId);
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      const customerId = parseInt(req.params.id);
+      const interactionData = insertCustomerInteractionSchema.parse({
+        ...req.body,
+        customerId,
+        storeId: store.id
+      });
+
+      const interaction = await storage.createCustomerInteraction(interactionData);
+      res.status(201).json(interaction);
+    } catch (error) {
+      console.error('Error creating customer interaction:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.get('/api/customers/:id/interactions', isAuthenticated, async (req: any, res) => {
+    try {
+      const store = await storage.getStoreByManagerId(req.session.userId);
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      const customerId = parseInt(req.params.id);
+      const interactions = await storage.getCustomerInteractions(customerId, store.id);
+      
+      res.json(interactions);
+    } catch (error) {
+      console.error('Error fetching customer interactions:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

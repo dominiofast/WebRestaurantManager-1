@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
-import { Home, UtensilsCrossed, ClipboardList, LogOut, Shield, Store, Globe, ShoppingCart, Bot, Settings, ChevronDown, ChevronRight, Plug, User } from "lucide-react";
+import { Home, UtensilsCrossed, ClipboardList, LogOut, Shield, Store, Globe, ShoppingCart, Bot, Settings, ChevronDown, ChevronRight, Plug, User, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
@@ -30,8 +30,13 @@ const getNavigationItems = (userRole: string) => {
     },
   ];
 
-  // Add AI Agent for managers
+  // Add AI Agent and Customers for managers
   if (userRole === 'manager') {
+    baseItems.push({
+      href: "/customers",
+      icon: Users,
+      label: "Clientes",
+    });
     baseItems.push({
       href: "/ai-agent",
       icon: Bot,
