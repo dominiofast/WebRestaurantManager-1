@@ -2646,6 +2646,49 @@ Responda de forma natural e humana. Se for sobre cardápio, horários, delivery 
     }
   });
 
+  // API endpoint for uploading store images
+  app.post('/api/upload-store-image', upload.single('image'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "Nenhum arquivo enviado" });
+      }
+
+      const { storeId, type } = req.body;
+      
+      if (!storeId || !type) {
+        return res.status(400).json({ message: "storeId e type são obrigatórios" });
+      }
+
+      const store = await storage.getStoreById(parseInt(storeId));
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      // Criar URL da imagem
+      const imageUrl = `/uploads/${req.file.filename}`;
+
+      // Atualizar a store com a nova URL da imagem
+      const updateData: any = {};
+      if (type === 'logo') {
+        updateData.logoUrl = imageUrl;
+      } else if (type === 'banner') {
+        updateData.bannerUrl = imageUrl;
+      }
+
+      const updatedStore = await storage.updateStore(parseInt(storeId), updateData);
+
+      res.json({
+        message: "Imagem salva com sucesso",
+        url: imageUrl,
+        store: updatedStore
+      });
+
+    } catch (error) {
+      console.error('Erro no upload:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
   // Enhanced webhook endpoint for store-specific instances
   app.post('/api/webhook/whatsapp/:storeId?', express.json(), async (req, res) => {
     try {

@@ -1,30 +1,90 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Upload, ImageIcon } from "lucide-react";
+import { Upload, ImageIcon, Check } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface SimpleImageUploadProps {
   label: string;
-  onImageSelected: (file: File) => void;
+  storeId: number;
+  currentImageUrl?: string;
+  onImageUploaded: (url: string) => void;
 }
 
-export default function SimpleImageUpload({ label, onImageSelected }: SimpleImageUploadProps) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string>("");
+export default function SimpleImageUpload({ label, storeId, currentImageUrl, onImageUploaded }: SimpleImageUploadProps) {
+  const [preview, setPreview] = useState<string>(currentImageUrl || "");
+  const [uploading, setUploading] = useState(false);
+  const [uploaded, setUploaded] = useState(false);
+  const { toast } = useToast();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Criar preview
+    // Validar arquivo
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Erro",
+        description: "Selecione apenas arquivos de imagem",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "Erro", 
+        description: "Imagem muito grande. Máximo 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Criar preview local
     const reader = new FileReader();
     reader.onload = () => {
       setPreview(reader.result as string);
     };
     reader.readAsDataURL(file);
 
-    setSelectedFile(file);
-    onImageSelected(file);
+    // Upload para o servidor
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('storeId', storeId.toString());
+      formData.append('type', label.toLowerCase().includes('logo') ? 'logo' : 'banner');
+
+      const response = await fetch('/api/upload-store-image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Falha no upload');
+      }
+
+      const data = await response.json();
+      onImageUploaded(data.url);
+      setUploaded(true);
+      
+      toast({
+        title: "Sucesso",
+        description: `${label} salvo com sucesso!`,
+      });
+
+      // Reset uploaded status after 3 seconds
+      setTimeout(() => setUploaded(false), 3000);
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast({
+        title: "Erro",
+        description: "Falha ao salvar imagem. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+    }
   };
 
   const inputId = `upload-${label.toLowerCase().replace(/\s+/g, '-')}`;
@@ -40,7 +100,16 @@ export default function SimpleImageUpload({ label, onImageSelected }: SimpleImag
             alt={label} 
             className="w-full h-48 object-cover rounded-lg border"
           />
-          <p className="text-sm text-green-600 mt-2">Arquivo selecionado: {selectedFile?.name}</p>
+          {uploaded ? (
+            <p className="text-sm text-green-600 mt-2 flex items-center">
+              <Check className="w-4 h-4 mr-1" />
+              Imagem salva com sucesso!
+            </p>
+          ) : uploading ? (
+            <p className="text-sm text-blue-600 mt-2">Salvando imagem...</p>
+          ) : (
+            <p className="text-sm text-gray-600 mt-2">Imagem carregada - clique em "Escolher" para salvar</p>
+          )}
         </div>
       ) : (
         <div 
