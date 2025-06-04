@@ -1280,46 +1280,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Rota para excluir imagens específica por loja
-  app.delete("/api/stores/:storeId/images/:filename", async (req: any, res) => {
+  app.delete("/api/stores/:storeId/images/:filename", requireAuth, async (req: any, res) => {
     try {
-      if (!req.session || !req.session.userId) {
-        return res.status(401).json({ message: "Não autorizado" });
-      }
+      console.log(`[DELETE IMAGE] Request received - Store ID: ${req.params.storeId}, Filename: ${req.params.filename}`);
+      console.log(`[DELETE IMAGE] User ID: ${req.user?.id}, Role: ${req.user?.role}`);
 
       const storeId = parseInt(req.params.storeId);
       const filename = req.params.filename;
 
       if (isNaN(storeId)) {
+        console.log(`[DELETE IMAGE] Invalid store ID: ${req.params.storeId}`);
         return res.status(400).json({ message: "ID da loja inválido" });
       }
 
       // Verificar se o usuário tem acesso a esta loja
-      const userStores = await getUserAccessibleStores(req.session.userId, req.user?.role || 'manager');
+      const userStores = await getUserAccessibleStores(req.user.id, req.user.role);
       const hasAccess = userStores.some(store => store.id === storeId);
       
+      console.log(`[DELETE IMAGE] User has access to ${userStores.length} stores`);
+      console.log(`[DELETE IMAGE] Access to store ${storeId}: ${hasAccess}`);
+      
       if (!hasAccess) {
+        console.log(`[DELETE IMAGE] Access denied to store ${storeId}`);
         return res.status(403).json({ message: "Acesso negado a esta loja" });
       }
 
       // Verificar se o arquivo pertence a esta loja (deve começar com store_ID_)
       if (!filename.startsWith(`store_${storeId}_`)) {
+        console.log(`[DELETE IMAGE] File ${filename} does not belong to store ${storeId}`);
         return res.status(403).json({ message: "Esta imagem não pertence a esta loja" });
       }
 
       const filePath = path.join(uploadsDir, filename);
+      console.log(`[DELETE IMAGE] File path: ${filePath}`);
       
       // Verificar se o arquivo existe
       if (!fs.existsSync(filePath)) {
+        console.log(`[DELETE IMAGE] File not found: ${filePath}`);
         return res.status(404).json({ message: "Arquivo não encontrado" });
       }
 
       // Excluir arquivo
       fs.unlinkSync(filePath);
+      console.log(`[DELETE IMAGE] File deleted successfully: ${filePath}`);
       
-      res.json({ message: "Imagem excluída com sucesso" });
+      res.json({ message: "Imagem excluída com sucesso", filename });
     } catch (error) {
-      console.error("Erro ao excluir imagem:", error);
-      res.status(500).json({ message: "Erro ao excluir imagem" });
+      console.error("[DELETE IMAGE] Error:", error);
+      res.status(500).json({ message: "Erro ao excluir imagem", error: error.message });
     }
   });
 
