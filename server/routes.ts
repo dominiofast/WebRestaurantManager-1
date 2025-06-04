@@ -1745,7 +1745,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             let phoneNumber = instance.phoneNumber;
 
             // Check if connected and has user data
-            if (statusData.instance && statusData.instance.status === 'open' && statusData.instance.user) {
+            if (statusData.instance && (statusData.instance.status === 'open' || statusData.instance.status === 'connected') && statusData.instance.user) {
               newStatus = 'connected';
               
               // Extract phone number from user ID (format: 556993910380:31@s.whatsapp.net)
