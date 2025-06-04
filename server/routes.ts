@@ -1708,6 +1708,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log('[WhatsApp AI] Customer phone:', customerPhone);
       console.log('[WhatsApp AI] Message text:', messageText);
+
+      // Register customer and interaction
+      try {
+        const phoneNumber = customerPhone.replace('@s.whatsapp.net', '');
+        let customer = await storage.getCustomerByPhone(phoneNumber, storeId);
+        
+        if (!customer) {
+          // Create new customer
+          customer = await storage.createCustomer({
+            storeId,
+            name: 'Cliente WhatsApp',
+            phone: phoneNumber,
+            email: null,
+            notes: 'Cliente criado automaticamente via WhatsApp'
+          });
+          console.log('[WhatsApp AI] New customer created:', customer.id);
+        }
+
+        // Log interaction
+        await storage.createCustomerInteraction({
+          customerId: customer.id,
+          storeId,
+          type: 'whatsapp_message',
+          message: messageText
+        });
+        console.log('[WhatsApp AI] Interaction logged for customer:', customer.id);
+      } catch (error) {
+        console.error('[WhatsApp AI] Error logging customer interaction:', error);
+      }
       
       // Basic AI responses for common scenarios
       let responseText = '';

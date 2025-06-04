@@ -24,6 +24,7 @@ import AIAgentNew from "@/pages/AIAgentNew";
 import Integrations from "@/pages/Integrations";
 import IntegrationsNew from "@/pages/IntegrationsNew";
 import Customers from "@/pages/Customers";
+import Analytics from "@/pages/Analytics";
 import Profile from "@/pages/Profile";
 import Sidebar from "@/components/Sidebar";
 import TopBar from "@/components/TopBar";
