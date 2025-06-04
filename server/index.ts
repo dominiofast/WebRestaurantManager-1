@@ -56,16 +56,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Servir arquivos estáticos da pasta uploads
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads'), {
-  setHeaders: (res, filePath) => {
-    if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) {
-      res.setHeader('Content-Type', 'image/jpeg');
-    } else if (filePath.endsWith('.png')) {
-      res.setHeader('Content-Type', 'image/png');
-    }
-  }
-}));
+
 
 (async () => {
   const server = await registerRoutes(app);

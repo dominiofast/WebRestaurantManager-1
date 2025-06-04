@@ -50,6 +50,40 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Rota API específica para servir imagens com Content-Type correto
+  app.get('/api/image/:filename', (req, res) => {
+    const filename = req.params.filename;
+    const filePath = path.join(uploadsDir, filename);
+    
+    // Verificar se o arquivo existe
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ message: 'Arquivo não encontrado' });
+    }
+    
+    // Definir Content-Type baseado na extensão
+    const ext = path.extname(filename).toLowerCase();
+    let contentType = 'application/octet-stream';
+    
+    if (ext === '.jpg' || ext === '.jpeg') {
+      contentType = 'image/jpeg';
+    } else if (ext === '.png') {
+      contentType = 'image/png';
+    } else if (ext === '.gif') {
+      contentType = 'image/gif';
+    } else if (ext === '.webp') {
+      contentType = 'image/webp';
+    }
+    
+    // Forçar cabeçalhos corretos
+    res.removeHeader('X-Powered-By');
+    res.removeHeader('Vary');
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Cache-Control', 'public, max-age=31536000');
+    
+    // Enviar arquivo
+    fs.createReadStream(filePath).pipe(res);
+  });
+
   // Check current session
   app.get('/api/auth/me', async (req: any, res) => {
     try {
