@@ -524,7 +524,30 @@ export default function IntegrationsNew() {
                       <Switch 
                         id="whatsapp-enabled"
                         checked={integrations.whatsapp.enabled}
-                        onCheckedChange={(checked) => updateIntegration('whatsapp', 'enabled', checked)}
+                        onCheckedChange={async (checked) => {
+                          // Update local state first
+                          updateIntegration('whatsapp', 'enabled', checked);
+                          
+                          // Wait a bit for state to update
+                          setTimeout(async () => {
+                            try {
+                              await handleSaveWhatsAppConfig();
+                              toast({
+                                title: checked ? "Integração ativada" : "Integração desativada",
+                                description: "Configuração salva automaticamente",
+                              });
+                            } catch (error) {
+                              console.error('Erro ao salvar:', error);
+                              // Revert the change if save fails
+                              updateIntegration('whatsapp', 'enabled', !checked);
+                              toast({
+                                title: "Erro ao salvar",
+                                description: "Não foi possível alterar a configuração",
+                                variant: "destructive"
+                              });
+                            }
+                          }, 100);
+                        }}
                       />
                     </div>
 
