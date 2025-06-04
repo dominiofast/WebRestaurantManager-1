@@ -516,7 +516,24 @@ export class DatabaseStorage implements IStorage {
   async getStoreByManagerId(managerId: string): Promise<any> {
     const result = await db
       .select({
-        store: stores,
+        id: stores.id,
+        name: stores.name,
+        companyId: stores.companyId,
+        address: stores.address,
+        phone: stores.phone,
+        email: stores.email,
+        status: stores.status,
+        managerId: stores.managerId,
+        slug: stores.slug,
+        description: stores.description,
+        openingHours: stores.openingHours,
+        deliveryFee: stores.deliveryFee,
+        minimumOrder: stores.minimumOrder,
+        estimatedDeliveryTime: stores.estimatedDeliveryTime,
+        createdAt: stores.createdAt,
+        updatedAt: stores.updatedAt,
+        logoUrl: stores.logo_url,
+        bannerUrl: stores.banner_url,
         company: companies,
       })
       .from(stores)
@@ -526,24 +543,7 @@ export class DatabaseStorage implements IStorage {
 
     if (result.length === 0) return undefined;
 
-    const row = result[0];
-    const store = row.store;
-    
-    // Convert snake_case to camelCase for frontend compatibility
-    const convertedStore = {
-      ...store,
-      logoUrl: store.logo_url,
-      bannerUrl: store.banner_url,
-      logo_url: undefined,
-      banner_url: undefined,
-      company: row.company!,
-    };
-    
-    // Remove undefined fields
-    delete convertedStore.logo_url;
-    delete convertedStore.banner_url;
-    
-    return convertedStore;
+    return result[0];
   }
 
   // Store operations
