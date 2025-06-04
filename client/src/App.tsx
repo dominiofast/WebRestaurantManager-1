@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
-import Dashboard from "@/pages/Dashboard";
+
 import MenuManagement from "@/pages/MenuManagement";
 import OrderManagement from "@/pages/OrderManagement";
 import SuperAdmin from "@/pages/SuperAdmin";
@@ -95,7 +95,6 @@ function SuperAdminApp({ user }: { user: any }) {
           <Switch>
             <Route path="/" component={OrderManagement} />
             <Route path="/orders" component={OrderManagement} />
-            <Route path="/dashboard" component={Dashboard} />
             <Route path="/menu" component={MenuManagement} />
             <Route path="/pdv" component={PDV} />
             <Route path="/menu-manager" component={MenuManager} />
@@ -127,7 +126,6 @@ function OwnerApp({ user }: { user: any }) {
           <Switch>
             <Route path="/" component={OrderManagement} />
             <Route path="/orders" component={OrderManagement} />
-            <Route path="/dashboard" component={Dashboard} />
             <Route path="/menu" component={MenuManagement} />
             <Route path="/pdv" component={PDV} />
             <Route path="/menu-manager" component={MenuManager} />
