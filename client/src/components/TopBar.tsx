@@ -50,9 +50,9 @@ export default function TopBar() {
   };
 
   const handleOpenDigitalMenu = () => {
-    if (store?.slug) {
-      window.open(`/digital-menu/${store.slug}`, '_blank');
-    }
+    // Usar slug da loja se disponível, senão usar um padrão
+    const slug = store?.slug || 'don-giuseppe-paulista';
+    window.open(`/digital-menu/${slug}`, '_blank');
   };
 
   const { time, date } = getCurrentDateTime();
@@ -71,16 +71,14 @@ export default function TopBar() {
         
         <div className="flex items-center space-x-4">
           {/* Digital Menu Button */}
-          {store?.slug && (
-            <Button 
-              onClick={handleOpenDigitalMenu}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 text-sm font-medium"
-            >
-              <Menu className="w-4 h-4 mr-2" />
-              Cardápio Digital
-              <ExternalLink className="w-3 h-3 ml-2" />
-            </Button>
-          )}
+          <Button 
+            onClick={handleOpenDigitalMenu}
+            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 text-sm font-medium"
+          >
+            <Menu className="w-4 h-4 mr-2" />
+            Cardápio Digital
+            <ExternalLink className="w-3 h-3 ml-2" />
+          </Button>
           
           {/* Notifications */}
           <Button variant="ghost" size="icon" className="relative">
