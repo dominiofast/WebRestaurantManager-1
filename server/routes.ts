@@ -1710,9 +1710,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('[WhatsApp AI] Message text:', messageText);
 
       // Register customer and interaction
+      let customer;
       try {
         const phoneNumber = customerPhone.replace('@s.whatsapp.net', '');
-        let customer = await storage.getCustomerByPhone(phoneNumber, storeId);
+        customer = await storage.getCustomerByPhone(phoneNumber, storeId);
         
         if (!customer) {
           // Create new customer
@@ -1737,30 +1738,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (error) {
         console.error('[WhatsApp AI] Error logging customer interaction:', error);
       }
+
+      // Get recent conversation history for context
+      let conversationHistory = [];
+      if (customer) {
+        try {
+          const recentInteractions = await storage.getCustomerInteractions(customer.id, storeId);
+          conversationHistory = recentInteractions
+            .slice(-10) // Last 10 interactions
+            .map(interaction => ({
+              type: interaction.type,
+              content: interaction.message,
+              timestamp: interaction.createdAt
+            }));
+        } catch (error) {
+          console.error('[WhatsApp AI] Error getting conversation history:', error);
+        }
+      }
       
-      // Basic AI responses for common scenarios
+      // Generate AI response using OpenAI or fallback
       let responseText = '';
-      
-      if (messageText.toLowerCase().includes('cardápio') || messageText.toLowerCase().includes('menu')) {
-        responseText = `Olá! 🍕 Bem-vindo ao ${store.name}!\n\nVocê pode ver nosso cardápio completo em:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu me diga o que você gostaria de pedir!`;
-      } else if (messageText.toLowerCase().includes('horário') || messageText.toLowerCase().includes('funcionamento')) {
-        responseText = `📅 Nosso horário de funcionamento:\n\nSegunda a Sexta: 11h às 23h\nSábado e Domingo: 18h às 23h\n\nEstamos sempre prontos para atendê-lo!`;
-      } else if (messageText.toLowerCase().includes('delivery') || messageText.toLowerCase().includes('entrega')) {
-        responseText = `🚚 Sim, fazemos delivery!\n\nTaxa de entrega: R$ 5,00\nTempo estimado: 30-45 minutos\n\nFaça seu pedido através do nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}`;
-      } else if (messageText.toLowerCase().includes('oi') || messageText.toLowerCase().includes('olá') || messageText.toLowerCase().includes('bom dia') || messageText.toLowerCase().includes('boa tarde') || messageText.toLowerCase().includes('boa noite')) {
-        responseText = `Olá! 👋 Bem-vindo ao ${store.name}!\n\nComo posso ajudá-lo hoje?\n\n📱 Cardápio digital: https://dominiomenu-app.replit.app/menu/${store.slug}\n\nDigite "cardápio" para ver nossas opções ou "horário" para saber quando funcionamos!`;
-      } else if (messageText.toLowerCase().includes('áudio')) {
-        responseText = `🎵 Recebi seu áudio!\n\nPara atendê-lo melhor, por favor envie sua mensagem em texto ou acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas opções!`;
-      } else if (messageText.toLowerCase().includes('imagem')) {
-        responseText = `📷 Recebi sua imagem!\n\nComo posso ajudá-lo? Acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas deliciosas opções!`;
-      } else if (messageText.toLowerCase().includes('vídeo')) {
-        responseText = `🎥 Recebi seu vídeo!\n\nPara fazer seu pedido, acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas opções!`;
-      } else if (messageText.toLowerCase().includes('documento')) {
-        responseText = `📄 Recebi seu documento!\n\nPara fazer seu pedido, acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas opções!`;
-      } else if (messageText.toLowerCase().includes('figurinha')) {
-        responseText = `😄 Que figurinha legal!\n\nComo posso ajudá-lo hoje? Acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas deliciosas opções!`;
-      } else {
-        responseText = `Obrigado pela sua mensagem! 😊\n\nPara fazer seu pedido, acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite:\n• "cardápio" - ver opções\n• "horário" - horário de funcionamento\n• "delivery" - informações de entrega`;
+      try {
+        responseText = await generateIntelligentAIResponse(messageText, store, customer, conversationHistory);
+      } catch (error) {
+        console.error('[WhatsApp AI] Error generating AI response:', error);
+        responseText = generateFallbackResponse(messageText, store);
       }
 
       console.log('[WhatsApp AI] Generated response:', responseText);
@@ -1792,6 +1794,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (response.ok) {
           const result = await response.json();
           console.log('[WhatsApp AI] API Response success:', result);
+          
+          // Log the response interaction
+          if (customer) {
+            try {
+              await storage.createCustomerInteraction({
+                customerId: customer.id,
+                storeId,
+                type: 'whatsapp_response',
+                message: responseText
+              });
+            } catch (error) {
+              console.error('[WhatsApp AI] Error logging response interaction:', error);
+            }
+          }
         } else {
           const errorText = await response.text();
           console.error('[WhatsApp AI] API Response error:', errorText);
@@ -1800,6 +1816,145 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('[WhatsApp AI] Error processing message:', error);
     }
+  }
+
+  async function generateIntelligentAIResponse(messageText: string, store: any, customer: any, conversationHistory: any[]): Promise<string> {
+    try {
+      if (!process.env.OPENAI_API_KEY) {
+        console.log('[WhatsApp AI] OpenAI API key not found, using fallback responses');
+        return generateFallbackResponse(messageText, store);
+      }
+
+      // Build conversation context
+      const contextMessages = conversationHistory.map(interaction => {
+        if (interaction.type === 'whatsapp_message') {
+          return `Cliente: ${interaction.content}`;
+        } else if (interaction.type === 'whatsapp_response') {
+          return `Atendente: ${interaction.content}`;
+        }
+        return '';
+      }).filter(Boolean).join('\n');
+
+      const storeInfo = {
+        name: store.name,
+        slug: store.slug,
+        address: store.address,
+        phone: store.phone,
+        description: store.description
+      };
+
+      const prompt = `Você é um atendente virtual muito amigável e humano do restaurante "${store.name}". 
+
+INFORMAÇÕES DO RESTAURANTE:
+- Nome: ${store.name}
+- Cardápio online: https://dominiomenu-app.replit.app/menu/${store.slug}
+- Horário: Segunda a Sexta 11h às 23h, Sábados e Domingos 18h às 23h
+- Delivery: Sim, taxa R$ 5,00, tempo 30-45min, pedido mínimo R$ 25,00
+${store.address ? `- Endereço: ${store.address}` : ''}
+
+CONTEXTO DA CONVERSA ANTERIOR:
+${contextMessages || 'Primeira mensagem do cliente'}
+
+PERSONALIDADE:
+- Seja natural, amigável e conversacional
+- Use emojis de forma moderada
+- Responda como um humano real responderia
+- Seja prestativo e informativo
+- Mantenha o tom profissional mas caloroso
+- Adapte-se ao estilo da conversa do cliente
+
+MENSAGEM ATUAL DO CLIENTE: "${messageText}"
+
+Responda de forma natural e humana. Se for sobre cardápio, horários, delivery ou localização, forneça as informações. Se for saudação, seja caloroso. Se for pergunta específica sobre pratos, seja descritivo e apetitoso. Mantenha a resposta concisa mas completa.`;
+
+      console.log('[WhatsApp AI] Calling OpenAI API...');
+      const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'gpt-3.5-turbo',
+          messages: [
+            {
+              role: 'system',
+              content: prompt
+            }
+          ],
+          max_tokens: 300,
+          temperature: 0.8,
+          presence_penalty: 0.1,
+          frequency_penalty: 0.1
+        })
+      });
+
+      if (openaiResponse.ok) {
+        const data = await openaiResponse.json();
+        const aiResponse = data.choices[0].message.content.trim();
+        console.log('[WhatsApp AI] OpenAI response generated successfully');
+        return aiResponse;
+      } else {
+        console.log('[WhatsApp AI] OpenAI API error, using fallback');
+        return generateFallbackResponse(messageText, store);
+      }
+
+    } catch (error) {
+      console.error('[WhatsApp AI] Error with OpenAI API:', error);
+      return generateFallbackResponse(messageText, store);
+    }
+  }
+
+  function generateFallbackResponse(messageText: string, store: any): string {
+    const message = messageText.toLowerCase();
+    
+    // Check for specific keywords and respond accordingly
+    if (message.includes('cardápio') || message.includes('cardapio') || message.includes('menu')) {
+      return `🍽️ Confira nosso delicioso cardápio!\n\nAcesse: https://dominiomenu-app.replit.app/menu/${store.slug}\n\nTemos diversas opções especiais esperando por você! 😋`;
+    }
+    
+    if (message.includes('horário') || message.includes('horario') || message.includes('funcionamento') || message.includes('aberto')) {
+      return `📅 Nosso horário de funcionamento:\n\nSegunda a Sexta: 11h às 23h\nSábado e Domingo: 18h às 23h\n\nEstamos sempre prontos para atendê-lo!`;
+    }
+    
+    if (message.includes('delivery') || message.includes('entrega') || message.includes('entregar')) {
+      return `🚀 Fazemos delivery sim!\n\nTaxa de entrega: R$ 5,00\nTempo médio: 30-45 minutos\nPedido mínimo: R$ 25,00\n\nFaça seu pedido pelo nosso cardápio digital!`;
+    }
+    
+    if (message.includes('localização') || message.includes('endereço') || message.includes('endereco') || message.includes('onde')) {
+      return `📍 Venha nos visitar!\n\n${store.address || 'Endereço disponível em breve'}\n\nEsperamos você! 🏪`;
+    }
+    
+    if (message.includes('preço') || message.includes('preco') || message.includes('valor') || message.includes('quanto custa')) {
+      return `💰 Nossos preços são super acessíveis!\n\nConfira todas as opções e valores no nosso cardápio:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nTemos opções para todos os bolsos! 😊`;
+    }
+
+    if (message.includes('oi') || message.includes('olá') || message.includes('ola') || message.includes('bom dia') || message.includes('boa tarde') || message.includes('boa noite')) {
+      return `Olá! Seja muito bem-vindo(a) ao ${store.name}! 😊\n\nComo posso ajudá-lo hoje?\n\n🍽️ Cardápio - veja nossas delícias\n⏰ Horário - nosso funcionamento\n🚀 Delivery - informações de entrega`;
+    }
+
+    if (message.includes('áudio')) {
+      return `🎵 Recebi seu áudio!\n\nPara atendê-lo melhor, por favor envie sua mensagem em texto ou acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas opções!`;
+    }
+    
+    if (message.includes('imagem')) {
+      return `📷 Recebi sua imagem!\n\nComo posso ajudá-lo? Acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas deliciosas opções!`;
+    }
+    
+    if (message.includes('vídeo')) {
+      return `🎥 Recebi seu vídeo!\n\nPara fazer seu pedido, acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas opções!`;
+    }
+    
+    if (message.includes('documento')) {
+      return `📄 Recebi seu documento!\n\nPara fazer seu pedido, acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas opções!`;
+    }
+    
+    if (message.includes('figurinha')) {
+      return `😄 Que figurinha legal!\n\nComo posso ajudá-lo hoje? Acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas deliciosas opções!`;
+    }
+    
+    // Default response for other messages
+    return `Obrigado pela sua mensagem! 😊\n\nPara fazer seu pedido, acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite:\n• "cardápio" - ver opções\n• "horário" - horário de funcionamento\n• "delivery" - informações de entrega`;
   }
 
   // WhatsApp Instance routes for multi-store support
