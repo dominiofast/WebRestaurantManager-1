@@ -1199,7 +1199,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const storeId = parseInt(req.params.storeId);
       const webhookData = req.body;
       
-      console.log('WhatsApp webhook received for store:', storeId, webhookData);
+      console.log('=== WEBHOOK RECEIVED ===');
+      console.log('Timestamp:', new Date().toISOString());
+      console.log('Store ID:', storeId);
+      console.log('Headers:', req.headers);
+      console.log('Body:', JSON.stringify(webhookData, null, 2));
+      console.log('========================');
       
       // Check if it's an incoming message
       if (webhookData.event === 'onMessage' || webhookData.event === 'messages.upsert') {
