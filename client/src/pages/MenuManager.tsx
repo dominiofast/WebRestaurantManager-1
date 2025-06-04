@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -53,7 +54,8 @@ export default function MenuManager() {
     name: "",
     description: "",
     isRequired: false,
-    maxSelections: 1
+    allowMultiple: false,
+    maxSelections: "1"
   });
 
   // Buscar seções do cardápio
@@ -1089,6 +1091,174 @@ export default function MenuManager() {
                   </div>
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            <TabsContent value="edit-group" className="h-full overflow-y-auto">
+              {editingGroup && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Editar Grupo: {editingGroup.name}</CardTitle>
+                    <CardDescription>
+                      Modifique as configurações do grupo e seus itens
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Formulário do Grupo */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="group-name">Nome do Grupo *</Label>
+                        <Input
+                          id="group-name"
+                          value={groupForm.name}
+                          onChange={(e) => setGroupForm({...groupForm, name: e.target.value})}
+                          placeholder="Ex: Escolha o sabor"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="group-description">Descrição</Label>
+                        <Input
+                          id="group-description"
+                          value={groupForm.description}
+                          onChange={(e) => setGroupForm({...groupForm, description: e.target.value})}
+                          placeholder="Descrição opcional"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="edit-required"
+                          checked={groupForm.isRequired}
+                          onCheckedChange={(checked) => setGroupForm({...groupForm, isRequired: !!checked})}
+                        />
+                        <Label htmlFor="edit-required">Obrigatório</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="edit-multiple"
+                          checked={groupForm.allowMultiple}
+                          onCheckedChange={(checked) => setGroupForm({...groupForm, allowMultiple: !!checked})}
+                        />
+                        <Label htmlFor="edit-multiple">Múltipla seleção</Label>
+                      </div>
+                      <div>
+                        <Label htmlFor="edit-max-selections">Máx. seleções</Label>
+                        <Input
+                          id="edit-max-selections"
+                          type="number"
+                          min="1"
+                          value={groupForm.maxSelections}
+                          onChange={(e) => setGroupForm({...groupForm, maxSelections: e.target.value})}
+                          placeholder="Ex: 2"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Lista de Adicionais para Edição */}
+                    <div>
+                      <div className="flex justify-between items-center mb-4">
+                        <Label className="text-base font-semibold">Itens do Grupo</Label>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setEditingAddons([...editingAddons, {name: "", price: "", description: "", isNew: true}])}
+                        >
+                          <Plus className="mr-2 h-4 w-4" />
+                          Adicionar Item
+                        </Button>
+                      </div>
+                      
+                      <div className="space-y-3 max-h-64 overflow-y-auto">
+                        {editingAddons.map((addon, index) => (
+                          <div key={index} className="grid grid-cols-4 gap-2 items-end p-3 border rounded-lg">
+                            <div>
+                              <Label>Nome *</Label>
+                              <Input
+                                value={addon.name}
+                                onChange={(e) => {
+                                  const updated = [...editingAddons];
+                                  updated[index] = {...updated[index], name: e.target.value};
+                                  setEditingAddons(updated);
+                                }}
+                                placeholder="Ex: Calabresa"
+                              />
+                            </div>
+                            <div>
+                              <Label>Preço</Label>
+                              <Input
+                                value={addon.price}
+                                onChange={(e) => {
+                                  const updated = [...editingAddons];
+                                  updated[index] = {...updated[index], price: e.target.value};
+                                  setEditingAddons(updated);
+                                }}
+                                placeholder="0.00"
+                              />
+                            </div>
+                            <div>
+                              <Label>Descrição</Label>
+                              <Input
+                                value={addon.description}
+                                onChange={(e) => {
+                                  const updated = [...editingAddons];
+                                  updated[index] = {...updated[index], description: e.target.value};
+                                  setEditingAddons(updated);
+                                }}
+                                placeholder="Opcional"
+                              />
+                            </div>
+                            <div className="flex gap-1">
+                              {addon.id && !addon.isNew && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    deleteAddonMutation.mutate(addon.id!);
+                                    setEditingAddons(editingAddons.filter((_, i) => i !== index));
+                                  }}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              )}
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setEditingAddons(editingAddons.filter((_, i) => i !== index))}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {editingAddons.length === 0 && (
+                        <div className="text-center py-8 text-muted-foreground">
+                          <p>Nenhum item no grupo.</p>
+                          <p>Clique em "Adicionar Item" para adicionar novos itens.</p>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex justify-end gap-2">
+                      <Button variant="outline" onClick={() => {
+                        setActiveTab("groups");
+                        setEditingGroup(null);
+                        setEditingAddons([]);
+                      }}>
+                        Cancelar
+                      </Button>
+                      <Button 
+                        onClick={() => editGroupMutation.mutate({group: groupForm, addons: editingAddons})}
+                        disabled={editGroupMutation.isPending || !groupForm.name}
+                      >
+                        {editGroupMutation.isPending ? "Salvando..." : "Salvar Alterações"}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
             
             <TabsContent value="copy" className="h-full overflow-y-auto">
