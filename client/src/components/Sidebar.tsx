@@ -10,18 +10,13 @@ const getNavigationItems = (userRole: string) => {
   const baseItems = [
     {
       href: "/",
-      icon: Home,
-      label: "Dashboard",
+      icon: ClipboardList,
+      label: "Pedidos",
     },
     {
       href: "/menu",
       icon: UtensilsCrossed,
       label: "Cardápio",
-    },
-    {
-      href: "/orders",
-      icon: ClipboardList,
-      label: "Pedidos",
     },
     {
       href: "/pdv",
@@ -32,6 +27,11 @@ const getNavigationItems = (userRole: string) => {
       href: "/customers",
       icon: Users,
       label: "Clientes",
+    },
+    {
+      href: "/dashboard",
+      icon: Home,
+      label: "Dashboard",
     },
   ];
 
