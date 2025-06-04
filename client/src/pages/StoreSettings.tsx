@@ -179,8 +179,13 @@ export default function StoreSettings() {
   };
 
   // Usar preview se existe, senão usar dados salvos do banco
-  const currentLogo = logoPreview || (store as any)?.logoUrl;
-  const currentBanner = bannerPreview || (store as any)?.bannerUrl;
+  const currentLogo = logoPreview || store?.logoUrl;
+  const currentBanner = bannerPreview || store?.bannerUrl;
+  
+  // Debug para verificar os dados
+  console.log('Store data:', store);
+  console.log('Current logo:', currentLogo);
+  console.log('Current banner:', currentBanner);
 
   if (isLoading) {
     return (
