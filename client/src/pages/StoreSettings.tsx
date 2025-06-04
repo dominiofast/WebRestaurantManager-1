@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { Save, Store, Clock, Truck, DollarSign, Settings, Image as ImageIcon, Globe } from "lucide-react";
-import ImageUpload from "@/components/ImageUpload";
+import SimpleImageUpload from "@/components/SimpleImageUpload";
 import { apiRequest } from "@/lib/queryClient";
 
 interface StoreData {
@@ -53,8 +53,7 @@ export default function StoreSettings() {
     status: "active"
   });
 
-  const [logoData, setLogoData] = useState({ file: null as File | null, url: "" });
-  const [bannerData, setBannerData] = useState({ file: null as File | null, url: "" });
+  const [selectedFiles, setSelectedFiles] = useState<{ logo?: File; banner?: File }>({});
 
   // Buscar dados da loja do manager
   const { data: store, isLoading, error } = useQuery<StoreData>({
@@ -126,26 +125,12 @@ export default function StoreSettings() {
     }));
   };
 
-  const handleLogoChange = (file: File | null, url: string) => {
-    setLogoData({ file, url });
-  };
 
-  const handleBannerChange = (file: File | null, url: string) => {
-    setBannerData({ file, url });
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     const updates: any = { ...formData };
-    
-    // Adicionar URLs das imagens se foram alteradas
-    if (logoData.url) {
-      updates.logo_url = logoData.url;
-    }
-    if (bannerData.url) {
-      updates.banner_url = bannerData.url;
-    }
 
     await updateStoreMutation.mutateAsync(updates);
   };
@@ -385,56 +370,40 @@ export default function StoreSettings() {
 
             {/* Imagens */}
             <TabsContent value="images" className="space-y-6">
-              <Card className="border-2 border-orange-200">
-                <CardHeader className="bg-orange-50">
-                  <CardTitle className="flex items-center gap-2 text-orange-800">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
                     <ImageIcon className="w-6 h-6" />
-                    📸 ADICIONAR IMAGENS DA LOJA
+                    Imagens da Loja
                   </CardTitle>
-                  <CardDescription className="text-orange-700 font-medium">
-                    Clique nas áreas abaixo para adicionar logo e banner da sua loja
+                  <CardDescription>
+                    Adicione logo e banner para sua loja
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="p-8 space-y-8">
+                <CardContent className="space-y-8">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                        🏪 Logo da Loja
-                      </h3>
-                      <ImageUpload
-                        label="Logo da Loja"
-                        currentImageUrl={store?.logoUrl || null}
-                        onImageChange={handleLogoChange}
-                        storeId={store?.id}
-                        className="min-h-[250px]"
-                      />
-                      <p className="text-sm text-gray-600">
-                        <strong>Recomendado:</strong> 200x200px, formato quadrado
-                      </p>
-                    </div>
+                    <SimpleImageUpload
+                      label="Logo da Loja"
+                      onImageSelected={(file) => {
+                        console.log('Logo selecionado:', file.name);
+                        // Aqui você pode implementar o upload
+                      }}
+                    />
                     
-                    <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                        🖼️ Banner da Loja
-                      </h3>
-                      <ImageUpload
-                        label="Banner da Loja"
-                        currentImageUrl={store?.bannerUrl || null}
-                        onImageChange={handleBannerChange}
-                        storeId={store?.id}
-                        className="min-h-[250px]"
-                      />
-                      <p className="text-sm text-gray-600">
-                        <strong>Recomendado:</strong> 1200x400px, formato retangular
-                      </p>
-                    </div>
+                    <SimpleImageUpload
+                      label="Banner da Loja"
+                      onImageSelected={(file) => {
+                        console.log('Banner selecionado:', file.name);
+                        // Aqui você pode implementar o upload
+                      }}
+                    />
                   </div>
                   
                   <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                    <h4 className="font-semibold text-blue-800 mb-2">📋 Instruções:</h4>
+                    <h4 className="font-semibold text-blue-800 mb-2">Instruções:</h4>
                     <ul className="text-sm text-blue-700 space-y-1">
-                      <li>• Clique na área tracejada para selecionar uma imagem</li>
-                      <li>• Para remover uma imagem, passe o mouse sobre ela e clique no X</li>
+                      <li>• Logo: Recomendado 200x200px, formato quadrado</li>
+                      <li>• Banner: Recomendado 1200x400px, formato retangular</li>
                       <li>• Tamanho máximo: 5MB por imagem</li>
                       <li>• Formatos aceitos: JPG, PNG, GIF</li>
                     </ul>
