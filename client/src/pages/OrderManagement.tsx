@@ -323,7 +323,7 @@ export default function OrderManagement() {
         />
       </div>
 
-      {/* Order Statistics */}
+      {/* Order Statistics - 3 Cards Only */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardContent className="p-4">
