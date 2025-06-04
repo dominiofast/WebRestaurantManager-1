@@ -30,6 +30,7 @@ export default function MenuManager() {
   const [editingGroup, setEditingGroup] = useState<any>(null);
   const [newAddons, setNewAddons] = useState<Array<{name: string, price: string, description: string}>>([]);
   const [editingAddons, setEditingAddons] = useState<Array<{id?: number, name: string, price: string, description: string, isNew?: boolean}>>([]);
+  const [deletingGroupId, setDeletingGroupId] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -282,21 +283,26 @@ export default function MenuManager() {
     }
   });
 
-  // Mutation para deletar grupo
-  const deleteGroupMutation = useMutation({
-    mutationFn: (id: number) => apiRequest('DELETE', `/api/addon-groups/${id}`),
-    onSuccess: () => {
+  // Função para deletar grupo com controle de estado
+  const handleDeleteGroup = async (groupId: number) => {
+    if (deletingGroupId === groupId) return; // Previne múltiplas chamadas
+    
+    setDeletingGroupId(groupId);
+    try {
+      await apiRequest('DELETE', `/api/addon-groups/${groupId}`);
       toast({ title: "Sucesso", description: "Grupo deletado!" });
       queryClient.invalidateQueries({ queryKey: [`/api/menu-products/${selectedProductForAddons?.id}/addon-groups`] });
-    },
-    onError: () => {
+    } catch (error) {
+      console.error('Erro ao deletar grupo:', error);
       toast({ 
         title: "Erro", 
         description: "Erro ao deletar grupo",
         variant: "destructive" 
       });
+    } finally {
+      setDeletingGroupId(null);
     }
-  });
+  };
 
   // Mutation para editar grupo existente
   const editGroupMutation = useMutation({
@@ -938,9 +944,10 @@ export default function MenuManager() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => deleteGroupMutation.mutate(group.id)}
+                              onClick={() => handleDeleteGroup(group.id)}
+                              disabled={deletingGroupId === group.id}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              {deletingGroupId === group.id ? "..." : <Trash2 className="h-4 w-4" />}
                             </Button>
                           </div>
                         </div>
