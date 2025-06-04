@@ -61,9 +61,9 @@ function ManagerApp({ user }: { user: any }) {
   return (
     <div className="flex h-screen bg-background">
       <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
         <TopBar />
-        <main className="flex-1 overflow-x-hidden overflow-y-auto">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 lg:p-6">
           <Switch>
             <Route path="/" component={ManagerStoreDashboard} />
             <Route path="/pdv" component={PDV} />

@@ -28,28 +28,18 @@ const getNavigationItems = (userRole: string) => {
       icon: ShoppingCart,
       label: "Pedidos (PDV)",
     },
-  ];
-
-  // Add AI Agent and Customers for managers
-  if (userRole === 'manager') {
-    baseItems.push({
+    {
       href: "/customers",
       icon: Users,
       label: "Clientes",
-    });
-    baseItems.push({
-      href: "/ai-agent",
-      icon: Bot,
-      label: "Agente de IA",
-    });
-  }
+    },
+  ];
 
-  // Only show menu manager for owners and super admins (multi-store management)
-  if (userRole === 'owner' || userRole === 'super_admin') {
+  if (userRole === 'manager') {
     baseItems.push({
-      href: "/menu-manager",
+      href: "/digital-menu",
       icon: Globe,
-      label: "Gestor de Cardápio",
+      label: "Cardápio Digital",
     });
   }
 
@@ -176,39 +166,39 @@ export default function Sidebar() {
                   )}
                 </div>
               
-              {/* Submenu */}
-              {configExpanded && (
-                <div className="ml-6 space-y-1">
-                  <Link href="/config/profile">
-                    <div
-                      className={cn(
-                        "flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors cursor-pointer",
-                        location === "/config/profile"
-                          ? "bg-coral text-white"
-                          : "text-white/70 hover:bg-white/10 hover:text-white"
-                      )}
-                    >
-                      <User className="w-4 h-4" />
-                      <span className="font-medium text-sm">Perfil</span>
-                    </div>
-                  </Link>
-                  <Link href="/config/integrations">
-                    <div
-                      className={cn(
-                        "flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors cursor-pointer",
-                        location === "/config/integrations"
-                          ? "bg-coral text-white"
-                          : "text-white/70 hover:bg-white/10 hover:text-white"
-                      )}
-                    >
-                      <Plug className="w-4 h-4" />
-                      <span className="font-medium text-sm">Integrações</span>
-                    </div>
-                  </Link>
-                </div>
-              )}
-            </div>
-          )}
+                {/* Submenu */}
+                {configExpanded && !isCollapsed && (
+                  <div className="ml-6 space-y-1">
+                    <Link href="/config/profile">
+                      <div
+                        className={cn(
+                          "flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors cursor-pointer",
+                          location === "/config/profile"
+                            ? "bg-coral text-white"
+                            : "text-white/70 hover:bg-white/10 hover:text-white"
+                        )}
+                      >
+                        <User className="w-4 h-4" />
+                        <span className="font-medium text-sm">Perfil</span>
+                      </div>
+                    </Link>
+                    <Link href="/config/integrations">
+                      <div
+                        className={cn(
+                          "flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors cursor-pointer",
+                          location === "/config/integrations"
+                            ? "bg-coral text-white"
+                            : "text-white/70 hover:bg-white/10 hover:text-white"
+                        )}
+                      >
+                        <Plug className="w-4 h-4" />
+                        <span className="font-medium text-sm">Integrações</span>
+                      </div>
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )}
           
             {/* Super Admin Navigation */}
             {isSuperAdmin && (
