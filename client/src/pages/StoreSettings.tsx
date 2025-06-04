@@ -150,6 +150,20 @@ export default function StoreSettings() {
       // Atualizar loja se há mudanças
       if (Object.keys(updates).length > 0) {
         await updateStoreMutation.mutateAsync(updates);
+        
+        // Limpar states e previews após sucesso
+        setLogoFile(null);
+        setBannerFile(null);
+        setLogoPreview("");
+        setBannerPreview("");
+        
+        // Invalidar cache para recarregar dados
+        await queryClient.invalidateQueries({ queryKey: ['/api/manager/store'] });
+        
+        toast({
+          title: "Sucesso",
+          description: "Imagens salvas com sucesso!",
+        });
       } else {
         toast({
           title: "Aviso",
@@ -178,14 +192,9 @@ export default function StoreSettings() {
     }
   };
 
-  // Usar preview se existe, senão usar dados salvos do banco
+  // Mostrar preview durante upload, senão mostrar imagem salva no banco
   const currentLogo = logoPreview || store?.logoUrl;
   const currentBanner = bannerPreview || store?.bannerUrl;
-  
-  // Debug para verificar os dados
-  console.log('Store data:', store);
-  console.log('Current logo:', currentLogo);
-  console.log('Current banner:', currentBanner);
 
   if (isLoading) {
     return (
