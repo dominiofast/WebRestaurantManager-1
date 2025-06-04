@@ -1,157 +1,152 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload, X, Image as ImageIcon } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 
 interface ImageUploadProps {
-  currentImage?: string;
-  onImageChange: (imageUrl: string) => void;
+  label: string;
+  currentImageUrl?: string;
+  onImageChange: (file: File | null, url: string) => void;
   className?: string;
 }
 
-export default function ImageUpload({ currentImage, onImageChange, className = "" }: ImageUploadProps) {
-  const [previewUrl, setPreviewUrl] = useState<string | null>(currentImage || null);
-  const [isDragging, setIsDragging] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+export default function ImageUpload({ 
+  label, 
+  currentImageUrl, 
+  onImageChange, 
+  className = "" 
+}: ImageUploadProps) {
+  const [preview, setPreview] = useState<string>("");
+  const [uploading, setUploading] = useState(false);
+  const { toast } = useToast();
 
-  const uploadMutation = useMutation({
-    mutationFn: async (file: File) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validação básica
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Erro",
+        description: "Apenas arquivos de imagem são permitidos",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "Erro", 
+        description: "Arquivo muito grande. Máximo 5MB",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Criar preview local
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      setPreview(result);
+    };
+    reader.readAsDataURL(file);
+
+    // Upload do arquivo
+    setUploading(true);
+    try {
       const formData = new FormData();
       formData.append('image', file);
-      
+
       const response = await fetch('/api/upload', {
         method: 'POST',
-        body: formData,
+        body: formData
       });
-      
+
       if (!response.ok) {
-        throw new Error('Erro no upload da imagem');
+        throw new Error('Erro no upload');
       }
+
+      const data = await response.json();
+      onImageChange(file, data.imageUrl);
       
-      return response.json();
-    },
-    onSuccess: (data) => {
-      setPreviewUrl(data.imageUrl);
-      onImageChange(data.imageUrl);
-    },
-    onError: (error) => {
-      console.error('Erro no upload:', error);
-      alert('Erro ao fazer upload da imagem. Tente novamente.');
+      toast({
+        title: "Sucesso",
+        description: "Imagem carregada com sucesso"
+      });
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao fazer upload da imagem",
+        variant: "destructive"
+      });
+      setPreview("");
+    } finally {
+      setUploading(false);
     }
-  });
-
-  const handleFileSelect = (file: File) => {
-    if (file && file.type.startsWith('image/')) {
-      // Criar preview local
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setPreviewUrl(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-
-      // Fazer upload
-      uploadMutation.mutate(file);
-    } else {
-      alert('Por favor, selecione um arquivo de imagem válido.');
-    }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      handleFileSelect(file);
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      handleFileSelect(file);
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setIsDragging(false);
   };
 
   const removeImage = () => {
-    setPreviewUrl(null);
-    onImageChange("");
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    setPreview("");
+    onImageChange(null, "");
   };
 
+  const displayImage = preview || currentImageUrl;
+
   return (
-    <div className={`space-y-2 ${className}`}>
-      <Label htmlFor="image-upload">Imagem do produto</Label>
+    <div className={`space-y-4 ${className}`}>
+      <Label>{label}</Label>
       
-      {previewUrl ? (
-        <div className="relative">
-          <img 
-            src={previewUrl} 
-            alt="Preview" 
-            className="w-full h-48 object-cover rounded-lg border"
+      {displayImage ? (
+        <div className="relative group">
+          <img
+            src={displayImage}
+            alt={label}
+            className="w-full h-48 object-cover rounded-lg border-2 border-gray-200"
+            onError={(e) => {
+              console.error('Image load error:', e);
+              e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YTNhZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlbSBuJmFtcDthdGlsZGU7byBlbmNvbnRyYWRhPC90ZXh0Pjwvc3ZnPg==';
+            }}
           />
-          <Button
-            type="button"
-            variant="destructive"
-            size="sm"
-            className="absolute top-2 right-2"
-            onClick={removeImage}
-          >
-            <X className="w-4 h-4" />
-          </Button>
+          <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg">
+            <Button
+              type="button"
+              variant="destructive"
+              size="sm"
+              onClick={removeImage}
+              disabled={uploading}
+            >
+              <X className="w-4 h-4 mr-1" />
+              Remover
+            </Button>
+          </div>
         </div>
       ) : (
-        <div
-          className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-            isDragging 
-              ? 'border-orange-500 bg-orange-50' 
-              : 'border-gray-300 hover:border-gray-400'
-          }`}
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-        >
-          <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600 mb-4">
-            Arraste uma imagem aqui ou clique para selecionar
-          </p>
+        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors">
+          <ImageIcon className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+          <p className="text-gray-600 mb-4">Clique para selecionar uma imagem</p>
           <Button
             type="button"
             variant="outline"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={uploadMutation.isPending}
+            disabled={uploading}
+            onClick={() => document.getElementById(`file-${label}`)?.click()}
           >
             <Upload className="w-4 h-4 mr-2" />
-            {uploadMutation.isPending ? 'Enviando...' : 'Selecionar Imagem'}
+            {uploading ? "Enviando..." : "Selecionar Arquivo"}
           </Button>
         </div>
       )}
 
       <Input
-        ref={fileInputRef}
-        id="image-upload"
+        id={`file-${label}`}
         type="file"
         accept="image/*"
-        onChange={handleInputChange}
+        onChange={handleFileSelect}
         className="hidden"
+        disabled={uploading}
       />
-      
-      <p className="text-xs text-gray-500">
-        Formatos aceitos: JPG, PNG, GIF. Tamanho máximo: 5MB
-      </p>
     </div>
   );
 }
