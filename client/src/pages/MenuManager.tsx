@@ -175,17 +175,23 @@ export default function MenuManager() {
         productId: selectedProductForAddons?.id
       });
       
+      console.log('Grupo criado:', groupResponse);
+      
       // Depois criar os adicionais um por um com verificação
       if (data.addons.length > 0) {
         for (const addon of data.addons) {
           if (addon.name && addon.price) { // Só criar se tiver nome e preço
+            const addonData = {
+              name: addon.name,
+              description: addon.description || "",
+              price: addon.price,
+              groupId: groupResponse.id
+            };
+            
+            console.log('Criando adicional:', addonData);
+            
             try {
-              await apiRequest('POST', '/api/addons', {
-                name: addon.name,
-                description: addon.description || "",
-                price: addon.price,
-                groupId: groupResponse.id
-              });
+              await apiRequest('POST', '/api/addons', addonData);
             } catch (error) {
               console.error('Erro ao criar adicional:', addon, error);
               throw error;
