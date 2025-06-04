@@ -483,7 +483,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Removed duplicate PUT route - using the one below that allows managers
+  // Store update route - allows managers to update their own store
+  app.put('/api/stores/:id', requireAuth, async (req: any, res) => {
+    try {
+      const storeId = parseInt(req.params.id);
+      const user = await storage.getUser(req.user.id);
+      
+      if (!user) {
+        return res.status(401).json({ message: "Usuário não encontrado" });
+      }
+
+      // Allow super_admin to update any store, managers can only update their assigned store
+      if (user.role === 'manager') {
+        const managerStore = await storage.getStoreByManagerId(req.user.id);
+        if (!managerStore || managerStore.id !== storeId) {
+          return res.status(403).json({ message: "Acesso negado - Você só pode atualizar sua própria loja" });
+        }
+      } else if (user.role !== 'super_admin' && user.role !== 'owner') {
+        return res.status(403).json({ message: "Acesso negado" });
+      }
+
+      const updatedStore = await storage.updateStore(storeId, req.body);
+      res.json(updatedStore);
+    } catch (error) {
+      console.error('Error updating store:', error);
+      res.status(500).json({ message: "Erro ao atualizar loja" });
+    }
+  });
 
   app.delete('/api/admin/stores/:id', requireAuth, async (req: any, res) => {
     try {
