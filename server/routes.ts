@@ -1115,18 +1115,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const webhookUrl = `https://dominiomenu-app.replit.app/api/webhook/whatsapp/${storeId}`;
       
-      // Configure webhook in Mega API
-      const response = await fetch(`https://${instance.apiHost}/rest/instance/webhook/${instance.instanceKey}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${instance.apiToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          url: webhookUrl,
-          events: ['message', 'messages.upsert']
-        })
-      });
+      // Try multiple webhook endpoints for Mega API
+      const endpoints = [
+        `/rest/instance/webhook/${instance.instanceKey}`,
+        `/rest/instance/setWebhook/${instance.instanceKey}`,
+        `/rest/instance/settings/webhook/${instance.instanceKey}`,
+        `/webhook/${instance.instanceKey}`
+      ];
+
+      let response = null;
+      let lastError = null;
+
+      for (const endpoint of endpoints) {
+        try {
+          response = await fetch(`https://${instance.apiHost}${endpoint}`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${instance.apiToken}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              url: webhookUrl,
+              webhook: webhookUrl,
+              events: ['message', 'messages.upsert', 'onMessage']
+            })
+          });
+
+          if (response.ok) {
+            console.log(`Webhook configured successfully using endpoint: ${endpoint}`);
+            break;
+          } else {
+            const errorText = await response.text();
+            lastError = errorText;
+            console.log(`Failed endpoint ${endpoint}:`, errorText);
+          }
+        } catch (error) {
+          lastError = error;
+          console.log(`Error with endpoint ${endpoint}:`, error);
+        }
+      }
 
       if (response.ok) {
         const result = await response.json();
