@@ -39,6 +39,12 @@ export default function StoreSettings() {
         email: (store as any).email || "",
         description: (store as any).description || ""
       });
+      
+      // Limpar previews quando novos dados chegam
+      setLogoPreview("");
+      setBannerPreview("");
+      setLogoFile(null);
+      setBannerFile(null);
     }
   }, [store]);
 
@@ -78,13 +84,17 @@ export default function StoreSettings() {
       
       return response.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/manager/store'] });
+    onSuccess: async (data) => {
+      // Force refresh the store data
+      await queryClient.invalidateQueries({ queryKey: ['/api/manager/store'] });
+      await queryClient.refetchQueries({ queryKey: ['/api/manager/store'] });
+      
       toast({
         title: "Sucesso",
         description: "Configurações da loja atualizadas com sucesso!",
       });
-      // Limpar previews
+      
+      // Limpar apenas os previews e arquivos selecionados
       setLogoFile(null);
       setBannerFile(null);
       setLogoPreview("");
@@ -169,6 +179,7 @@ export default function StoreSettings() {
     }
   };
 
+  // Usar preview se existe, senão usar dados salvos do banco
   const currentLogo = logoPreview || (store as any)?.logoUrl || (store as any)?.logo_url;
   const currentBanner = bannerPreview || (store as any)?.bannerUrl || (store as any)?.banner_url;
 
