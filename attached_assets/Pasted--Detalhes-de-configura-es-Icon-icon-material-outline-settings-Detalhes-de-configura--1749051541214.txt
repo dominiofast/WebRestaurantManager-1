@@ -1,0 +1,138 @@
+# Detalhes de configurações
+
+> ## <Icon icon="material-outline-settings"/> Detalhes de configurações
+
+Este método é responsável por retornar todas as configurações realizadas no webhook, incluindo informações sobre os eventos ativos tanto no webhook principal quanto no secundário. Além disso, ele fornece o token atualmente configurado na instância, permitindo um acompanhamento detalhado das configurações da integração.
+
+## OpenAPI
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ''
+  description: ''
+  version: 1.0.0
+paths:
+  /rest/config/instance_key:
+    get:
+      summary: Detalhes de configurações
+      deprecated: false
+      description: >-
+        ## <Icon icon="material-outline-settings"/> Detalhes de configurações
+
+
+        Este método é responsável por retornar todas as configurações realizadas
+        no webhook, incluindo informações sobre os eventos ativos tanto no
+        webhook principal quanto no secundário. Além disso, ele fornece o token
+        atualmente configurado na instância, permitindo um acompanhamento
+        detalhado das configurações da integração.
+      tags:
+        - ConfigController
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                  message:
+                    type: string
+                  dataMessage:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        description: Token
+                      blockList:
+                        type: array
+                        items:
+                          type: string
+                        description: Eventos bloqueados
+                      acceptWebhook:
+                        type: array
+                        items:
+                          type: string
+                        description: Eventos webhook primário
+                      acceptSecondaryWebhook:
+                        type: array
+                        items:
+                          type: string
+                        description: Eventos webhook secundário
+                      messagesAck:
+                        type: array
+                        items:
+                          type: string
+                        description: Eventos de status
+                    required:
+                      - token
+                      - blockList
+                      - acceptWebhook
+                      - acceptSecondaryWebhook
+                      - messagesAck
+                    x-apidog-orders:
+                      - token
+                      - blockList
+                      - acceptWebhook
+                      - acceptSecondaryWebhook
+                      - messagesAck
+                required:
+                  - error
+                  - message
+                  - dataMessage
+                x-apidog-orders:
+                  - error
+                  - message
+                  - dataMessage
+          headers: {}
+          x-apidog-name: Success
+        x-200:Error:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                  name:
+                    type: string
+                  message:
+                    type: string
+                    description: Mensagem de erro
+                  statusCode:
+                    type: integer
+                    description: Status code
+                required:
+                  - error
+                  - name
+                  - message
+                  - statusCode
+                x-apidog-orders:
+                  - error
+                  - name
+                  - message
+                  - statusCode
+          headers: {}
+          x-apidog-name: Error
+      security:
+        - bearer: []
+      x-apidog-folder: ConfigController
+      x-apidog-status: released
+      x-run-in-apidog: https://app.apidog.com/web/project/706630/apis/api-11143749-run
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://apinocode01.megaapi.com.br
+    description: apinocode01.megaapi.com.br
+security:
+  - bearer: []
+
+```
