@@ -2420,6 +2420,26 @@ Responda de forma natural e humana. Se for sobre cardápio, horários, delivery 
     }
   });
 
+  app.post('/api/customers', isAuthenticated, async (req: any, res) => {
+    try {
+      const store = await storage.getStoreByManagerId(req.session.userId);
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      const customerData = insertCustomerSchema.parse({
+        ...req.body,
+        storeId: store.id
+      });
+
+      const customer = await storage.createCustomer(customerData);
+      res.status(201).json(customer);
+    } catch (error) {
+      console.error('Error creating customer:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
   app.get('/api/customers/:id', isAuthenticated, async (req: any, res) => {
     try {
       const store = await storage.getStoreByManagerId(req.session.userId);
