@@ -1643,19 +1643,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const message = webhookData.data || webhookData.message;
         console.log('[Webhook] Message object:', message);
         
-        if (message && !message.fromMe && message.body) {
-          console.log('[Webhook] Valid incoming message found');
+        // Extract text from different message formats
+        let messageText = '';
+        if (message.message?.conversation) {
+          messageText = message.message.conversation;
+        } else if (message.message?.extendedTextMessage?.text) {
+          messageText = message.message.extendedTextMessage.text;
+        } else if (message.body) {
+          messageText = message.body;
+        }
+        
+        // Check if message is from customer (not from us)
+        const isFromMe = message.key?.fromMe === true || message.fromMe === true;
+        
+        if (messageText && !isFromMe) {
+          console.log('[Webhook] Valid incoming message found:', messageText);
           const instance = await storage.getWhatsappInstance(storeId);
           console.log('[Webhook] Instance found:', instance);
           
           if (instance && instance.isActive) {
             console.log('[Webhook] Instance is active, processing message');
-            await processWhatsAppMessage(storeId, message, instance);
+            
+            // Create standardized message object
+            const processedMessage = {
+              from: message.key?.remoteJid || message.from,
+              body: messageText,
+              fromMe: isFromMe
+            };
+            
+            await processWhatsAppMessage(storeId, processedMessage, instance);
           } else {
             console.log('[Webhook] Instance not active or not found');
           }
         } else {
-          console.log('[Webhook] Message does not meet criteria - fromMe:', message?.fromMe, 'body:', message?.body);
+          console.log('[Webhook] Message does not meet criteria - fromMe:', isFromMe, 'text:', messageText);
         }
       } else {
         console.log('[Webhook] Unknown webhook format - checking for messageType:', !!webhookData.messageType);
