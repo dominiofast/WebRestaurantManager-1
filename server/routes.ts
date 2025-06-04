@@ -695,7 +695,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/addons', requireAuth, async (req: any, res) => {
     try {
-      const addon = await storage.createAddon(req.body);
+      console.log("Dados recebidos para addon:", req.body);
+      
+      // Validar dados obrigatórios
+      if (!req.body.name || !req.body.price || !req.body.groupId) {
+        return res.status(400).json({ 
+          message: "Nome, preço e groupId são obrigatórios",
+          received: req.body 
+        });
+      }
+
+      const addonData = {
+        name: req.body.name,
+        description: req.body.description || "",
+        price: req.body.price,
+        groupId: parseInt(req.body.groupId),
+        isAvailable: req.body.isAvailable !== false
+      };
+
+      console.log("Dados processados para addon:", addonData);
+      
+      const addon = await storage.createAddon(addonData);
       res.status(201).json(addon);
     } catch (error) {
       console.error("Error creating addon:", error);
