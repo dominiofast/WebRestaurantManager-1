@@ -324,7 +324,7 @@ export default function OrderManagement() {
       </div>
 
       {/* Order Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="text-2xl font-bold text-red-600">
@@ -349,15 +349,6 @@ export default function OrderManagement() {
               {groupedOrders.delivered.length}
             </div>
             <div className="text-sm text-muted-foreground">Entregue</div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold text-blue-600">
-              {filteredOrders.length}
-            </div>
-            <div className="text-sm text-muted-foreground">Total de Pedidos</div>
           </CardContent>
         </Card>
       </div>
