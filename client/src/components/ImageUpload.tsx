@@ -17,10 +17,12 @@ export default function ImageUpload({
   label, 
   currentImageUrl, 
   onImageChange, 
-  className = "" 
+  className = "",
+  storeId 
 }: ImageUploadProps) {
   const [preview, setPreview] = useState<string>("");
   const [uploading, setUploading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const { toast } = useToast();
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,7 +62,9 @@ export default function ImageUpload({
       const formData = new FormData();
       formData.append('image', file);
 
-      const response = await fetch('/api/upload', {
+      // Use store-specific upload endpoint if storeId is provided
+      const uploadUrl = storeId ? `/api/stores/${storeId}/upload` : '/api/upload';
+      const response = await fetch(uploadUrl, {
         method: 'POST',
         body: formData
       });
@@ -89,7 +93,38 @@ export default function ImageUpload({
     }
   };
 
-  const removeImage = () => {
+  const removeImage = async () => {
+    // If there's a current image and we have store ID, try to delete from server
+    if (currentImageUrl && storeId && currentImageUrl.includes('/api/image/')) {
+      setDeleting(true);
+      
+      try {
+        const filename = currentImageUrl.split('/api/image/')[1];
+        
+        // Only try to delete if filename starts with store_ prefix (indicates it's store-specific)
+        if (filename.startsWith(`store_${storeId}_`)) {
+          const response = await fetch(`/api/stores/${storeId}/images/${filename}`, {
+            method: 'DELETE',
+          });
+
+          if (response.ok) {
+            toast({
+              title: "Imagem excluída",
+              description: "A imagem foi excluída do servidor."
+            });
+          } else {
+            console.warn('Failed to delete image from server, but continuing with removal');
+          }
+        }
+      } catch (error) {
+        console.error('Error deleting image:', error);
+        // Continue with removal even if server deletion fails
+      } finally {
+        setDeleting(false);
+      }
+    }
+
+    // Always clear the preview and notify parent
     setPreview("");
     onImageChange(null, "");
     

@@ -387,11 +387,13 @@ export default function StoreSettings() {
                       label="Logo da Loja"
                       currentImageUrl={store?.logoUrl || ""}
                       onImageChange={handleLogoChange}
+                      storeId={store?.id}
                     />
                     <ImageUpload
                       label="Banner da Loja"
                       currentImageUrl={store?.bannerUrl || ""}
                       onImageChange={handleBannerChange}
+                      storeId={store?.id}
                     />
                   </div>
                   <div className="text-sm text-gray-600">
