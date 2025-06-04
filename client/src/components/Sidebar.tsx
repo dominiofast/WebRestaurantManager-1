@@ -14,7 +14,7 @@ const getNavigationItems = (userRole: string) => {
       label: "Pedidos",
     },
     {
-      href: "/menu",
+      href: "/menu-manager",
       icon: UtensilsCrossed,
       label: "Cardápio",
     },
@@ -27,11 +27,6 @@ const getNavigationItems = (userRole: string) => {
       href: "/customers",
       icon: Users,
       label: "Clientes",
-    },
-    {
-      href: "/dashboard",
-      icon: Home,
-      label: "Dashboard",
     },
   ];
 

@@ -70,6 +70,7 @@ function ManagerApp({ user }: { user: any }) {
           <Switch>
             <Route path="/" component={OrderManagement} />
             <Route path="/orders" component={OrderManagement} />
+            <Route path="/menu-manager" component={ManagerStoreDashboard} />
             <Route path="/pdv" component={PDV} />
             <Route path="/customers" component={Customers} />
             <Route path="/analytics" component={Analytics} />
