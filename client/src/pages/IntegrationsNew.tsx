@@ -96,6 +96,7 @@ export default function IntegrationsNew() {
           phoneNumber: integrations.whatsapp.phoneNumber,
           webhookUrl: integrations.whatsapp.webhookUrl,
           enabled: integrations.whatsapp.enabled,
+          isActive: integrations.whatsapp.enabled,
           autoResponder: integrations.whatsapp.autoResponder,
           businessHours: integrations.whatsapp.businessHours
         })
@@ -138,7 +139,7 @@ export default function IntegrationsNew() {
               host: instance.apiHost || prev.whatsapp.host,
               phoneNumber: instance.phoneNumber || prev.whatsapp.phoneNumber,
               webhookUrl: instance.webhookUrl || prev.whatsapp.webhookUrl,
-              enabled: instance.status === 'connected' ? true : (instance.enabled ?? false),
+              enabled: instance.isActive ?? false,
               autoResponder: instance.autoResponder ?? true,
               businessHours: instance.businessHours ?? true,
               status: instance.status || 'disconnected'
