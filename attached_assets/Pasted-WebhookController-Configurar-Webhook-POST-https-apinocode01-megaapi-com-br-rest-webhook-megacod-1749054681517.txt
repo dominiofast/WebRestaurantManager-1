@@ -1,0 +1,106 @@
+WebhookController
+Configurar Webhook
+POST
+https://apinocode01.megaapi.com.br/rest/webhook/megacode-McmAMknxcxu/configWebhook
+ Configurar webhook
+Este método te permite verificar qual url esta salva no webhook
+
+ Configurar webhook utilizando painel Mega-api
+1️⃣ - Acesse nosso painel, clique na opção MINHAS INSTANCIAS
+
+
+2️⃣ - Agora, clicando no botão DETALHES, você será redirecionado, para a tela com todos os detalhes da instância contratada
+
+
+3️⃣ - Clique no EDITAR, abrirá uma janela modal. Adicione a url do weu webhook, salve e pronto. Sua instância a partir de agora, começará a receber todos os eventos disparados pelo whatsapp
+
+
+ Configurar eventos webhook utilizando painel Mega-api
+Agora você pode selecionar facilmente os eventos do WhatsApp que deseja receber em seu webhook, tornando a integração ainda mais personalizada e eficiente.
+eventos.png
+Requisição
+Authorization
+Forneça seu token bearer no cabeçalho Authorization ao fazer requisições para recursos protegidos.
+Exemplo:
+Authorization: Bearer ********************
+Parâmetros Header
+Name
+Type
+Required
+Description
+Authorization
+string 
+Exemplo:
+Bearer {{token}}
+Parâmetros Body
+application/json
+object
+ 
+{0}
+Exemplo
+{
+  "messageData": {
+    "webhookUrl": "https://webhook.megaapi.com.br/0d5c7fd5-cbeb-4181-acd0-f563e9b73e2a",
+    "webhookEnabled": true,
+    "webhookSecondaryUrl": "https://webhook.megaapi.com.br/0d5c7fd5-cbeb-4181-acd0-f563e9b73e2awebhook2",
+    "webhookSecondaryEnabled": false
+  }
+}
+Exemplos de Requisição
+http.client
+Requests
+import requests
+import json
+
+url = "https://apinocode01.megaapi.com.br/rest/webhook/sua instance_key/configWebhook"
+
+payload = json.dumps({
+   "messageData": {
+      "webhookUrl": "https://webhook.megaapi.com.br/0d5c7fd5-cbeb-4181-acd0-f563e9b73e2a",
+      "webhookEnabled": True,
+      "webhookSecondaryUrl": "https://webhook.megaapi.com.br/0d5c7fd5-cbeb-4181-acd0-f563e9b73e2awebhook2",
+      "webhookSecondaryEnabled": False
+   }
+})
+headers = {
+   'Authorization': 'Bearer seu token',
+   'Content-Type': 'application/json'
+}
+
+response = requests.request("POST", url, headers=headers, data=payload)
+
+print(response.text)
+Respostas
+🟢200
+Success
+application/json
+error
+boolean 
+requerido
+message
+string 
+requerido
+dataMessage
+object 
+requerido
+webhookUrl
+string 
+requerido
+webhookEnabled
+boolean 
+requerido
+webhookSecondaryUrl
+string 
+requerido
+webhookSecondaryEnabled
+boolean 
+requerido
+Exemplo
+{
+    "error": false,
+    "message": "Webhook configured",
+    "dataMessage": {
+        "url": "https://meuwebhook.com",
+        "sendMessage": true
+    }
+}
