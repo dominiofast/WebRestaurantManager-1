@@ -530,12 +530,20 @@ export class DatabaseStorage implements IStorage {
     const store = row.store;
     
     // Convert snake_case to camelCase for frontend compatibility
-    return {
+    const convertedStore = {
       ...store,
       logoUrl: store.logo_url,
       bannerUrl: store.banner_url,
+      logo_url: undefined,
+      banner_url: undefined,
       company: row.company!,
     };
+    
+    // Remove undefined fields
+    delete convertedStore.logo_url;
+    delete convertedStore.banner_url;
+    
+    return convertedStore;
   }
 
   // Store operations
