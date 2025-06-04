@@ -65,14 +65,15 @@ function ManagerApp({ user }: { user: any }) {
         <TopBar />
         <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 lg:p-6">
           <Switch>
-            <Route path="/" component={ManagerStoreDashboard} />
+            <Route path="/" component={OrderManagement} />
+            <Route path="/orders" component={OrderManagement} />
             <Route path="/pdv" component={PDV} />
             <Route path="/dashboard" component={ManagerStoreDashboard} />
             <Route path="/customers" component={Customers} />
             <Route path="/ai-agent" component={AIAgentNew} />
             <Route path="/config/profile" component={Profile} />
             <Route path="/config/integrations" component={IntegrationsNew} />
-            <Route component={ManagerStoreDashboard} />
+            <Route component={OrderManagement} />
           </Switch>
         </main>
       </div>

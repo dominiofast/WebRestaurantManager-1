@@ -21,7 +21,8 @@ import {
   Eye,
   MessageCircle,
   Plus,
-  Search
+  Search,
+  ShoppingCart
 } from "lucide-react";
 
 interface Order {
@@ -281,24 +282,33 @@ export default function OrderManagement() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Gerenciar Pedidos</h1>
-          <p className="text-muted-foreground">
-            Acompanhe e gerencie todos os pedidos em tempo real
-          </p>
-        </div>
-        
-        <div className="flex items-center gap-3">
-          <Button className="bg-blue-600 hover:bg-blue-700 text-sm">
-            <Plus className="h-3 w-3 mr-2" />
-            $ VENDA DE BALCÃO SEM CLIENTE
-          </Button>
-          
-          <Button className="bg-green-600 hover:bg-green-700 text-sm">
-            REGISTRAR ENTREGA
-          </Button>
+      {/* Welcome Bar */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50 rounded-lg p-4 mb-6 border">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-100">
+              Bem-vindo ao Painel de Pedidos
+            </h2>
+            <p className="text-blue-700 dark:text-blue-300 mt-1">
+              Gerencie todos os pedidos do seu estabelecimento de forma eficiente
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="default"
+              className="bg-green-600 hover:bg-green-700 text-white text-sm"
+            >
+              <Plus className="h-3 w-3 mr-1" />
+              Adicionar Pedidos
+            </Button>
+            <Button
+              variant="outline"
+              className="border-blue-600 text-blue-600 hover:bg-blue-50 text-sm"
+            >
+              <ShoppingCart className="h-3 w-3 mr-1" />
+              Venda de Balcão sem Clientes
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -353,14 +363,14 @@ export default function OrderManagement() {
       </div>
 
       {/* Kanban Board */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
         {Object.entries(statusConfig).map(([status, config]) => {
           const Icon = config.icon;
           const statusOrders = groupedOrders[status as keyof typeof groupedOrders] || [];
           
           return (
-            <div key={status} className="space-y-4">
-              <div className="flex items-center gap-2 p-2.5 rounded-lg bg-card border">
+            <div key={status} className="space-y-3 w-full max-w-sm">
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-card border">
                 <Icon className={cn("h-3 w-3", config.iconColor)} />
                 <h3 className="font-medium text-sm">{config.label}</h3>
                 <Badge variant="secondary" className="ml-auto text-xs">
@@ -368,10 +378,10 @@ export default function OrderManagement() {
                 </Badge>
               </div>
               
-              <div className="space-y-3 max-h-[600px] overflow-y-auto">
+              <div className="space-y-2 max-h-[600px] overflow-y-auto">
                 {statusOrders.length === 0 ? (
-                  <Card className={cn("p-4 text-center", config.color)}>
-                    <p className="text-sm text-muted-foreground">
+                  <Card className={cn("p-3 text-center", config.color)}>
+                    <p className="text-xs text-muted-foreground">
                       Nenhum pedido neste status
                     </p>
                   </Card>
