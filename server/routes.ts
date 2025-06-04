@@ -50,9 +50,6 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Servir arquivos estáticos da pasta uploads
-  app.use('/uploads', express.static(uploadsDir));
-  
   // Check current session
   app.get('/api/auth/me', async (req: any, res) => {
     try {

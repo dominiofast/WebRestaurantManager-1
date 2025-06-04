@@ -151,14 +151,16 @@ export default function StoreSettings() {
       if (Object.keys(updates).length > 0) {
         await updateStoreMutation.mutateAsync(updates);
         
-        // Limpar states e previews após sucesso
-        setLogoFile(null);
-        setBannerFile(null);
-        setLogoPreview("");
-        setBannerPreview("");
-        
-        // Invalidar cache para recarregar dados
+        // Invalidar cache para recarregar dados primeiro
         await queryClient.invalidateQueries({ queryKey: ['/api/manager/store'] });
+        
+        // Aguardar um pouco para os dados carregarem, depois limpar previews
+        setTimeout(() => {
+          setLogoFile(null);
+          setBannerFile(null);
+          setLogoPreview("");
+          setBannerPreview("");
+        }, 500);
         
         toast({
           title: "Sucesso",
