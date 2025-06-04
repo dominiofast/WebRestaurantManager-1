@@ -14,7 +14,7 @@ export default function TopBar() {
 
   // Buscar informações da loja para obter o slug
   const { data: store } = useQuery({
-    queryKey: ['/api/store-by-manager'],
+    queryKey: ['/api/manager/store'],
     enabled: !!user
   });
 
