@@ -50,43 +50,6 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Servir arquivos estáticos da pasta uploads
-  app.use('/uploads', express.static(uploadsDir));
-
-  // Rota API específica para servir imagens com Content-Type correto
-  app.get('/api/image/:filename', (req, res) => {
-    const filename = req.params.filename;
-    const filePath = path.join(uploadsDir, filename);
-    
-    // Verificar se o arquivo existe
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ message: 'Arquivo não encontrado' });
-    }
-    
-    // Definir Content-Type baseado na extensão
-    const ext = path.extname(filename).toLowerCase();
-    let contentType = 'application/octet-stream';
-    
-    if (ext === '.jpg' || ext === '.jpeg') {
-      contentType = 'image/jpeg';
-    } else if (ext === '.png') {
-      contentType = 'image/png';
-    } else if (ext === '.gif') {
-      contentType = 'image/gif';
-    } else if (ext === '.webp') {
-      contentType = 'image/webp';
-    }
-    
-    // Forçar cabeçalhos corretos
-    res.removeHeader('X-Powered-By');
-    res.removeHeader('Vary');
-    res.setHeader('Content-Type', contentType);
-    res.setHeader('Cache-Control', 'public, max-age=31536000');
-    
-    // Enviar arquivo
-    fs.createReadStream(filePath).pipe(res);
-  });
-
   // Check current session
   app.get('/api/auth/me', async (req: any, res) => {
     try {
@@ -164,15 +127,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(409).json({ message: "Email já está em uso" });
       }
 
-      // Hash password
-      const saltRounds = 10;
-      const hashedPassword = await bcrypt.hash(password, saltRounds);
-
       // Create new user
       const userData = {
         id: `user-${Date.now()}`,
         email,
-        password: hashedPassword,
         firstName: firstName,
         lastName: lastName,
         restaurantName: restaurantName,
@@ -525,33 +483,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Store update route - allows managers to update their own store
-  app.put('/api/stores/:id', requireAuth, async (req: any, res) => {
-    try {
-      const storeId = parseInt(req.params.id);
-      const user = await storage.getUser(req.user.id);
-      
-      if (!user) {
-        return res.status(401).json({ message: "Usuário não encontrado" });
-      }
-
-      // Allow super_admin to update any store, managers can only update their assigned store
-      if (user.role === 'manager') {
-        const managerStore = await storage.getStoreByManagerId(req.user.id);
-        if (!managerStore || managerStore.id !== storeId) {
-          return res.status(403).json({ message: "Acesso negado - Você só pode atualizar sua própria loja" });
-        }
-      } else if (user.role !== 'super_admin' && user.role !== 'owner') {
-        return res.status(403).json({ message: "Acesso negado" });
-      }
-
-      const updatedStore = await storage.updateStore(storeId, req.body);
-      res.json(updatedStore);
-    } catch (error) {
-      console.error('Error updating store:', error);
-      res.status(500).json({ message: "Erro ao atualizar loja" });
-    }
-  });
+  // Removed duplicate PUT route - using the one below that allows managers
 
   app.delete('/api/admin/stores/:id', requireAuth, async (req: any, res) => {
     try {
@@ -1236,126 +1168,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Servir arquivos estáticos da pasta uploads
   app.use('/uploads', express.static(uploadsDir));
 
-  // Rota para upload de imagens específica por loja
-  app.post("/api/stores/:storeId/upload", upload.single('image'), async (req: any, res) => {
-    try {
-      if (!req.session || !req.session.userId) {
-        return res.status(401).json({ message: "Não autorizado" });
-      }
-
-      if (!req.file) {
-        return res.status(400).json({ message: "Nenhum arquivo fornecido" });
-      }
-
-      const storeId = parseInt(req.params.storeId);
-      if (isNaN(storeId)) {
-        return res.status(400).json({ message: "ID da loja inválido" });
-      }
-
-      // Verificar se o usuário tem acesso a esta loja
-      const userStores = await getUserAccessibleStores(req.session.userId, req.user?.role || 'manager');
-      const hasAccess = userStores.some(store => store.id === storeId);
-      
-      if (!hasAccess) {
-        return res.status(403).json({ message: "Acesso negado a esta loja" });
-      }
-
-      // Renomear arquivo para incluir storeId
-      const originalName = req.file.filename;
-      const extension = path.extname(originalName);
-      const nameWithoutExt = path.basename(originalName, extension);
-      const newFilename = `store_${storeId}_${nameWithoutExt}${extension}`;
-      
-      const oldPath = path.join(uploadsDir, originalName);
-      const newPath = path.join(uploadsDir, newFilename);
-      
-      // Renomear arquivo para incluir ID da loja
-      fs.renameSync(oldPath, newPath);
-
-      // Gerar URL do arquivo usando a rota da API
-      const imageUrl = `/api/image/${newFilename}`;
-      
-      res.json({ 
-        imageUrl,
-        filename: newFilename,
-        originalName: req.file.originalname,
-        size: req.file.size
-      });
-    } catch (error) {
-      console.error("Erro no upload:", error);
-      res.status(500).json({ message: "Erro no upload da imagem" });
-    }
-  });
-
-  // Rota para excluir imagens específica por loja
-  app.delete("/api/stores/:storeId/images/:filename", requireAuth, async (req: any, res) => {
-    try {
-      console.log(`[DELETE IMAGE] Request received - Store ID: ${req.params.storeId}, Filename: ${req.params.filename}`);
-      console.log(`[DELETE IMAGE] User ID: ${req.user?.id}, Role: ${req.user?.role}`);
-
-      const storeId = parseInt(req.params.storeId);
-      const filename = req.params.filename;
-
-      if (isNaN(storeId)) {
-        console.log(`[DELETE IMAGE] Invalid store ID: ${req.params.storeId}`);
-        return res.status(400).json({ message: "ID da loja inválido" });
-      }
-
-      // Verificar se o usuário tem acesso a esta loja
-      const userStores = await getUserAccessibleStores(req.user.id, req.user.role);
-      const hasAccess = userStores.some(store => store.id === storeId);
-      
-      console.log(`[DELETE IMAGE] User has access to ${userStores.length} stores`);
-      console.log(`[DELETE IMAGE] Access to store ${storeId}: ${hasAccess}`);
-      
-      if (!hasAccess) {
-        console.log(`[DELETE IMAGE] Access denied to store ${storeId}`);
-        return res.status(403).json({ message: "Acesso negado a esta loja" });
-      }
-
-      // Verificar se é uma imagem nova (com prefixo) ou legada
-      const isStoreSpecific = filename.startsWith(`store_${storeId}_`);
-      const isLegacyImage = filename.startsWith('image-');
-      
-      if (!isStoreSpecific && !isLegacyImage) {
-        console.log(`[DELETE IMAGE] File ${filename} is not a valid image file`);
-        return res.status(403).json({ message: "Arquivo não é uma imagem válida" });
-      }
-      
-      // Para imagens legadas, permitir exclusão apenas se o usuário tem acesso à loja
-      if (isLegacyImage) {
-        console.log(`[DELETE IMAGE] Processing legacy image: ${filename}`);
-      }
-
-      const filePath = path.join(uploadsDir, filename);
-      console.log(`[DELETE IMAGE] File path: ${filePath}`);
-      
-      // Verificar se o arquivo existe
-      if (!fs.existsSync(filePath)) {
-        console.log(`[DELETE IMAGE] File not found: ${filePath}`);
-        return res.status(404).json({ message: "Arquivo não encontrado" });
-      }
-
-      // Excluir arquivo
-      fs.unlinkSync(filePath);
-      console.log(`[DELETE IMAGE] File deleted successfully: ${filePath}`);
-      
-      res.json({ message: "Imagem excluída com sucesso", filename });
-    } catch (error) {
-      console.error("[DELETE IMAGE] Error:", error);
-      res.status(500).json({ message: "Erro ao excluir imagem", error: error.message });
-    }
-  });
-
-  // Rota para upload de imagens (fallback para compatibilidade)
+  // Rota para upload de imagens
   app.post("/api/upload", upload.single('image'), async (req, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ message: "Nenhum arquivo fornecido" });
       }
 
-      // Gerar URL do arquivo usando a rota da API
-      const imageUrl = `/api/image/${req.file.filename}`;
+      // Gerar URL do arquivo
+      const imageUrl = `/uploads/${req.file.filename}`;
       
       res.json({ 
         imageUrl,
@@ -2650,49 +2471,6 @@ Responda de forma natural e humana. Se for sobre cardápio, horários, delivery 
     } catch (error) {
       console.error('Erro ao conectar WhatsApp:', error);
       await storage.updateWhatsappInstance(parseInt(req.params.storeId), { status: 'disconnected' });
-      res.status(500).json({ message: "Erro interno do servidor" });
-    }
-  });
-
-  // API endpoint for uploading store images
-  app.post('/api/upload-store-image', upload.single('image'), async (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ message: "Nenhum arquivo enviado" });
-      }
-
-      const { storeId, type } = req.body;
-      
-      if (!storeId || !type) {
-        return res.status(400).json({ message: "storeId e type são obrigatórios" });
-      }
-
-      const store = await storage.getStoreById(parseInt(storeId));
-      if (!store) {
-        return res.status(404).json({ message: "Loja não encontrada" });
-      }
-
-      // Criar URL da imagem
-      const imageUrl = `/uploads/${req.file.filename}`;
-
-      // Atualizar a store com a nova URL da imagem
-      const updateData: any = {};
-      if (type === 'logo') {
-        updateData.logoUrl = imageUrl;
-      } else if (type === 'banner') {
-        updateData.bannerUrl = imageUrl;
-      }
-
-      const updatedStore = await storage.updateStore(parseInt(storeId), updateData);
-
-      res.json({
-        message: "Imagem salva com sucesso",
-        url: imageUrl,
-        store: updatedStore
-      });
-
-    } catch (error) {
-      console.error('Erro no upload:', error);
       res.status(500).json({ message: "Erro interno do servidor" });
     }
   });

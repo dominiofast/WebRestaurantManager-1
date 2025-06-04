@@ -3,7 +3,6 @@ import session from "express-session";
 import createMemoryStore from "memorystore";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import path from "path";
 
 const app = express();
 app.use(express.json());
@@ -55,8 +54,6 @@ app.use((req, res, next) => {
 
   next();
 });
-
-
 
 (async () => {
   const server = await registerRoutes(app);

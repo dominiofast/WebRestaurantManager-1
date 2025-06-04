@@ -171,19 +171,6 @@ export default function Sidebar() {
                         <span className="font-medium text-sm">Perfil</span>
                       </div>
                     </Link>
-                    <Link href="/config/store-settings">
-                      <div
-                        className={cn(
-                          "flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors cursor-pointer",
-                          location === "/config/store-settings"
-                            ? "bg-coral text-white"
-                            : "text-white/70 hover:bg-white/10 hover:text-white"
-                        )}
-                      >
-                        <Store className="w-4 h-4" />
-                        <span className="font-medium text-sm">Loja</span>
-                      </div>
-                    </Link>
                     <Link href="/config/integrations">
                       <div
                         className={cn(

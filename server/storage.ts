@@ -513,61 +513,23 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Get store managed by a specific user
-  async getStoreByManagerId(managerId: string): Promise<any> {
-    // Use raw SQL to ensure we get the correct data
-    const result = await db.execute(sql`
-      SELECT 
-        s.id, s.name, s.company_id as "companyId", s.address, s.phone, s.email, 
-        s.status, s.manager_id as "managerId", s.slug, s.description, 
-        s.opening_hours as "openingHours", s.delivery_fee as "deliveryFee", 
-        s.minimum_order as "minimumOrder", s.estimated_delivery_time as "estimatedDeliveryTime",
-        s.created_at as "createdAt", s.updated_at as "updatedAt",
-        s.logo_url as "logoUrl", s.banner_url as "bannerUrl",
-        c.id as "company_id", c.name as "company_name", c.description as "company_description",
-        c.email as "company_email", c.phone as "company_phone", c.address as "company_address",
-        c.status as "company_status", c.owner_id as "company_ownerId", 
-        c.created_at as "company_createdAt", c.updated_at as "company_updatedAt"
-      FROM stores s
-      LEFT JOIN companies c ON s.company_id = c.id
-      WHERE s.manager_id = ${managerId}
-      LIMIT 1
-    `);
+  async getStoreByManagerId(managerId: string): Promise<StoreWithCompany | undefined> {
+    const result = await db
+      .select({
+        store: stores,
+        company: companies,
+      })
+      .from(stores)
+      .leftJoin(companies, eq(stores.companyId, companies.id))
+      .where(eq(stores.managerId, managerId))
+      .limit(1);
 
-    if (result.rows.length === 0) return undefined;
+    if (result.length === 0) return undefined;
 
-    const row = result.rows[0] as any;
-    
+    const row = result[0];
     return {
-      id: row.id,
-      name: row.name,
-      companyId: row.companyId,
-      address: row.address,
-      phone: row.phone,
-      email: row.email,
-      status: row.status,
-      managerId: row.managerId,
-      slug: row.slug,
-      description: row.description,
-      openingHours: row.openingHours,
-      deliveryFee: row.deliveryFee,
-      minimumOrder: row.minimumOrder,
-      estimatedDeliveryTime: row.estimatedDeliveryTime,
-      createdAt: row.createdAt,
-      updatedAt: row.updatedAt,
-      logoUrl: row.logoUrl,
-      bannerUrl: row.bannerUrl,
-      company: {
-        id: row.company_id,
-        name: row.company_name,
-        description: row.company_description,
-        email: row.company_email,
-        phone: row.company_phone,
-        address: row.company_address,
-        status: row.company_status,
-        ownerId: row.company_ownerId,
-        createdAt: row.company_createdAt,
-        updatedAt: row.company_updatedAt,
-      },
+      ...row.store,
+      company: row.company!,
     };
   }
 
