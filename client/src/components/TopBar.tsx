@@ -1,6 +1,7 @@
-import { Bell, LogOut, User } from "lucide-react";
+import { Bell, LogOut, User, Menu, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,6 +11,12 @@ import {
 
 export default function TopBar() {
   const { user } = useAuth();
+
+  // Buscar informações da loja para obter o slug
+  const { data: store } = useQuery({
+    queryKey: ['/api/store-by-manager'],
+    enabled: !!user
+  });
 
   const getCurrentDateTime = () => {
     const now = new Date();
@@ -42,6 +49,12 @@ export default function TopBar() {
     }
   };
 
+  const handleOpenDigitalMenu = () => {
+    if (store?.slug) {
+      window.open(`/digital-menu/${store.slug}`, '_blank');
+    }
+  };
+
   const { time, date } = getCurrentDateTime();
 
   return (
@@ -57,6 +70,18 @@ export default function TopBar() {
         </div>
         
         <div className="flex items-center space-x-4">
+          {/* Digital Menu Button */}
+          {store?.slug && (
+            <Button 
+              onClick={handleOpenDigitalMenu}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 text-sm font-medium"
+            >
+              <Menu className="w-4 h-4 mr-2" />
+              Cardápio Digital
+              <ExternalLink className="w-3 h-3 ml-2" />
+            </Button>
+          )}
+          
           {/* Notifications */}
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="w-5 h-5" />
