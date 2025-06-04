@@ -515,27 +515,7 @@ export class DatabaseStorage implements IStorage {
   // Get store managed by a specific user
   async getStoreByManagerId(managerId: string): Promise<any> {
     const result = await db
-      .select({
-        id: stores.id,
-        name: stores.name,
-        companyId: stores.companyId,
-        address: stores.address,
-        phone: stores.phone,
-        email: stores.email,
-        status: stores.status,
-        managerId: stores.managerId,
-        slug: stores.slug,
-        description: stores.description,
-        openingHours: stores.openingHours,
-        deliveryFee: stores.deliveryFee,
-        minimumOrder: stores.minimumOrder,
-        estimatedDeliveryTime: stores.estimatedDeliveryTime,
-        createdAt: stores.createdAt,
-        updatedAt: stores.updatedAt,
-        logoUrl: stores.logo_url,
-        bannerUrl: stores.banner_url,
-        company: companies,
-      })
+      .select()
       .from(stores)
       .leftJoin(companies, eq(stores.companyId, companies.id))
       .where(eq(stores.managerId, managerId))
@@ -543,7 +523,32 @@ export class DatabaseStorage implements IStorage {
 
     if (result.length === 0) return undefined;
 
-    return result[0];
+    const row = result[0];
+    const store = row.stores;
+    const company = row.companies;
+    
+    // Convert snake_case to camelCase for frontend compatibility
+    return {
+      id: store.id,
+      name: store.name,
+      companyId: store.companyId,
+      address: store.address,
+      phone: store.phone,
+      email: store.email,
+      status: store.status,
+      managerId: store.managerId,
+      slug: store.slug,
+      description: store.description,
+      openingHours: store.openingHours,
+      deliveryFee: store.deliveryFee,
+      minimumOrder: store.minimumOrder,
+      estimatedDeliveryTime: store.estimatedDeliveryTime,
+      createdAt: store.createdAt,
+      updatedAt: store.updatedAt,
+      logoUrl: store.logo_url,
+      bannerUrl: store.banner_url,
+      company: company,
+    };
   }
 
   // Store operations
