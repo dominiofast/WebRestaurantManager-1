@@ -685,7 +685,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/addon-groups', requireAuth, async (req: any, res) => {
     try {
+      console.log("Dados recebidos para grupo:", req.body);
       const addonGroup = await storage.createAddonGroup(req.body);
+      console.log("Grupo criado no servidor:", addonGroup);
       res.status(201).json(addonGroup);
     } catch (error) {
       console.error("Error creating addon group:", error);
