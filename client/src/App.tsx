@@ -28,6 +28,7 @@ import IntegrationsNew from "@/pages/IntegrationsNew";
 import Customers from "@/pages/Customers";
 import Analytics from "@/pages/Analytics";
 import Profile from "@/pages/Profile";
+import StoreSettings from "@/pages/StoreSettings";
 import Sidebar from "@/components/Sidebar";
 import TopBar from "@/components/TopBar";
 import NotFound from "@/pages/not-found";
@@ -77,6 +78,7 @@ function ManagerApp({ user }: { user: any }) {
             <Route path="/ai-agent" component={AIAgentSimple} />
             <Route path="/config/profile" component={Profile} />
             <Route path="/config/integrations" component={IntegrationsNew} />
+            <Route path="/config/store-settings" component={StoreSettings} />
             <Route component={OrderManagement} />
           </Switch>
         </main>
