@@ -1336,6 +1336,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         responseText = `🎥 Recebi seu vídeo!\n\nPara fazer seu pedido, acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas opções!`;
       } else if (messageText.toLowerCase().includes('documento')) {
         responseText = `📄 Recebi seu documento!\n\nPara fazer seu pedido, acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas opções!`;
+      } else if (messageText.toLowerCase().includes('figurinha')) {
+        responseText = `😄 Que figurinha legal!\n\nComo posso ajudá-lo hoje? Acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas deliciosas opções!`;
       } else {
         responseText = `Obrigado pela sua mensagem! 😊\n\nPara fazer seu pedido, acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite:\n• "cardápio" - ver opções\n• "horário" - horário de funcionamento\n• "delivery" - informações de entrega`;
       }
