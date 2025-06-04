@@ -1,0 +1,177 @@
+# Configurar Webhook
+
+> ## <Icon icon="material-outline-webhook"/> Configurar webhook
+
+Este método te permite verificar qual url esta salva no webhook
+
+<br>
+
+## <Icon icon="material-outline-settings"/> Configurar webhook utilizando painel Mega-api
+
+1️⃣ - Acesse nosso painel, clique na opção MINHAS INSTANCIAS
+<Frame caption="">
+  ![](https://mega-api.app.br/documentacao/business/img/painel-1.png)
+</Frame>
+<br>
+2️⃣ - Agora, clicando no botão DETALHES, você será redirecionado, para a tela com todos os detalhes da instância contratada
+<Frame caption="">
+  ![](https://mega-api.app.br/documentacao/business/img/painel-2.png)
+</Frame>
+<br>
+3️⃣ - Clique no EDITAR, abrirá uma janela modal. Adicione a url do weu webhook, salve e pronto. Sua instância a partir de agora, começará a receber todos os eventos disparados pelo whatsapp
+<Frame caption="">
+  ![](https://mega-api.app.br/documentacao/business/img/painel-3.png)
+</Frame>
+<br>
+## <Icon icon="material-outline-settings"/> Configurar eventos webhook utilizando painel Mega-api
+
+Agora você pode selecionar facilmente os eventos do WhatsApp que deseja receber em seu webhook, tornando a integração ainda mais personalizada e eficiente.
+
+![eventos.png](https://api.apidog.com/api/v1/projects/706630/resources/346940/image-preview)
+
+## OpenAPI
+
+```yaml
+openapi: 3.0.1
+info:
+  title: ''
+  description: ''
+  version: 1.0.0
+paths:
+  /rest/webhook/instance_key/configWebhook:
+    post:
+      summary: Configurar Webhook
+      deprecated: false
+      description: >-
+        ## <Icon icon="material-outline-webhook"/> Configurar webhook
+
+
+        Este método te permite verificar qual url esta salva no webhook
+
+
+        <br>
+
+
+        ## <Icon icon="material-outline-settings"/> Configurar webhook
+        utilizando painel Mega-api
+
+
+        1️⃣ - Acesse nosso painel, clique na opção MINHAS INSTANCIAS
+
+        <Frame caption="">
+          ![](https://mega-api.app.br/documentacao/business/img/painel-1.png)
+        </Frame>
+
+        <br>
+
+        2️⃣ - Agora, clicando no botão DETALHES, você será redirecionado, para a
+        tela com todos os detalhes da instância contratada
+
+        <Frame caption="">
+          ![](https://mega-api.app.br/documentacao/business/img/painel-2.png)
+        </Frame>
+
+        <br>
+
+        3️⃣ - Clique no EDITAR, abrirá uma janela modal. Adicione a url do weu
+        webhook, salve e pronto. Sua instância a partir de agora, começará a
+        receber todos os eventos disparados pelo whatsapp
+
+        <Frame caption="">
+          ![](https://mega-api.app.br/documentacao/business/img/painel-3.png)
+        </Frame>
+
+        <br>
+
+        ## <Icon icon="material-outline-settings"/> Configurar eventos webhook
+        utilizando painel Mega-api
+
+
+        Agora você pode selecionar facilmente os eventos do WhatsApp que deseja
+        receber em seu webhook, tornando a integração ainda mais personalizada e
+        eficiente.
+
+
+        ![eventos.png](https://api.apidog.com/api/v1/projects/706630/resources/346940/image-preview)
+      tags:
+        - WebhookController
+      parameters:
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer {{token}}
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              messageData:
+                webhookUrl: >-
+                  https://webhook.megaapi.com.br/0d5c7fd5-cbeb-4181-acd0-f563e9b73e2a
+                webhookEnabled: true
+                webhookSecondaryUrl: >-
+                  https://webhook.megaapi.com.br/0d5c7fd5-cbeb-4181-acd0-f563e9b73e2awebhook2
+                webhookSecondaryEnabled: false
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: boolean
+                  message:
+                    type: string
+                  dataMessage:
+                    type: object
+                    properties:
+                      webhookUrl:
+                        type: string
+                      webhookEnabled:
+                        type: boolean
+                      webhookSecondaryUrl:
+                        type: string
+                      webhookSecondaryEnabled:
+                        type: boolean
+                    required:
+                      - webhookUrl
+                      - webhookEnabled
+                      - webhookSecondaryUrl
+                      - webhookSecondaryEnabled
+                required:
+                  - error
+                  - message
+                  - dataMessage
+              example:
+                error: false
+                message: Webhook configured
+                dataMessage:
+                  url: https://meuwebhook.com
+                  sendMessage: true
+          headers: {}
+          x-apidog-name: Success
+      security:
+        - bearer: []
+      x-apidog-folder: WebhookController
+      x-apidog-status: released
+      x-run-in-apidog: https://app.apidog.com/web/project/706630/apis/api-10974910-run
+components:
+  schemas: {}
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: https://apinocode01.megaapi.com.br
+    description: apinocode01.megaapi.com.br
+security:
+  - bearer: []
+
+```
