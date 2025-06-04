@@ -129,13 +129,13 @@ export default function StoreSettings() {
       // Upload logo se selecionado
       if (logoFile) {
         const logoResult = await uploadMutation.mutateAsync(logoFile);
-        updates.logoUrl = logoResult.imageUrl;
+        updates.logo_url = logoResult.imageUrl;
       }
 
       // Upload banner se selecionado
       if (bannerFile) {
         const bannerResult = await uploadMutation.mutateAsync(bannerFile);
-        updates.bannerUrl = bannerResult.imageUrl;
+        updates.banner_url = bannerResult.imageUrl;
       }
 
       // Atualizar loja se há mudanças
@@ -169,8 +169,8 @@ export default function StoreSettings() {
     }
   };
 
-  const currentLogo = logoPreview || (store as any)?.logoUrl;
-  const currentBanner = bannerPreview || (store as any)?.bannerUrl;
+  const currentLogo = logoPreview || (store as any)?.logoUrl || (store as any)?.logo_url;
+  const currentBanner = bannerPreview || (store as any)?.bannerUrl || (store as any)?.banner_url;
 
   if (isLoading) {
     return (
