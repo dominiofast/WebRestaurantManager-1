@@ -164,10 +164,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(409).json({ message: "Email já está em uso" });
       }
 
+      // Hash password
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+
       // Create new user
       const userData = {
         id: `user-${Date.now()}`,
         email,
+        password: hashedPassword,
         firstName: firstName,
         lastName: lastName,
         restaurantName: restaurantName,
