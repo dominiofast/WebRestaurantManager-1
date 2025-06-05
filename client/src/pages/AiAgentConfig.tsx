@@ -80,7 +80,7 @@ export default function AiAgentConfig() {
   }, [agentData]);
 
   const saveMutation = useMutation({
-    mutationFn: (data: AiAgentConfig) => apiRequest('/api/ai-agent', 'PUT', data),
+    mutationFn: (data: AiAgentConfig) => apiRequest('PUT', '/api/ai-agent', data),
     onSuccess: () => {
       toast({
         title: "Configurações salvas",
@@ -98,7 +98,7 @@ export default function AiAgentConfig() {
   });
 
   const resetMutation = useMutation({
-    mutationFn: () => apiRequest('/api/ai-agent', 'DELETE'),
+    mutationFn: () => apiRequest('DELETE', '/api/ai-agent'),
     onSuccess: () => {
       setConfig({
         storeId: 0,
