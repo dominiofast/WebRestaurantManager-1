@@ -2194,7 +2194,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const isFirstInteraction = !conversationHistory || conversationHistory.length <= 1;
       const customerContext = customerName ? `Cliente: ${customerName}` : 'Cliente novo/anônimo';
 
-      const menuLink = `https://dominiomenu.com/menu/${store.slug}`;
+      // Use functional Replit domain until custom domain proxy is configured
+      const currentDomain = getBaseUrl();
+      const menuLink = `${currentDomain}/menu/${store.slug}`;
       
       const prompt = `Você é um atendente virtual do restaurante "${store.name}". Seja CONCISO e DIRETO.
 
