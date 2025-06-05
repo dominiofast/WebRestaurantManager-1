@@ -2295,11 +2295,11 @@ Responda de forma OBJETIVA e RÁPIDA:`;
     }
     
     if (message.includes('figurinha')) {
-      return `😄 Que figurinha legal!\n\nComo posso ajudá-lo hoje? Acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas deliciosas opções!`;
+      return `😄 Que figurinha legal!\n\nComo posso ajudá-lo hoje? Acesse nosso cardápio digital:\nhttps://dominiomenu.com/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas deliciosas opções!`;
     }
     
     // Default response for other messages
-    return `Obrigado pela sua mensagem! 😊\n\nPara fazer seu pedido, acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite:\n• "cardápio" - ver opções\n• "horário" - horário de funcionamento\n• "delivery" - informações de entrega`;
+    return `Obrigado pela sua mensagem! 😊\n\nPara fazer seu pedido, acesse nosso cardápio digital:\nhttps://dominiomenu.com/menu/${store.slug}\n\nOu digite:\n• "cardápio" - ver opções\n• "horário" - horário de funcionamento\n• "delivery" - informações de entrega`;
   }
 
   // AI Agent configuration routes
