@@ -51,18 +51,14 @@ const upload = multer({
 
 // Helper function to get dynamic base URL
 function getBaseUrl(req?: any): string {
-  // Try environment variables first
+  // Always use REPLIT_DOMAINS for external access
   if (process.env.REPLIT_DOMAINS) {
     return `https://${process.env.REPLIT_DOMAINS}`;
   }
-  if (process.env.REPL_SLUG && process.env.REPL_OWNER) {
-    return `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`;
-  }
-  // Fallback to request headers if available
+  // Fallback for development
   if (req) {
     return `${req.protocol}://${req.get('host')}`;
   }
-  // Last resort fallback
   return 'https://localhost:5000';
 }
 
@@ -1572,8 +1568,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Configure webhook using Mega API
-      const baseUrl = `${req.protocol}://${req.get('host')}`;
-      const webhookUrl = `${baseUrl}/api/webhook/whatsapp/${storeId}`;
+      const webhookUrl = `${getBaseUrl(req)}/api/webhook/whatsapp/${storeId}`;
       
       const apiUrl = `https://${instance.apiHost}/rest/webhook/${instance.instanceKey}/configWebhook`;
       
