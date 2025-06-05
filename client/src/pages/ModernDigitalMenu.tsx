@@ -224,7 +224,7 @@ export default function ModernDigitalMenu() {
     : [];
 
   return (
-    <div className={`min-h-screen bg-white menu-font ${storeData?.darkMode ? 'dark-menu' : ''}`}>
+    <div className={`min-h-screen bg-white menu-font pb-24 ${storeData?.darkMode ? 'dark-menu' : ''}`}>
       {/* Hero Banner - Apenas o banner sem sobreposições */}
       <div className="relative h-48 overflow-hidden">
         {/* Banner de fundo ou gradiente */}
@@ -824,6 +824,78 @@ function ModernProductCard({ product, onAddToCart, storeData }: { product: any; 
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Barra de navegação inferior com ícones circulados */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 z-50">
+        <div className="flex justify-around items-center max-w-md mx-auto">
+          {/* Início */}
+          <div className="flex flex-col items-center">
+            <div 
+              className="w-12 h-12 rounded-full flex items-center justify-center"
+              style={{
+                backgroundColor: storeData?.primaryColor || '#ff0000'
+              }}
+            >
+              <Home className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-xs mt-1 font-medium text-gray-600">Início</span>
+          </div>
+
+          {/* Buscar */}
+          <div className="flex flex-col items-center">
+            <div 
+              className="w-12 h-12 rounded-full border-2 flex items-center justify-center"
+              style={{
+                borderColor: storeData?.primaryColor || '#ff0000'
+              }}
+            >
+              <Search 
+                className="w-6 h-6"
+                style={{
+                  color: storeData?.primaryColor || '#ff0000'
+                }}
+              />
+            </div>
+            <span className="text-xs mt-1 font-medium text-gray-600">Buscar</span>
+          </div>
+
+          {/* Favoritos */}
+          <div className="flex flex-col items-center">
+            <div 
+              className="w-12 h-12 rounded-full border-2 flex items-center justify-center"
+              style={{
+                borderColor: storeData?.primaryColor || '#ff0000'
+              }}
+            >
+              <Heart 
+                className="w-6 h-6"
+                style={{
+                  color: storeData?.primaryColor || '#ff0000'
+                }}
+              />
+            </div>
+            <span className="text-xs mt-1 font-medium text-gray-600">Favoritos</span>
+          </div>
+
+          {/* Perfil */}
+          <div className="flex flex-col items-center">
+            <div 
+              className="w-12 h-12 rounded-full border-2 flex items-center justify-center"
+              style={{
+                borderColor: storeData?.primaryColor || '#ff0000'
+              }}
+            >
+              <User 
+                className="w-6 h-6"
+                style={{
+                  color: storeData?.primaryColor || '#ff0000'
+                }}
+              />
+            </div>
+            <span className="text-xs mt-1 font-medium text-gray-600">Perfil</span>
+          </div>
+        </div>
+      </div>
 
       {/* Facebook Pixel Integration */}
       {storeData?.id && <AutoFacebookPixel storeId={storeData.id} />}
