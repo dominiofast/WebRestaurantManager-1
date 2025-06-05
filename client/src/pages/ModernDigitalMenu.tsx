@@ -492,6 +492,11 @@ export default function ModernDigitalMenu() {
                         e.currentTarget.style.backgroundColor = storeData.primaryColor;
                       }
                     }}
+                    onClick={() => {
+                      // Salvar carrinho no localStorage antes de ir para o checkout
+                      localStorage.setItem('cart', JSON.stringify(cart));
+                      window.location.href = `/menu/${params?.storeSlug}/checkout`;
+                    }}
                   >
                     Finalizar Pedido
                   </Button>

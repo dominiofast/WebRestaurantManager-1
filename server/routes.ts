@@ -846,7 +846,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/orders', requireAuth, async (req: any, res) => {
+  // API para pedidos digitais (sem autenticação)
+  app.post('/api/orders', async (req: any, res) => {
+    try {
+      const { storeId, customer, items, payment, subtotal, deliveryFee, total, notes } = req.body;
+      
+      // Validar dados obrigatórios
+      if (!storeId || !customer?.name || !customer?.phone || !items?.length) {
+        return res.status(400).json({ message: "Dados obrigatórios faltando" });
+      }
+
+      // Criar o pedido digital
+      const orderData = {
+        storeId: parseInt(storeId),
+        customerName: customer.name,
+        customerPhone: customer.phone,
+        customerEmail: customer.email || null,
+        customerAddress: `${customer.address}, ${customer.addressNumber} - ${customer.neighborhood}, ${customer.city}`,
+        paymentMethod: payment.method,
+        paymentStatus: payment.status || 'pending',
+        subtotal: subtotal.toString(),
+        deliveryFee: deliveryFee.toString(),
+        total: total.toString(),
+        status: 'received',
+        notes: notes || null,
+        orderType: 'delivery'
+      };
+
+      // Criar o pedido usando a storage digital
+      const createdOrder = await storage.createDigitalOrder(orderData, items);
+      
+      res.status(201).json({
+        success: true,
+        orderId: createdOrder.id,
+        order: createdOrder,
+        message: "Pedido criado com sucesso!"
+      });
+    } catch (error) {
+      console.error("Error creating digital order:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Erro ao criar pedido. Tente novamente." 
+      });
+    }
+  });
+
+  app.post('/api/orders/authenticated', requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.id;
       const { order, items } = req.body;

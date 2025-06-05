@@ -16,6 +16,7 @@ import StoreDashboard from "@/pages/StoreDashboard";
 import ManagerStoreDashboard from "@/pages/ManagerStoreDashboard";
 import DigitalMenu from "@/pages/DigitalMenu";
 import ModernDigitalMenu from "@/pages/ModernDigitalMenu";
+import CartCheckout from "@/pages/CartCheckout";
 import MenuManager from "@/pages/MenuManager";
 import MenuIndex from "@/pages/MenuIndex";
 import PDV from "@/pages/PDV";
@@ -168,6 +169,7 @@ function Router() {
       {/* Rotas públicas do cardápio digital */}
       <Route path="/cardapios" component={MenuIndex} />
       <Route path="/menu/:storeSlug" component={ModernDigitalMenu} />
+      <Route path="/menu/:storeSlug/checkout" component={CartCheckout} />
       <Route path="/facebook-pixel-config" component={FacebookPixelConfigV2} />
       
       {!isAuthenticated ? (
