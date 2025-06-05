@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>300 Graus - Cardápio Digital</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍕</text></svg>">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 90%;
+        }
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+        p {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .loading {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #ff6b35;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .timer {
+            color: #ff6b35;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🍕</div>
+        <h1>300 Graus</h1>
+        <p>Redirecionando para o cardápio digital...</p>
+        <div class="loading"></div>
+        <div class="timer" id="timer">3</div>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'https://29824401-c1d7-4113-aee2-051f45c04452-00-3aipz2hk07y9j.kirk.replit.dev';
+        
+        // Função para detectar o tipo de acesso
+        function handleRedirect() {
+            const path = window.location.pathname;
+            const search = window.location.search;
+            
+            if (path.startsWith('/menu/')) {
+                // Cardápio digital - redirecionar para o backend
+                window.location.href = BACKEND_URL + path + search;
+            } else if (path.startsWith('/api/')) {
+                // Chamada de API - fazer proxy
+                fetch(BACKEND_URL + path + search)
+                    .then(response => response.text())
+                    .then(data => {
+                        document.body.innerHTML = `<pre>${data}</pre>`;
+                    })
+                    .catch(() => {
+                        window.location.href = BACKEND_URL + path + search;
+                    });
+            } else {
+                // Página inicial - redirecionar para menu da 300 Graus
+                window.location.href = BACKEND_URL + '/menu/300-graus-central';
+            }
+        }
+        
+        // Countdown timer
+        let countdown = 3;
+        const timer = document.getElementById('timer');
+        
+        const interval = setInterval(() => {
+            countdown--;
+            timer.textContent = countdown;
+            
+            if (countdown <= 0) {
+                clearInterval(interval);
+                handleRedirect();
+            }
+        }, 1000);
+        
+        // Permitir clique para redirecionar imediatamente
+        document.addEventListener('click', () => {
+            clearInterval(interval);
+            handleRedirect();
+        });
+    </script>
+</body>
+</html>
