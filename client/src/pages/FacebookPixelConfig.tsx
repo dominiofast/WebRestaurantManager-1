@@ -42,8 +42,20 @@ export default function FacebookPixelConfig() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('config');
 
+  // Hard-code store ID 4 for 300 Graus restaurant for now
+  const storeId = 4;
+  
   const { data: store, isLoading } = useQuery<Store>({
-    queryKey: ['/api/manager/store']
+    queryKey: ['/api/stores', storeId],
+    queryFn: async () => {
+      const response = await fetch(`/api/stores/${storeId}`, {
+        credentials: 'include'
+      });
+      if (!response.ok) {
+        throw new Error('Erro ao carregar dados da loja');
+      }
+      return response.json();
+    }
   });
 
   const form = useForm<FacebookPixelData>({
@@ -60,15 +72,21 @@ export default function FacebookPixelConfig() {
 
   const updatePixelConfig = useMutation({
     mutationFn: async (data: FacebookPixelData) => {
-      const response = await fetch(`/api/stores/${store?.id}/pixel-config`, {
+      if (!store?.id) {
+        throw new Error('Loja não encontrada');
+      }
+      
+      const response = await fetch(`/api/stores/${store.id}/pixel-config`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(data)
       });
       if (!response.ok) {
-        throw new Error('Erro ao atualizar configurações');
+        const errorData = await response.text();
+        throw new Error(errorData || 'Erro ao atualizar configurações');
       }
       return response.json();
     },
@@ -77,7 +95,7 @@ export default function FacebookPixelConfig() {
         title: "Configuração atualizada",
         description: "As configurações do Facebook Pixel foram salvas com sucesso."
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/manager/store'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/stores', storeId] });
     },
     onError: () => {
       toast({
