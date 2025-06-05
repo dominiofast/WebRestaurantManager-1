@@ -2104,6 +2104,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
+      // Force correct domain replacement in the final response before sending
+      const currentDomain = getBaseUrl();
+      const correctMenuLink = `${currentDomain}/menu/${store.slug}`;
+      
+      // Replace any incorrect domain references with the correct one
+      responseText = responseText.replace(/https:\/\/dominiomenu\.com\/menu\/[^/\s]+/g, correctMenuLink);
+      responseText = responseText.replace(/https:\/\/dominiomenu-app\.replit\.app\/menu\/[^/\s]+/g, correctMenuLink);
+      responseText = responseText.replace(/https:\/\/[^/\s]*\.replit\.dev\/menu\/[^/\s]+/g, correctMenuLink);
+
       console.log('[WhatsApp AI] Generated response:', responseText);
 
       // Send response via Mega API
@@ -2187,14 +2196,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const isFirstInteraction = !conversationHistory || conversationHistory.length <= 1;
       const customerContext = customerName ? `Cliente: ${customerName}` : 'Cliente novo/anônimo';
 
+      const currentDomain = getBaseUrl();
+      const menuLink = `${currentDomain}/menu/${store.slug}`;
+      
       const prompt = `Você é um atendente virtual do restaurante "${store.name}". Seja CONCISO e DIRETO.
 
 INFORMAÇÕES DO RESTAURANTE:
 - Nome: ${store.name}
-- Cardápio: ${getBaseUrl()}/menu/${store.slug}
+- Cardápio: ${menuLink}
 - Horário: Seg-Sex 11h-23h, Sáb-Dom 18h-23h
 - Delivery: R$ 5,00, 30-45min, mínimo R$ 25,00
 ${store.address ? `- Endereço: ${store.address}` : ''}
+
+LINK DO CARDÁPIO OBRIGATÓRIO: ${menuLink}
 
 CONTEXTO DO CLIENTE: ${customerContext}
 HISTÓRICO DA CONVERSA: ${contextMessages || 'Primeira mensagem'}
@@ -2204,13 +2218,14 @@ REGRAS IMPORTANTES:
 - Use apenas 1-2 emojis por resposta
 - ${customerName ? `SEMPRE use o nome "${customerName}" para se dirigir ao cliente` : 'Se o cliente disser o nome, registre e use nas próximas respostas'}
 - ${isFirstInteraction && !customerName ? 'Na primeira interação, pergunte educadamente o nome do cliente' : ''}
+- SEMPRE use EXATAMENTE este link do cardápio: ${menuLink}
 - Seja direto, sem introduções longas
 - Foque no que o cliente perguntou
 - Não repita informações desnecessárias
 
 CLIENTE PERGUNTOU: "${messageText}"
 
-Responda de forma OBJETIVA e RÁPIDA:`;
+Responda de forma OBJETIVA e RÁPIDA usando SEMPRE o link: ${menuLink}`;
 
       console.log('[WhatsApp AI] Calling OpenAI API...');
       const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -2236,7 +2251,17 @@ Responda de forma OBJETIVA e RÁPIDA:`;
 
       if (openaiResponse.ok) {
         const data = await openaiResponse.json();
-        const aiResponse = data.choices[0].message.content.trim();
+        let aiResponse = data.choices[0].message.content.trim();
+        
+        // Force correct domain replacement in AI response
+        const currentDomain = getBaseUrl();
+        const correctMenuLink = `${currentDomain}/menu/${store.slug}`;
+        
+        // Replace any incorrect domain references with the correct one
+        aiResponse = aiResponse.replace(/https:\/\/dominiomenu\.com\/menu\/[^/\s]+/g, correctMenuLink);
+        aiResponse = aiResponse.replace(/https:\/\/dominiomenu-app\.replit\.app\/menu\/[^/\s]+/g, correctMenuLink);
+        aiResponse = aiResponse.replace(/https:\/\/[^/\s]*\.replit\.dev\/menu\/[^/\s]+/g, correctMenuLink);
+        
         console.log('[WhatsApp AI] OpenAI response generated successfully');
         return aiResponse;
       } else {
