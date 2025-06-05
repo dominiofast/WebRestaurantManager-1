@@ -74,7 +74,7 @@ function ManagerApp({ user }: { user: any }) {
             <Route path="/pdv" component={PDV} />
             <Route path="/customers" component={Customers} />
             <Route path="/analytics" component={Analytics} />
-            <Route path="/ai-agent" component={AiAgentConfig} />
+            <Route path="/ai-agent" component={AiAgentConfigAdvanced} />
             <Route path="/config/profile" component={Profile} />
             <Route path="/config/store" component={StoreConfig} />
             <Route path="/config/ai-agent" component={AiAgentConfigAdvanced} />
@@ -109,7 +109,7 @@ function SuperAdminApp({ user }: { user: any }) {
             <Route path="/customers" component={Customers} />
             <Route path="/config/store" component={StoreConfig} />
             <Route path="/config/integrations" component={IntegrationsNew} />
-            <Route path="/config/ai-agent" component={AiAgentConfig} />
+            <Route path="/config/ai-agent" component={AiAgentConfigAdvanced} />
             <Route path="/profile" component={Profile} />
             <Route component={NotFound} />
           </Switch>
@@ -140,7 +140,7 @@ function OwnerApp({ user }: { user: any }) {
             <Route path="/customers" component={Customers} />
             <Route path="/config/store" component={StoreConfig} />
             <Route path="/config/integrations" component={IntegrationsNew} />
-            <Route path="/config/ai-agent" component={AiAgentConfig} />
+            <Route path="/config/ai-agent" component={AiAgentConfigAdvanced} />
             <Route path="/profile" component={Profile} />
             <Route component={NotFound} />
           </Switch>
