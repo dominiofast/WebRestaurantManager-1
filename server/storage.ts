@@ -143,7 +143,7 @@ export interface IStorage {
   clearCart(sessionId: string, storeId: number): Promise<void>;
 
   // Digital order operations
-  createDigitalOrder(order: InsertDigitalOrder): Promise<DigitalOrder>;
+  createDigitalOrder(order: InsertDigitalOrder, items: any[]): Promise<DigitalOrder>;
   getDigitalOrders(storeId: number, status?: string): Promise<DigitalOrderWithItems[]>;
   updateDigitalOrderStatus(id: number, status: string): Promise<DigitalOrder>;
 
@@ -802,7 +802,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Digital order operations
-  async createDigitalOrder(order: InsertDigitalOrder): Promise<DigitalOrder> {
+  async createDigitalOrder(order: InsertDigitalOrder, items: any[]): Promise<DigitalOrder> {
     const [created] = await db.insert(digitalOrders).values(order).returning();
     return created;
   }

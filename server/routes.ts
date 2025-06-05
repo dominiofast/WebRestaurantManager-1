@@ -856,9 +856,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Dados obrigatórios faltando" });
       }
 
+      // Gerar número do pedido único
+      const orderNumber = `PED-${Date.now()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
+      
       // Criar o pedido digital
       const orderData = {
         storeId: parseInt(storeId),
+        orderNumber,
         customerName: customer.name,
         customerPhone: customer.phone,
         customerEmail: customer.email || null,
@@ -870,7 +874,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         total: total.toString(),
         status: 'received',
         notes: notes || null,
-        orderType: 'delivery'
+        orderType: 'delivery',
+        items: JSON.stringify(items)
       };
 
       // Criar o pedido usando a storage digital
