@@ -49,6 +49,23 @@ const upload = multer({
   }
 });
 
+// Helper function to get dynamic base URL
+function getBaseUrl(req?: any): string {
+  // Try environment variables first
+  if (process.env.REPLIT_DOMAINS) {
+    return `https://${process.env.REPLIT_DOMAINS}`;
+  }
+  if (process.env.REPL_SLUG && process.env.REPL_OWNER) {
+    return `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`;
+  }
+  // Fallback to request headers if available
+  if (req) {
+    return `${req.protocol}://${req.get('host')}`;
+  }
+  // Last resort fallback
+  return 'https://localhost:5000';
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Check current session
   app.get('/api/auth/me', async (req: any, res) => {
@@ -1334,7 +1351,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Instância WhatsApp não encontrada" });
       }
 
-      const webhookUrl = `https://dominiomenu-app.replit.app/api/webhook/whatsapp/${storeId}`;
+      const baseUrl = process.env.REPLIT_DOMAIN || `${req.protocol}://${req.get('host')}`;
+      const webhookUrl = `${baseUrl}/api/webhook/whatsapp/${storeId}`;
       
       // Try multiple webhook endpoints for Mega API
       const endpoints = [
@@ -2099,7 +2117,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 INFORMAÇÕES DO RESTAURANTE:
 - Nome: ${store.name}
-- Cardápio online: https://dominiomenu-app.replit.app/menu/${store.slug}
+- Cardápio online: ${process.env.REPLIT_DOMAIN || 'https://localhost:5000'}/menu/${store.slug}
 - Horário: Segunda a Sexta 11h às 23h, Sábados e Domingos 18h às 23h
 - Delivery: Sim, taxa R$ 5,00, tempo 30-45min, pedido mínimo R$ 25,00
 ${store.address ? `- Endereço: ${store.address}` : ''}
@@ -2162,7 +2180,8 @@ Responda de forma natural e humana. Se for sobre cardápio, horários, delivery 
     
     // Check for specific keywords and respond accordingly
     if (message.includes('cardápio') || message.includes('cardapio') || message.includes('menu')) {
-      return `🍽️ Confira nosso delicioso cardápio!\n\nAcesse: https://dominiomenu-app.replit.app/menu/${store.slug}\n\nTemos diversas opções especiais esperando por você! 😋`;
+      const menuUrl = process.env.REPLIT_DOMAIN ? `${process.env.REPLIT_DOMAIN}/menu/${store.slug}` : `https://localhost:5000/menu/${store.slug}`;
+      return `🍽️ Confira nosso delicioso cardápio!\n\nAcesse: ${menuUrl}\n\nTemos diversas opções especiais esperando por você! 😋`;
     }
     
     if (message.includes('horário') || message.includes('horario') || message.includes('funcionamento') || message.includes('aberto')) {
