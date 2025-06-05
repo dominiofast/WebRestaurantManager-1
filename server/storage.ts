@@ -1053,9 +1053,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateAiAgent(storeId: number, agent: any): Promise<any> {
+    // Remove updatedAt from agent data and add it separately
+    const { updatedAt, ...agentData } = agent;
     const [updated] = await db
       .update(aiAgents)
-      .set({ ...agent, updatedAt: new Date() })
+      .set({ ...agentData, updatedAt: new Date() })
       .where(eq(aiAgents.storeId, storeId))
       .returning();
     return updated;
