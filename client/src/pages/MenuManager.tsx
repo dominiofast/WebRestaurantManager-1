@@ -486,29 +486,29 @@ export default function MenuManager() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Gestor de Cardápio</h1>
-          <p className="text-gray-600">Gerencie seções, produtos e adicionais do seu cardápio digital</p>
+          <p className="text-gray-600">Gerencie categorias, produtos e adicionais do seu cardápio digital</p>
         </div>
         <div className="flex gap-2">
-          {/* Botão Nova Seção */}
+          {/* Botão Nova Categoria */}
           <Dialog open={isSectionDialogOpen} onOpenChange={setIsSectionDialogOpen}>
             <DialogTrigger asChild>
               <Button variant="outline">
                 <Plus className="mr-2 h-4 w-4" />
-                Nova Seção
+                Nova Categoria
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md">
               <DialogHeader>
                 <DialogTitle>
-                  {editingSection ? "Editar Seção" : "Nova Seção"}
+                  {editingSection ? "Editar Categoria" : "Nova Categoria"}
                 </DialogTitle>
                 <DialogDescription>
-                  {editingSection ? "Edite os dados da seção" : "Adicione uma nova seção ao cardápio"}
+                  {editingSection ? "Edite os dados da categoria" : "Adicione uma nova categoria ao cardápio"}
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="section-name">Nome da Seção *</Label>
+                  <Label htmlFor="section-name">Nome da Categoria *</Label>
                   <Input
                     id="section-name"
                     value={sectionForm.name}
@@ -1325,8 +1325,8 @@ export default function MenuManager() {
       {/* Lista de Seções */}
       <Card>
         <CardHeader>
-          <CardTitle>Seções do Cardápio</CardTitle>
-          <CardDescription>Gerencie as seções do seu cardápio</CardDescription>
+          <CardTitle>Categorias do Cardápio</CardTitle>
+          <CardDescription>Gerencie as categorias do seu cardápio</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
