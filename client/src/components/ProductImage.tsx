@@ -51,7 +51,12 @@ export default function ProductImage({
       {/* Badge de promoção */}
       {showPromoBadge && (
         <div className="absolute -top-1 -right-1 z-10">
-          <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+          <div 
+            className="text-white text-xs px-2 py-1 rounded-full font-bold"
+            style={{
+              backgroundColor: 'var(--primary-color, #ff0000)'
+            }}
+          >
             30%OFF
           </div>
         </div>
