@@ -30,6 +30,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import AddonsModal from "@/components/AddonsModal";
 import StoreIntegrations from "./StoreIntegrations";
+import ImageUpload from "@/components/ImageUpload";
 
 interface StoreInfo {
   id: number;
@@ -71,7 +72,9 @@ export default function ManagerStoreDashboard() {
     instagram: "",
     onlineOrders: true,
     showPrices: true,
-    deliveryAvailable: true
+    deliveryAvailable: true,
+    logoUrl: "",
+    bannerUrl: ""
   });
 
   // Fetch manager's store info
@@ -207,7 +210,9 @@ export default function ManagerStoreDashboard() {
         instagram: `@${store.slug}`,
         onlineOrders: true,
         showPrices: true,
-        deliveryAvailable: true
+        deliveryAvailable: true,
+        logoUrl: (store as any).logoUrl || "",
+        bannerUrl: (store as any).bannerUrl || ""
       });
     }
   }, [store]);
