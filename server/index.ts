@@ -3,8 +3,6 @@ import session from "express-session";
 import createMemoryStore from "memorystore";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import path from "path";
-import fs from "fs";
 
 const app = express();
 app.use(express.json());
@@ -74,21 +72,7 @@ app.use((req, res, next) => {
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
-    // Em produção, primeiro servir arquivos estáticos com path específico
-    // para não interferir com as rotas da API
-    const distPath = path.resolve(process.cwd(), "dist");
-    if (fs.existsSync(distPath)) {
-      app.use(express.static(distPath));
-      
-      // Apenas servir index.html para rotas que NÃO são da API
-      app.get('*', (req, res) => {
-        if (!req.path.startsWith('/api/')) {
-          res.sendFile(path.resolve(distPath, "index.html"));
-        } else {
-          res.status(404).json({ message: "API endpoint não encontrado" });
-        }
-      });
-    }
+    serveStatic(app);
   }
 
   // ALWAYS serve the app on port 5000
