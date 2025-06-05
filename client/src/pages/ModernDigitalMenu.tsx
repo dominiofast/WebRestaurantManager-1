@@ -779,6 +779,9 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Facebook Pixel Integration */}
+      {storeData?.slug && <FacebookPixel storeSlug={storeData.slug} />}
     </>
   );
 }

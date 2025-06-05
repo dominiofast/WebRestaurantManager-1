@@ -210,6 +210,19 @@ export default function Sidebar() {
                         <span className="font-medium text-sm">Integrações</span>
                       </div>
                     </Link>
+                    <Link href="/config/facebook-pixel">
+                      <div
+                        className={cn(
+                          "flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors cursor-pointer",
+                          location === "/config/facebook-pixel"
+                            ? "bg-coral text-white"
+                            : "text-white/70 hover:bg-white/10 hover:text-white"
+                        )}
+                      >
+                        <Globe className="w-4 h-4" />
+                        <span className="font-medium text-sm">Facebook Pixel</span>
+                      </div>
+                    </Link>
 
                   </div>
                 )}
