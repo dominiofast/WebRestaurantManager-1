@@ -47,6 +47,12 @@ interface StoreData {
   phone?: string;
   logoUrl?: string;
   bannerUrl?: string;
+  primaryColor?: string;
+  secondaryColor?: string;
+  darkMode?: boolean;
+  fontFamily?: string;
+  showBanner?: boolean;
+  showLogo?: boolean;
   company: {
     name: string;
   };
@@ -103,6 +109,42 @@ export default function ModernDigitalMenu() {
       setActiveSection(firstSection.id);
     }
   }, [storeData, activeSection]);
+
+  // Apply theme colors and dark mode
+  useEffect(() => {
+    if (storeData) {
+      const root = document.documentElement;
+      
+      // Apply custom colors
+      if (storeData.primaryColor) {
+        root.style.setProperty('--menu-primary', storeData.primaryColor);
+      }
+      if (storeData.secondaryColor) {
+        root.style.setProperty('--menu-secondary', storeData.secondaryColor);
+      }
+      
+      // Apply dark mode
+      if (storeData.darkMode) {
+        document.body.classList.add('dark-menu');
+      } else {
+        document.body.classList.remove('dark-menu');
+      }
+      
+      // Apply font family
+      if (storeData.fontFamily) {
+        root.style.setProperty('--menu-font', storeData.fontFamily);
+      }
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      document.body.classList.remove('dark-menu');
+      const root = document.documentElement;
+      root.style.removeProperty('--menu-primary');
+      root.style.removeProperty('--menu-secondary');
+      root.style.removeProperty('--menu-font');
+    };
+  }, [storeData]);
 
   const addToCart = (product: any) => {
     const existingItem = cart.find(item => item.productId === product.id);

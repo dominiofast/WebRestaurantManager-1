@@ -115,6 +115,13 @@ export const stores = pgTable("stores", {
   deliveryFee: varchar("delivery_fee").default("0"),
   minimumOrder: varchar("minimum_order").default("0"),
   estimatedDeliveryTime: varchar("estimated_delivery_time").default("30-45 min"),
+  // Theme customization fields
+  primaryColor: varchar("primary_color").default("#FF6B35"),
+  secondaryColor: varchar("secondary_color").default("#F7931E"),
+  darkMode: boolean("dark_mode").default(false),
+  fontFamily: varchar("font_family").default("Inter"),
+  showBanner: boolean("show_banner").default(true),
+  showLogo: boolean("show_logo").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

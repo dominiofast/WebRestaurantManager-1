@@ -1063,7 +1063,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: 'Acesso negado' });
       }
       
-      const { logoUrl, bannerUrl, name, address, phone, email, ...otherData } = req.body;
+      const { logoUrl, bannerUrl, name, address, phone, email, primaryColor, secondaryColor, darkMode, fontFamily, showBanner, showLogo, ...otherData } = req.body;
       
       const updateData: any = {};
       if (name !== undefined) updateData.name = name;
@@ -1072,6 +1072,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (email !== undefined) updateData.email = email;
       if (logoUrl !== undefined) updateData.logoUrl = logoUrl;
       if (bannerUrl !== undefined) updateData.bannerUrl = bannerUrl;
+      if (primaryColor !== undefined) updateData.primaryColor = primaryColor;
+      if (secondaryColor !== undefined) updateData.secondaryColor = secondaryColor;
+      if (darkMode !== undefined) updateData.darkMode = darkMode;
+      if (fontFamily !== undefined) updateData.fontFamily = fontFamily;
+      if (showBanner !== undefined) updateData.showBanner = showBanner;
+      if (showLogo !== undefined) updateData.showLogo = showLogo;
       
       const updatedStore = await storage.updateStore(storeId, updateData);
       res.json(updatedStore);
