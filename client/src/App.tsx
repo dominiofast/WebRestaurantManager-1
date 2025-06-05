@@ -77,6 +77,7 @@ function ManagerApp({ user }: { user: any }) {
             <Route path="/analytics" component={Analytics} />
             <Route path="/ai-agent" component={AIAgentSimple} />
             <Route path="/config/profile" component={Profile} />
+            <Route path="/config/store" component={StoreConfig} />
             <Route path="/config/integrations" component={IntegrationsNew} />
             <Route component={OrderManagement} />
           </Switch>
