@@ -28,6 +28,7 @@ import IntegrationsNew from "@/pages/IntegrationsNew";
 import Customers from "@/pages/Customers";
 import Analytics from "@/pages/Analytics";
 import Profile from "@/pages/Profile";
+import StoreConfig from "@/pages/StoreConfig";
 import Sidebar from "@/components/Sidebar";
 import TopBar from "@/components/TopBar";
 import NotFound from "@/pages/not-found";
