@@ -259,25 +259,78 @@ export const aiAgents = pgTable("ai_agents", {
   responseSpeed: varchar("response_speed", { length: 50 }).default("moderada"),
   
   // Technical settings
-  maxTokens: integer("max_tokens").default(500),
+  maxTokens: integer("max_tokens").default(800),
   temperature: decimal("temperature", { precision: 3, scale: 1 }).default("0.7"),
-  conversationMemory: integer("conversation_memory").default(10),
+  conversationMemory: integer("conversation_memory").default(15),
+  contextWindow: integer("context_window").default(20),
+  responseLatency: varchar("response_latency", { length: 50 }).default("instant"),
   
-  // Features
-  useEmojis: boolean("use_emojis").default(false),
+  // Advanced AI Features
+  useEmojis: boolean("use_emojis").default(true),
   canMakeJokes: boolean("can_make_jokes").default(true),
   canGiveAdvice: boolean("can_give_advice").default(true),
   canRecommendProducts: boolean("can_recommend_products").default(true),
   useAnalogies: boolean("use_analogies").default(true),
+  canDetectIntent: boolean("can_detect_intent").default(true),
+  canDetectMood: boolean("can_detect_mood").default(true),
+  canSuggestUpsell: boolean("can_suggest_upsell").default(true),
+  canHandleComplaints: boolean("can_handle_complaints").default(true),
+  canScheduleOrders: boolean("can_schedule_orders").default(true),
+  useCustomerHistory: boolean("use_customer_history").default(true),
   
-  // Custom messages
+  // Behavioral Intelligence
+  adaptivePersonality: boolean("adaptive_personality").default(true),
+  learningEnabled: boolean("learning_enabled").default(true),
+  sentimentAnalysis: boolean("sentiment_analysis").default(true),
+  contextualResponses: boolean("contextual_responses").default(true),
+  multiLanguageDetection: boolean("multi_language_detection").default(false),
+  
+  // Advanced Response Settings
   welcomeMessage: text("welcome_message").default("Olá! Como posso ajudá-lo hoje?"),
   awayMessage: text("away_message").default("No momento estou ausente, mas retornarei em breve!"),
   errorMessage: text("error_message").default("Desculpe, ocorreu um erro. Por favor, tente novamente."),
+  busyMessage: text("busy_message").default("Estou com um volume alto de atendimentos. Aguarde um momento!"),
+  thankYouMessage: text("thank_you_message").default("Obrigado por entrar em contato conosco!"),
+  goodbyeMessage: text("goodbye_message").default("Foi um prazer ajudá-lo! Volte sempre!"),
   
-  // Restrictions
-  blockedTopics: text("blocked_topics").array(),
-  prohibitedWords: text("prohibited_words").array(),
+  // Smart Response Patterns
+  orderConfirmationTemplate: text("order_confirmation_template").default("Pedido confirmado! Número: {orderNumber}. Tempo estimado: {estimatedTime} minutos."),
+  deliveryUpdateTemplate: text("delivery_update_template").default("Seu pedido está a caminho! Previsão de chegada: {estimatedArrival}."),
+  promotionTemplate: text("promotion_template").default("Temos uma oferta especial para você: {promotionDetails}"),
+  
+  // Intelligent Triggers
+  autoGreetingEnabled: boolean("auto_greeting_enabled").default(true),
+  autoGreetingDelay: integer("auto_greeting_delay").default(30),
+  proactiveRecommendations: boolean("proactive_recommendations").default(true),
+  seasonalAdaptation: boolean("seasonal_adaptation").default(true),
+  timeBasedResponses: boolean("time_based_responses").default(true),
+  
+  // Sales Intelligence
+  upsellThreshold: decimal("upsell_threshold", { precision: 10, scale: 2 }).default("50.00"),
+  crossSellEnabled: boolean("cross_sell_enabled").default(true),
+  loyaltyIntegration: boolean("loyalty_integration").default(false),
+  priceDiscussionAllowed: boolean("price_discussion_allowed").default(true),
+  discountAuthorized: boolean("discount_authorized").default(false),
+  maxDiscountPercent: integer("max_discount_percent").default(0),
+  
+  // Knowledge Management
+  menuKnowledgeLevel: integer("menu_knowledge_level").default(9),
+  allergenAwareness: boolean("allergen_awareness").default(true),
+  nutritionalInfo: boolean("nutritional_info").default(true),
+  preparationTimeAccuracy: boolean("preparation_time_accuracy").default(true),
+  ingredientSubstitutions: boolean("ingredient_substitutions").default(true),
+  
+  // Customer Service Excellence
+  complaintResolutionSteps: text("complaint_resolution_steps").default("1. Ouvir com empatia 2. Pedir desculpas 3. Oferecer solução 4. Confirmar satisfação"),
+  escalationTriggers: text("escalation_triggers").array().default(["reclamação grave", "pedido de reembolso", "problema técnico"]),
+  serviceRecoveryEnabled: boolean("service_recovery_enabled").default(true),
+  feedbackCollection: boolean("feedback_collection").default(true),
+  
+  // Restrictions & Safety
+  blockedTopics: text("blocked_topics").array().default(["política", "religião", "concorrentes"]),
+  prohibitedWords: text("prohibited_words").array().default([]),
+  contentModerationLevel: integer("content_moderation_level").default(5),
+  spamDetection: boolean("spam_detection").default(true),
   
   // Legacy fields for backward compatibility
   personality: text("personality"),
