@@ -15,6 +15,7 @@ import {
   whatsappInstances,
   customers,
   customerInteractions,
+  aiAgents,
   type User,
   type UpsertUser,
   type Category,
@@ -52,6 +53,8 @@ import {
   type CustomerInteraction,
   type InsertCustomerInteraction,
   type CustomerWithInteractions,
+  type AiAgent,
+  type InsertAiAgent,
   type CustomerWithStats,
   type MenuProductWithSection,
   type AddonGroupWithAddons,
@@ -1033,7 +1036,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // AI Agent operations
-  async getAiAgent(storeId: number): Promise<AiAgent | undefined> {
+  async getAiAgent(storeId: number): Promise<any | undefined> {
     const [agent] = await db
       .select()
       .from(aiAgents)
@@ -1041,7 +1044,7 @@ export class DatabaseStorage implements IStorage {
     return agent;
   }
 
-  async createAiAgent(agent: InsertAiAgent): Promise<AiAgent> {
+  async createAiAgent(agent: any): Promise<any> {
     const [created] = await db
       .insert(aiAgents)
       .values(agent)
@@ -1049,7 +1052,7 @@ export class DatabaseStorage implements IStorage {
     return created;
   }
 
-  async updateAiAgent(storeId: number, agent: Partial<InsertAiAgent>): Promise<AiAgent> {
+  async updateAiAgent(storeId: number, agent: any): Promise<any> {
     const [updated] = await db
       .update(aiAgents)
       .set({ ...agent, updatedAt: new Date() })
