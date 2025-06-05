@@ -345,7 +345,7 @@ export default function ModernDigitalMenu() {
                           alt={product.name}
                           size="md"
                           className="w-full h-24 rounded-t-lg"
-                          showPromoBadge={product.isPromotion}
+                          showPromoBadge={false}
                         />
                         {product.isPromotion && (
                           <div 
@@ -424,20 +424,18 @@ export default function ModernDigitalMenu() {
                       <h2 className="text-xl font-bold mb-0 text-black">{section.name}</h2>
                     </div>
                     
-                    {/* Grid de produtos - dentro da categoria */}
-                    <div className="p-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {section.products
-                          .sort((a, b) => a.displayOrder - b.displayOrder)
-                          .map((product) => (
-                            <ModernProductCard 
-                              key={product.id} 
-                              product={product} 
-                              onAddToCart={addToCart}
-                              storeData={storeData}
-                            />
-                          ))}
-                      </div>
+                    {/* Lista de produtos - layout compacto */}
+                    <div className="divide-y divide-gray-100">
+                      {section.products
+                        .sort((a, b) => a.displayOrder - b.displayOrder)
+                        .map((product) => (
+                          <ModernProductCard 
+                            key={product.id} 
+                            product={product} 
+                            onAddToCart={addToCart}
+                            storeData={storeData}
+                          />
+                        ))}
                     </div>
                   </div>
                 ))}
@@ -579,37 +577,43 @@ function ModernProductCard({ product, onAddToCart, storeData }: { product: any; 
   return (
     <>
       <div 
-        className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-sm transition-all duration-300 cursor-pointer"
+        className="bg-white hover:bg-gray-50 transition-colors duration-200 cursor-pointer px-4 py-3"
         onClick={() => setIsModalOpen(true)}
       >
-        <div className="flex p-3">
-          {/* Conteúdo do produto */}
-          <div className="flex-1 pr-3 flex flex-col justify-between">
-            <div>
-              <h3 className="font-bold text-sm text-gray-900 mb-1 leading-tight">
+        <div className="flex items-center gap-3">
+          {/* Conteúdo do produto - expandido */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between mb-1">
+              <h3 className="font-semibold text-base text-gray-900 leading-tight pr-2">
                 {product.name}
               </h3>
-              
-              {/* Descrição limitada a 1 linha para equilibrar */}
-              {product.description ? (
-                <p className="text-gray-500 text-xs leading-relaxed line-clamp-1 mb-1">
-                  {product.description}
-                </p>
-              ) : (
-                <p className="text-gray-400 text-xs italic mb-1">
-                  Sem descrição disponível
-                </p>
+              {product.isPromotion && (
+                <div 
+                  className="text-white text-xs px-2 py-0.5 rounded font-bold shadow-sm flex-shrink-0"
+                  style={{
+                    backgroundColor: storeData?.primaryColor || '#FF6B35'
+                  }}
+                >
+                  50% OFF
+                </div>
               )}
             </div>
             
-            {/* Preços na parte inferior */}
+            {/* Descrição mais visível */}
+            {product.description && (
+              <p className="text-gray-600 text-sm leading-relaxed line-clamp-2 mb-2">
+                {product.description}
+              </p>
+            )}
+            
+            {/* Preços lado a lado */}
             <div className="flex items-center gap-2">
               {product.originalPrice && parseFloat(product.originalPrice) !== parseFloat(product.price) && (
-                <span className="text-xs text-gray-400 line-through">
+                <span className="text-sm text-gray-400 line-through">
                   R$ {Math.max(parseFloat(product.originalPrice), parseFloat(product.price)).toFixed(2).replace('.', ',')}
                 </span>
               )}
-              <span className="font-bold text-base text-[#196e00]">
+              <span className="font-bold text-lg text-green-600">
                 R$ {product.originalPrice ? 
                   Math.min(parseFloat(product.originalPrice), parseFloat(product.price)).toFixed(2).replace('.', ',') :
                   parseFloat(product.price).toFixed(2).replace('.', ',')
@@ -618,12 +622,12 @@ function ModernProductCard({ product, onAddToCart, storeData }: { product: any; 
             </div>
           </div>
           
-          {/* Imagem à direita */}
+          {/* Imagem maior à direita */}
           <div className="flex-shrink-0">
             <div 
-              className="bg-gray-50 relative overflow-hidden rounded-lg"
+              className="bg-gray-50 relative overflow-hidden rounded-xl"
               style={{ 
-                width: '90px', 
+                width: '80px', 
                 height: '80px'
               }}
             >
@@ -635,24 +639,9 @@ function ModernProductCard({ product, onAddToCart, storeData }: { product: any; 
                 />
               ) : (
                 <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                  <svg className="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                </div>
-              )}
-              
-              {/* Badge de promoção */}
-              {product.isPromotion && (
-                <div className="absolute -top-1 -right-1 z-10">
-                  <div 
-                    className="text-white text-xs px-2 py-1 rounded-lg font-bold shadow-lg border border-white/20"
-                    style={{
-                      backgroundColor: storeData?.primaryColor || '#FF6B35',
-                      background: `linear-gradient(135deg, ${storeData?.primaryColor || '#FF6B35'}, ${storeData?.primaryColor || '#FF6B35'}dd)`
-                    }}
-                  >
-                    -30%
-                  </div>
                 </div>
               )}
             </div>
