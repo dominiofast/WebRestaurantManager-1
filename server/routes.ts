@@ -2191,7 +2191,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 INFORMAÇÕES DO RESTAURANTE:
 - Nome: ${store.name}
-- Cardápio: ${process.env.REPLIT_DOMAIN || 'https://localhost:5000'}/menu/${store.slug}
+- Cardápio: https://dominiomenu-app.replit.app/menu/${store.slug}
 - Horário: Seg-Sex 11h-23h, Sáb-Dom 18h-23h
 - Delivery: R$ 5,00, 30-45min, mínimo R$ 25,00
 ${store.address ? `- Endereço: ${store.address}` : ''}
@@ -2255,8 +2255,7 @@ Responda de forma OBJETIVA e RÁPIDA:`;
     
     // Check for specific keywords and respond accordingly
     if (message.includes('cardápio') || message.includes('cardapio') || message.includes('menu')) {
-      const menuUrl = process.env.REPLIT_DOMAIN ? `${process.env.REPLIT_DOMAIN}/menu/${store.slug}` : `https://localhost:5000/menu/${store.slug}`;
-      return `🍽️ Confira nosso delicioso cardápio!\n\nAcesse: ${menuUrl}\n\nTemos diversas opções especiais esperando por você! 😋`;
+      return `🍽️ Confira nosso delicioso cardápio!\n\nAcesse: https://dominiomenu-app.replit.app/menu/${store.slug}\n\nTemos diversas opções especiais esperando por você! 😋`;
     }
     
     if (message.includes('horário') || message.includes('horario') || message.includes('funcionamento') || message.includes('aberto')) {
