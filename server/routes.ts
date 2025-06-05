@@ -51,10 +51,16 @@ const upload = multer({
 
 // Helper function to get dynamic base URL
 function getBaseUrl(req?: any): string {
-  // Always use REPLIT_DOMAINS for external access
+  // Check if request is from custom domain
+  if (req && req.get('host') === 'dominiomenu.com') {
+    return 'https://dominiomenu.com';
+  }
+  
+  // Use REPLIT_DOMAINS for external access
   if (process.env.REPLIT_DOMAINS) {
     return `https://${process.env.REPLIT_DOMAINS}`;
   }
+  
   // Fallback for development
   if (req) {
     return `${req.protocol}://${req.get('host')}`;
