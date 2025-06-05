@@ -343,7 +343,12 @@ export default function ModernDigitalMenu() {
                           showPromoBadge={product.isPromotion}
                         />
                         {product.isPromotion && (
-                          <div className="absolute top-1 left-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full font-bold">
+                          <div 
+                            className="absolute top-1 left-1 text-white text-xs px-1.5 py-0.5 rounded-full font-bold"
+                            style={{
+                              backgroundColor: storeData?.primaryColor || '#FF6B35'
+                            }}
+                          >
                             COMBO
                           </div>
                         )}
