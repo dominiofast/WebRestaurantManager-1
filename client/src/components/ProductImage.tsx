@@ -13,11 +13,11 @@ export default function ProductImage({
   className = '',
   showPromoBadge = false 
 }: ProductImageProps) {
-  // Tamanhos responsivos padronizados - FORÇANDO QUADRADO
+  // Tamanhos responsivos padronizados - AUMENTADO EM 15%
   const sizeClasses = {
-    sm: 'w-16 h-16',
-    md: 'w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28',
-    lg: 'w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40'
+    sm: 'w-20 h-20',
+    md: 'w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36',
+    lg: 'w-40 h-40 sm:w-44 sm:h-44 md:w-48 md:h-48'
   };
 
   return (
