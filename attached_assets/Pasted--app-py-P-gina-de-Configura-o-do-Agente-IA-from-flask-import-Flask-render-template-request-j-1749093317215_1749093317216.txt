@@ -1,0 +1,719 @@
+# app.py - Página de Configuração do Agente IA
+from flask import Flask, render_template, request, jsonify
+import json
+import os
+
+app = Flask(__name__)
+
+# Arquivo para salvar as configurações
+CONFIG_FILE = 'agent_config.json'
+
+# Configuração padrão do agente
+DEFAULT_CONFIG = {
+    "nome_agente": "Assistente IA",
+    "tipo_humor": "profissional",
+    "nivel_empatia": 7,
+    "nivel_formalidade": 5,
+    "velocidade_resposta": "moderada",
+    "usar_emojis": False,
+    "max_tokens": 500,
+    "temperatura": 0.7,
+    "idioma": "pt-BR",
+    "pode_fazer_piadas": True,
+    "pode_dar_conselhos": True,
+    "pode_recomendar_produtos": True,
+    "usar_analogias": True,
+    "memoria_conversas": 10,
+    "topicos_bloqueados": [],
+    "palavras_proibidas": [],
+    "mensagem_boas_vindas": "Olá! Como posso ajudá-lo hoje?",
+    "mensagem_ausente": "No momento estou ausente, mas retornarei em breve!",
+    "mensagem_erro": "Desculpe, ocorreu um erro. Por favor, tente novamente."
+}
+
+def load_config():
+    """Carrega as configurações do arquivo"""
+    if os.path.exists(CONFIG_FILE):
+        with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return DEFAULT_CONFIG.copy()
+
+def save_config(config):
+    """Salva as configurações no arquivo"""
+    with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
+        json.dump(config, f, ensure_ascii=False, indent=2)
+
+@app.route('/')
+def index():
+    """Página principal de configuração"""
+    config = load_config()
+    return render_template('config.html', config=config)
+
+@app.route('/save', methods=['POST'])
+def save():
+    """Salva as configurações"""
+    try:
+        data = request.json
+        
+        # Validar e processar os dados
+        config = {
+            "nome_agente": data.get('nome_agente', DEFAULT_CONFIG['nome_agente']),
+            "tipo_humor": data.get('tipo_humor', DEFAULT_CONFIG['tipo_humor']),
+            "nivel_empatia": int(data.get('nivel_empatia', DEFAULT_CONFIG['nivel_empatia'])),
+            "nivel_formalidade": int(data.get('nivel_formalidade', DEFAULT_CONFIG['nivel_formalidade'])),
+            "velocidade_resposta": data.get('velocidade_resposta', DEFAULT_CONFIG['velocidade_resposta']),
+            "usar_emojis": bool(data.get('usar_emojis', DEFAULT_CONFIG['usar_emojis'])),
+            "max_tokens": int(data.get('max_tokens', DEFAULT_CONFIG['max_tokens'])),
+            "temperatura": float(data.get('temperatura', DEFAULT_CONFIG['temperatura'])),
+            "idioma": data.get('idioma', DEFAULT_CONFIG['idioma']),
+            "pode_fazer_piadas": bool(data.get('pode_fazer_piadas', DEFAULT_CONFIG['pode_fazer_piadas'])),
+            "pode_dar_conselhos": bool(data.get('pode_dar_conselhos', DEFAULT_CONFIG['pode_dar_conselhos'])),
+            "pode_recomendar_produtos": bool(data.get('pode_recomendar_produtos', DEFAULT_CONFIG['pode_recomendar_produtos'])),
+            "usar_analogias": bool(data.get('usar_analogias', DEFAULT_CONFIG['usar_analogias'])),
+            "memoria_conversas": int(data.get('memoria_conversas', DEFAULT_CONFIG['memoria_conversas'])),
+            "topicos_bloqueados": data.get('topicos_bloqueados', DEFAULT_CONFIG['topicos_bloqueados']),
+            "palavras_proibidas": data.get('palavras_proibidas', DEFAULT_CONFIG['palavras_proibidas']),
+            "mensagem_boas_vindas": data.get('mensagem_boas_vindas', DEFAULT_CONFIG['mensagem_boas_vindas']),
+            "mensagem_ausente": data.get('mensagem_ausente', DEFAULT_CONFIG['mensagem_ausente']),
+            "mensagem_erro": data.get('mensagem_erro', DEFAULT_CONFIG['mensagem_erro'])
+        }
+        
+        save_config(config)
+        
+        return jsonify({"success": True, "message": "Configurações salvas com sucesso!"})
+    
+    except Exception as e:
+        return jsonify({"success": False, "message": f"Erro ao salvar: {str(e)}"})
+
+@app.route('/api/config', methods=['GET'])
+def get_config():
+    """API para obter as configurações atuais"""
+    config = load_config()
+    return jsonify(config)
+
+@app.route('/reset', methods=['POST'])
+def reset():
+    """Restaura as configurações padrão"""
+    save_config(DEFAULT_CONFIG)
+    return jsonify({"success": True, "message": "Configurações restauradas!"})
+
+# Criar o diretório de templates se não existir
+if not os.path.exists('templates'):
+    os.makedirs('templates')
+
+# Template HTML
+html_template = '''<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuração do Agente IA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            color: #555;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+            select,
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .range-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        input[type="range"] {
+            flex: 1;
+            height: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #e0e0e0;
+            border-radius: 5px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #667eea;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #667eea;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .range-value {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            min-width: 50px;
+            text-align: center;
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .checkbox-container:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .checkbox-label {
+            flex: 1;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #555;
+        }
+        
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                border-radius: 0;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Configuração do Agente IA</h1>
+            <p>Personalize o comportamento do seu assistente inteligente</p>
+        </div>
+        
+        <div class="content">
+            <div id="alert" class="alert"></div>
+            
+            <form id="configForm">
+                <!-- Informações Básicas -->
+                <div class="section">
+                    <h2>📝 Informações Básicas</h2>
+                    
+                    <div class="form-group">
+                        <label for="nome_agente">Nome do Agente</label>
+                        <input type="text" id="nome_agente" name="nome_agente" value="{{ config.nome_agente }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="idioma">Idioma Principal</label>
+                        <select id="idioma" name="idioma">
+                            <option value="pt-BR" {% if config.idioma == 'pt-BR' %}selected{% endif %}>Português (Brasil)</option>
+                            <option value="pt-PT" {% if config.idioma == 'pt-PT' %}selected{% endif %}>Português (Portugal)</option>
+                            <option value="en-US" {% if config.idioma == 'en-US' %}selected{% endif %}>English (US)</option>
+                            <option value="es" {% if config.idioma == 'es' %}selected{% endif %}>Español</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Personalidade -->
+                <div class="section">
+                    <h2>🎭 Personalidade e Comportamento</h2>
+                    
+                    <div class="form-group">
+                        <label for="tipo_humor">Tipo de Humor</label>
+                        <select id="tipo_humor" name="tipo_humor">
+                            <option value="profissional" {% if config.tipo_humor == 'profissional' %}selected{% endif %}>Profissional</option>
+                            <option value="amigavel" {% if config.tipo_humor == 'amigavel' %}selected{% endif %}>Amigável</option>
+                            <option value="casual" {% if config.tipo_humor == 'casual' %}selected{% endif %}>Casual</option>
+                            <option value="formal" {% if config.tipo_humor == 'formal' %}selected{% endif %}>Formal</option>
+                            <option value="bem-humorado" {% if config.tipo_humor == 'bem-humorado' %}selected{% endif %}>Bem-Humorado</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="nivel_empatia">Nível de Empatia</label>
+                        <div class="range-container">
+                            <input type="range" id="nivel_empatia" name="nivel_empatia" min="1" max="10" value="{{ config.nivel_empatia }}">
+                            <span class="range-value" id="empatia_value">{{ config.nivel_empatia }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="nivel_formalidade">Nível de Formalidade</label>
+                        <div class="range-container">
+                            <input type="range" id="nivel_formalidade" name="nivel_formalidade" min="1" max="10" value="{{ config.nivel_formalidade }}">
+                            <span class="range-value" id="formalidade_value">{{ config.nivel_formalidade }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="velocidade_resposta">Velocidade de Resposta</label>
+                        <select id="velocidade_resposta" name="velocidade_resposta">
+                            <option value="rapida" {% if config.velocidade_resposta == 'rapida' %}selected{% endif %}>Rápida e Concisa</option>
+                            <option value="moderada" {% if config.velocidade_resposta == 'moderada' %}selected{% endif %}>Moderada</option>
+                            <option value="detalhada" {% if config.velocidade_resposta == 'detalhada' %}selected{% endif %}>Detalhada</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Configurações Técnicas -->
+                <div class="section">
+                    <h2>⚙️ Configurações Técnicas</h2>
+                    
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="max_tokens">Máximo de Tokens</label>
+                            <input type="number" id="max_tokens" name="max_tokens" min="50" max="4000" value="{{ config.max_tokens }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="temperatura">Temperatura (Criatividade)</label>
+                            <div class="range-container">
+                                <input type="range" id="temperatura" name="temperatura" min="0" max="1" step="0.1" value="{{ config.temperatura }}">
+                                <span class="range-value" id="temp_value">{{ config.temperatura }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="memoria_conversas">Memória de Conversas</label>
+                            <input type="number" id="memoria_conversas" name="memoria_conversas" min="0" max="50" value="{{ config.memoria_conversas }}">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Funcionalidades -->
+                <div class="section">
+                    <h2>✨ Funcionalidades</h2>
+                    
+                    <div class="grid">
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="usar_emojis" name="usar_emojis" {% if config.usar_emojis %}checked{% endif %}>
+                            <label for="usar_emojis" class="checkbox-label">Usar Emojis 😊</label>
+                        </div>
+                        
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="pode_fazer_piadas" name="pode_fazer_piadas" {% if config.pode_fazer_piadas %}checked{% endif %}>
+                            <label for="pode_fazer_piadas" class="checkbox-label">Pode Fazer Piadas</label>
+                        </div>
+                        
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="pode_dar_conselhos" name="pode_dar_conselhos" {% if config.pode_dar_conselhos %}checked{% endif %}>
+                            <label for="pode_dar_conselhos" class="checkbox-label">Pode Dar Conselhos</label>
+                        </div>
+                        
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="pode_recomendar_produtos" name="pode_recomendar_produtos" {% if config.pode_recomendar_produtos %}checked{% endif %}>
+                            <label for="pode_recomendar_produtos" class="checkbox-label">Recomendar Produtos</label>
+                        </div>
+                        
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="usar_analogias" name="usar_analogias" {% if config.usar_analogias %}checked{% endif %}>
+                            <label for="usar_analogias" class="checkbox-label">Usar Analogias</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mensagens Personalizadas -->
+                <div class="section">
+                    <h2>💬 Mensagens Personalizadas</h2>
+                    
+                    <div class="form-group">
+                        <label for="mensagem_boas_vindas">Mensagem de Boas-Vindas</label>
+                        <textarea id="mensagem_boas_vindas" name="mensagem_boas_vindas">{{ config.mensagem_boas_vindas }}</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="mensagem_ausente">Mensagem de Ausente</label>
+                        <textarea id="mensagem_ausente" name="mensagem_ausente">{{ config.mensagem_ausente }}</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="mensagem_erro">Mensagem de Erro</label>
+                        <textarea id="mensagem_erro" name="mensagem_erro">{{ config.mensagem_erro }}</textarea>
+                    </div>
+                </div>
+                
+                <!-- Restrições -->
+                <div class="section">
+                    <h2>🚫 Restrições</h2>
+                    
+                    <div class="form-group">
+                        <label for="topicos_bloqueados">Tópicos Bloqueados (separados por vírgula)</label>
+                        <textarea id="topicos_bloqueados" name="topicos_bloqueados" placeholder="Ex: política, religião, assuntos pessoais">{{ config.topicos_bloqueados|join(', ') }}</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="palavras_proibidas">Palavras Proibidas (separadas por vírgula)</label>
+                        <textarea id="palavras_proibidas" name="palavras_proibidas">{{ config.palavras_proibidas|join(', ') }}</textarea>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">💾 Salvar Configurações</button>
+                    <button type="button" class="btn btn-secondary" onclick="resetConfig()">🔄 Restaurar Padrão</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Atualizar valores dos ranges
+        document.getElementById('nivel_empatia').addEventListener('input', function() {
+            document.getElementById('empatia_value').textContent = this.value;
+        });
+        
+        document.getElementById('nivel_formalidade').addEventListener('input', function() {
+            document.getElementById('formalidade_value').textContent = this.value;
+        });
+        
+        document.getElementById('temperatura').addEventListener('input', function() {
+            document.getElementById('temp_value').textContent = this.value;
+        });
+        
+        // Salvar configurações
+        document.getElementById('configForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const config = {};
+            
+            // Processar campos do formulário
+            for (let [key, value] of formData.entries()) {
+                if (key === 'topicos_bloqueados' || key === 'palavras_proibidas') {
+                    config[key] = value.split(',').map(item => item.trim()).filter(item => item);
+                } else if (document.getElementById(key).type === 'checkbox') {
+                    config[key] = document.getElementById(key).checked;
+                } else {
+                    config[key] = value;
+                }
+            }
+            
+            try {
+                const response = await fetch('/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(config)
+                });
+                
+                const result = await response.json();
+                
+                showAlert(result.message, result.success ? 'success' : 'error');
+                
+            } catch (error) {
+                showAlert('Erro ao salvar configurações: ' + error.message, 'error');
+            }
+        });
+        
+        // Mostrar alerta
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.className = `alert alert-${type}`;
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Restaurar configurações padrão
+        async function resetConfig() {
+            if (confirm('Tem certeza que deseja restaurar as configurações padrão?')) {
+                try {
+                    const response = await fetch('/reset', {
+                        method: 'POST'
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showAlert(result.message, 'success');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    }
+                    
+                } catch (error) {
+                    showAlert('Erro ao restaurar configurações: ' + error.message, 'error');
+                }
+            }
+        }
+    </script>
+</body>
+</html>'''
+
+# Salvar o template
+with open('templates/config.html', 'w', encoding='utf-8') as f:
+    f.write(html_template)
+
+# Exemplo de como usar as configurações com OpenAI
+uso_openai = '''
+# exemplo_uso_openai.py - Como usar as configurações com sua integração OpenAI
+
+import json
+import openai
+
+def carregar_configuracoes():
+    """Carrega as configurações do agente"""
+    with open('agent_config.json', 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+def construir_prompt_sistema(config):
+    """Constrói o prompt do sistema baseado nas configurações"""
+    
+    prompt_parts = [
+        f"Você é {config['nome_agente']}.",
+        f"Idioma principal: {config['idioma']}."
+    ]
+    
+    # Personalidade
+    if config['tipo_humor'] == 'profissional':
+        prompt_parts.append("Mantenha um tom profissional e cortês.")
+    elif config['tipo_humor'] == 'amigavel':
+        prompt_parts.append("Seja amigável e acolhedor.")
+    elif config['tipo_humor'] == 'casual':
+        prompt_parts.append("Use um tom casual e descontraído.")
+    elif config['tipo_humor'] == 'bem-humorado':
+        prompt_parts.append("Seja bem-humorado quando apropriado.")
+    
+    # Níveis
+    if config['nivel_empatia'] >= 7:
+        prompt_parts.append("Demonstre alta empatia e compreensão.")
+    
+    if config['nivel_formalidade'] >= 7:
+        prompt_parts.append("Use linguagem formal.")
+    elif config['nivel_formalidade'] <= 3:
+        prompt_parts.append("Use linguagem informal e descontraída.")
+    
+    # Funcionalidades
+    if config['usar_emojis']:
+        prompt_parts.append("Use emojis nas suas respostas quando apropriado.")
+    
+    if config['pode_fazer_piadas']:
+        prompt_parts.append("Você pode fazer piadas leves quando apropriado.")
+    
+    if config['pode_dar_conselhos']:
+        prompt_parts.append("Você pode dar conselhos quando solicitado.")
+    
+    # Restrições
+    if config['topicos_bloqueados']:
+        prompt_parts.append(f"Evite falar sobre: {', '.join(config['topicos_bloqueados'])}")
+    
+    if config['palavras_proibidas']:
+        prompt_parts.append(f"Nunca use estas palavras: {', '.join(config['palavras_proibidas'])}")
+    
+    return "\\n".join(prompt_parts)
+
+def processar_mensagem(mensagem_usuario, historico_conversa=[]):
+    """Processa uma mensagem usando as configurações"""
+    
+    config = carregar_configuracoes()
+    
+    # Construir mensagens
+    messages = [
+        {"role": "system", "content": construir_prompt_sistema(config)}
+    ]
+    
+    # Adicionar histórico (se configurado)
+    if config['memoria_conversas'] > 0 and historico_conversa:
+        # Pegar apenas as últimas N mensagens
+        mensagens_recentes = historico_conversa[-config['memoria_conversas']:]
+        messages.extend(mensagens_recentes)
+    
+    # Adicionar mensagem atual
+    messages.append({"role": "user", "content": mensagem_usuario})
+    
+    # Chamar a API da OpenAI
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",  # ou gpt-4
+        messages=messages,
+        max_tokens=config['max_tokens'],
+        temperature=config['temperatura']
+    )
+    
+    return response.choices[0].message.content
+
+# Exemplo de uso
+if __name__ == "__main__":
+    # Testar com uma mensagem
+    resposta = processar_mensagem("Olá, como você está?")
+    print(resposta)
+'''
+
+with open('exemplo_uso_openai.py', 'w', encoding='utf-8') as f:
+    f.write(uso_openai)
+
+if __name__ == '__main__':
+    # Para o Replit, use host='0.0.0.0'
+    app.run(host='0.0.0.0', port=5000, debug=True)

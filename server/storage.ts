@@ -167,6 +167,12 @@ export interface IStorage {
     activeCustomers: number;
     totalInteractions: number;
   }>;
+
+  // AI Agent operations
+  getAiAgent(storeId: number): Promise<AiAgent | undefined>;
+  createAiAgent(agent: InsertAiAgent): Promise<AiAgent>;
+  updateAiAgent(storeId: number, agent: Partial<InsertAiAgent>): Promise<AiAgent>;
+  deleteAiAgent(storeId: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1024,6 +1030,38 @@ export class DatabaseStorage implements IStorage {
       activeCustomers: activeCustomers?.count || 0,
       totalInteractions: totalInteractions?.count || 0,
     };
+  }
+
+  // AI Agent operations
+  async getAiAgent(storeId: number): Promise<AiAgent | undefined> {
+    const [agent] = await db
+      .select()
+      .from(aiAgents)
+      .where(eq(aiAgents.storeId, storeId));
+    return agent;
+  }
+
+  async createAiAgent(agent: InsertAiAgent): Promise<AiAgent> {
+    const [created] = await db
+      .insert(aiAgents)
+      .values(agent)
+      .returning();
+    return created;
+  }
+
+  async updateAiAgent(storeId: number, agent: Partial<InsertAiAgent>): Promise<AiAgent> {
+    const [updated] = await db
+      .update(aiAgents)
+      .set({ ...agent, updatedAt: new Date() })
+      .where(eq(aiAgents.storeId, storeId))
+      .returning();
+    return updated;
+  }
+
+  async deleteAiAgent(storeId: number): Promise<void> {
+    await db
+      .delete(aiAgents)
+      .where(eq(aiAgents.storeId, storeId));
   }
 }
 

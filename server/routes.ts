@@ -2688,6 +2688,98 @@ Responda de forma natural e humana. Se for sobre cardápio, horários, delivery 
     }
   });
 
+  // AI Agent configuration routes
+  app.get('/api/ai-agent', isAuthenticated, async (req: any, res) => {
+    try {
+      const store = await storage.getStoreByManagerId(req.session.userId);
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      const agent = await storage.getAiAgent(store.id);
+      if (!agent) {
+        // Create default agent if doesn't exist
+        const defaultAgent = {
+          storeId: store.id,
+          name: "Assistente IA",
+          language: "pt-BR",
+          humorType: "profissional",
+          empathyLevel: 7,
+          formalityLevel: 5,
+          responseSpeed: "moderada",
+          maxTokens: 500,
+          temperature: "0.7",
+          conversationMemory: 10,
+          useEmojis: false,
+          canMakeJokes: true,
+          canGiveAdvice: true,
+          canRecommendProducts: true,
+          useAnalogies: true,
+          welcomeMessage: "Olá! Como posso ajudá-lo hoje?",
+          awayMessage: "No momento estou ausente, mas retornarei em breve!",
+          errorMessage: "Desculpe, ocorreu um erro. Por favor, tente novamente.",
+          blockedTopics: [],
+          prohibitedWords: [],
+          isActive: true
+        };
+        const createdAgent = await storage.createAiAgent(defaultAgent);
+        return res.json(createdAgent);
+      }
+
+      res.json(agent);
+    } catch (error) {
+      console.error('Erro ao buscar agente IA:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.put('/api/ai-agent', isAuthenticated, async (req: any, res) => {
+    try {
+      const store = await storage.getStoreByManagerId(req.session.userId);
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      const agentData = req.body;
+      
+      // Convert string arrays from form to actual arrays
+      if (typeof agentData.blockedTopics === 'string') {
+        agentData.blockedTopics = agentData.blockedTopics.split(',').map((item: string) => item.trim()).filter((item: string) => item);
+      }
+      if (typeof agentData.prohibitedWords === 'string') {
+        agentData.prohibitedWords = agentData.prohibitedWords.split(',').map((item: string) => item.trim()).filter((item: string) => item);
+      }
+
+      const existingAgent = await storage.getAiAgent(store.id);
+      
+      if (existingAgent) {
+        const updatedAgent = await storage.updateAiAgent(store.id, agentData);
+        res.json(updatedAgent);
+      } else {
+        const newAgent = await storage.createAiAgent({ ...agentData, storeId: store.id });
+        res.json(newAgent);
+      }
+    } catch (error) {
+      console.error('Erro ao salvar agente IA:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  app.delete('/api/ai-agent', isAuthenticated, async (req: any, res) => {
+    try {
+      const store = await storage.getStoreByManagerId(req.session.userId);
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      await storage.deleteAiAgent(store.id);
+      res.json({ message: "Agente IA removido com sucesso" });
+    } catch (error) {
+      console.error('Erro ao remover agente IA:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
   // Customer management routes
   app.get('/api/customers', isAuthenticated, async (req: any, res) => {
     try {

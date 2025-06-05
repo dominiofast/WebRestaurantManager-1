@@ -240,21 +240,53 @@ export const whatsappInstances = pgTable("whatsapp_instances", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// AI Agents table for WhatsApp integration
+// AI Agents table for WhatsApp integration with detailed configuration
 export const aiAgents = pgTable("ai_agents", {
   id: serial("id").primaryKey(),
   storeId: integer("store_id").references(() => stores.id, { onDelete: "cascade" }).notNull().unique(),
   whatsappInstanceId: integer("whatsapp_instance_id").references(() => whatsappInstances.id, { onDelete: "cascade" }),
-  name: varchar("name", { length: 255 }).notNull(),
+  
+  // Basic info
+  name: varchar("name", { length: 255 }).notNull().default("Assistente IA"),
   description: text("description"),
-  personality: text("personality"),
   isActive: boolean("is_active").default(true),
-  welcomeMessage: text("welcome_message"),
+  language: varchar("language", { length: 10 }).default("pt-BR"),
+  
+  // Personality settings
+  humorType: varchar("humor_type", { length: 50 }).default("profissional"),
+  empathyLevel: integer("empathy_level").default(7),
+  formalityLevel: integer("formality_level").default(5),
+  responseSpeed: varchar("response_speed", { length: 50 }).default("moderada"),
+  
+  // Technical settings
+  maxTokens: integer("max_tokens").default(500),
+  temperature: decimal("temperature", { precision: 3, scale: 1 }).default("0.7"),
+  conversationMemory: integer("conversation_memory").default(10),
+  
+  // Features
+  useEmojis: boolean("use_emojis").default(false),
+  canMakeJokes: boolean("can_make_jokes").default(true),
+  canGiveAdvice: boolean("can_give_advice").default(true),
+  canRecommendProducts: boolean("can_recommend_products").default(true),
+  useAnalogies: boolean("use_analogies").default(true),
+  
+  // Custom messages
+  welcomeMessage: text("welcome_message").default("Olá! Como posso ajudá-lo hoje?"),
+  awayMessage: text("away_message").default("No momento estou ausente, mas retornarei em breve!"),
+  errorMessage: text("error_message").default("Desculpe, ocorreu um erro. Por favor, tente novamente."),
+  
+  // Restrictions
+  blockedTopics: text("blocked_topics").array(),
+  prohibitedWords: text("prohibited_words").array(),
+  
+  // Legacy fields for backward compatibility
+  personality: text("personality"),
   menuPrompt: text("menu_prompt"),
   orderPrompt: text("order_prompt"),
   businessHours: jsonb("business_hours"),
   autoResponses: jsonb("auto_responses"),
   settings: jsonb("settings"),
+  
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
