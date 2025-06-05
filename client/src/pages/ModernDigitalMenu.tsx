@@ -295,7 +295,10 @@ export default function ModernDigitalMenu() {
               placeholder="Pesquisar no cardápio..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-orange-500 focus:border-transparent shadow-sm"
+              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:border-transparent shadow-sm"
+              style={{
+                '--tw-ring-color': storeData?.primaryColor || '#FF6B35'
+              } as React.CSSProperties}
             />
           </div>
         </div>
@@ -314,6 +317,7 @@ export default function ModernDigitalMenu() {
                   key={product.id} 
                   product={product} 
                   onAddToCart={addToCart}
+                  storeData={storeData}
                 />
               ))}
             </div>
@@ -336,11 +340,16 @@ export default function ModernDigitalMenu() {
                           block: 'start'
                         });
                       }}
-                      className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all duration-200 border menu-primary-border ${
+                      className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all duration-200 border ${
                         activeSection === section.id 
-                          ? 'menu-primary-bg text-white' 
-                          : 'menu-primary-text bg-transparent'
+                          ? 'text-white' 
+                          : 'bg-transparent'
                       }`}
+                      style={{
+                        backgroundColor: activeSection === section.id ? (storeData?.primaryColor || '#FF6B35') : 'transparent',
+                        borderColor: storeData?.primaryColor || '#FF6B35',
+                        color: activeSection === section.id ? 'white' : (storeData?.primaryColor || '#FF6B35')
+                      }}
                     >
                       {section.name}
                     </button>
@@ -372,6 +381,7 @@ export default function ModernDigitalMenu() {
                               key={product.id} 
                               product={product} 
                               onAddToCart={addToCart}
+                              storeData={storeData}
                             />
                           ))}
                       </div>
@@ -480,7 +490,7 @@ export default function ModernDigitalMenu() {
 }
 
 // Componente moderno para produtos - Layout clean com imagens SEMPRE QUADRADAS
-function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart: (product: any) => void }) {
+function ModernProductCard({ product, onAddToCart, storeData }: { product: any; onAddToCart: (product: any) => void; storeData?: StoreData }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAddons, setSelectedAddons] = useState<any[]>([]);
   const [quantity, setQuantity] = useState(1);
@@ -786,7 +796,21 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
                 setSpecialInstructions("");
               }}
               disabled={!product.isAvailable}
-              className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 flex items-center justify-between"
+              className="w-full text-white font-semibold py-3 flex items-center justify-between"
+              style={{
+                backgroundColor: storeData?.primaryColor || '#FF6B35',
+                borderColor: storeData?.primaryColor || '#FF6B35'
+              }}
+              onMouseEnter={(e) => {
+                if (storeData?.primaryColor) {
+                  e.currentTarget.style.backgroundColor = `${storeData.primaryColor}CC`;
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (storeData?.primaryColor) {
+                  e.currentTarget.style.backgroundColor = storeData.primaryColor;
+                }
+              }}
             >
               <span>Adicionar ao carrinho</span>
               <span className="font-bold">
