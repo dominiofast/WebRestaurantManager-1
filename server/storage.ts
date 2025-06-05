@@ -1053,11 +1053,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateAiAgent(storeId: number, agent: any): Promise<any> {
-    // Remove updatedAt from agent data and add it separately
-    const { updatedAt, ...agentData } = agent;
+    // Remove all problematic fields and only keep the data we want to update
+    const { id, createdAt, updatedAt, storeId: _, ...cleanAgentData } = agent;
     const [updated] = await db
       .update(aiAgents)
-      .set({ ...agentData, updatedAt: new Date() })
+      .set({ ...cleanAgentData, updatedAt: new Date() })
       .where(eq(aiAgents.storeId, storeId))
       .returning();
     return updated;

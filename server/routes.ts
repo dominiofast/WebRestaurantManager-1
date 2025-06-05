@@ -2742,6 +2742,11 @@ Responda de forma natural e humana. Se for sobre cardápio, horários, delivery 
 
       const agentData = req.body;
       
+      // Remove any date fields that might cause issues
+      delete agentData.createdAt;
+      delete agentData.updatedAt;
+      delete agentData.id;
+      
       // Convert string arrays from form to actual arrays
       if (typeof agentData.blockedTopics === 'string') {
         agentData.blockedTopics = agentData.blockedTopics.split(',').map((item: string) => item.trim()).filter((item: string) => item);
