@@ -2691,7 +2691,7 @@ Responda de forma natural e humana. Se for sobre cardápio, horários, delivery 
   // AI Agent configuration routes
   app.get('/api/ai-agent', isAuthenticated, async (req: any, res) => {
     try {
-      const store = await storage.getStoreByManagerId(req.session.userId);
+      const store = await storage.getStoreByManagerId(req.user.id);
       if (!store) {
         return res.status(404).json({ message: "Loja não encontrada" });
       }
@@ -2735,7 +2735,7 @@ Responda de forma natural e humana. Se for sobre cardápio, horários, delivery 
 
   app.put('/api/ai-agent', isAuthenticated, async (req: any, res) => {
     try {
-      const store = await storage.getStoreByManagerId(req.session.userId);
+      const store = await storage.getStoreByManagerId(req.user.id);
       if (!store) {
         return res.status(404).json({ message: "Loja não encontrada" });
       }
@@ -2767,7 +2767,7 @@ Responda de forma natural e humana. Se for sobre cardápio, horários, delivery 
 
   app.delete('/api/ai-agent', isAuthenticated, async (req: any, res) => {
     try {
-      const store = await storage.getStoreByManagerId(req.session.userId);
+      const store = await storage.getStoreByManagerId(req.user.id);
       if (!store) {
         return res.status(404).json({ message: "Loja não encontrada" });
       }
