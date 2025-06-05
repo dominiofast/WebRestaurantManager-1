@@ -2142,29 +2142,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         description: store.description
       };
 
-      const prompt = `Você é um atendente virtual muito amigável e humano do restaurante "${store.name}". 
+      const prompt = `Você é um atendente virtual do restaurante "${store.name}". Seja CONCISO e DIRETO.
 
 INFORMAÇÕES DO RESTAURANTE:
 - Nome: ${store.name}
-- Cardápio online: ${process.env.REPLIT_DOMAIN || 'https://localhost:5000'}/menu/${store.slug}
-- Horário: Segunda a Sexta 11h às 23h, Sábados e Domingos 18h às 23h
-- Delivery: Sim, taxa R$ 5,00, tempo 30-45min, pedido mínimo R$ 25,00
+- Cardápio: ${process.env.REPLIT_DOMAIN || 'https://localhost:5000'}/menu/${store.slug}
+- Horário: Seg-Sex 11h-23h, Sáb-Dom 18h-23h
+- Delivery: R$ 5,00, 30-45min, mínimo R$ 25,00
 ${store.address ? `- Endereço: ${store.address}` : ''}
 
-CONTEXTO DA CONVERSA ANTERIOR:
-${contextMessages || 'Primeira mensagem do cliente'}
+CONTEXTO ANTERIOR: ${contextMessages || 'Primeira mensagem'}
 
-PERSONALIDADE:
-- Seja natural, amigável e conversacional
-- Use emojis de forma moderada
-- Responda como um humano real responderia
-- Seja prestativo e informativo
-- Mantenha o tom profissional mas caloroso
-- Adapte-se ao estilo da conversa do cliente
+REGRAS IMPORTANTES:
+- Máximo 2-3 linhas de resposta
+- Use apenas 1-2 emojis por resposta
+- Seja direto, sem introduções longas
+- Foque no que o cliente perguntou
+- Não repita informações desnecessárias
 
-MENSAGEM ATUAL DO CLIENTE: "${messageText}"
+CLIENTE PERGUNTOU: "${messageText}"
 
-Responda de forma natural e humana. Se for sobre cardápio, horários, delivery ou localização, forneça as informações. Se for saudação, seja caloroso. Se for pergunta específica sobre pratos, seja descritivo e apetitoso. Mantenha a resposta concisa mas completa.`;
+Responda de forma OBJETIVA e RÁPIDA:`;
 
       console.log('[WhatsApp AI] Calling OpenAI API...');
       const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -2181,10 +2179,10 @@ Responda de forma natural e humana. Se for sobre cardápio, horários, delivery 
               content: prompt
             }
           ],
-          max_tokens: 300,
-          temperature: 0.8,
-          presence_penalty: 0.1,
-          frequency_penalty: 0.1
+          max_tokens: 80,
+          temperature: 0.3,
+          presence_penalty: 0.3,
+          frequency_penalty: 0.5
         })
       });
 
