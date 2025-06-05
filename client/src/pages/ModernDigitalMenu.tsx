@@ -324,10 +324,9 @@ export default function ModernDigitalMenu() {
           </div>)
         ) : (
           <>
-            {/* Navegação de categorias - Pills menores */}
-            <div className="sticky top-0 bg-white/95 backdrop-blur-sm z-30 py-3 border-b">
-              <h3 className="text-sm font-medium text-gray-500 mb-2 px-1">Categorias</h3>
-              <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+            {/* Navegação de categorias - Pills refinadas */}
+            <div className="sticky top-0 bg-white/95 backdrop-blur-sm z-30 py-4 border-b">
+              <div className="flex gap-3 overflow-x-auto scrollbar-hide px-1">
                 {storeData.sections
                   .sort((a, b) => a.displayOrder - b.displayOrder)
                   .map((section) => (
@@ -340,13 +339,13 @@ export default function ModernDigitalMenu() {
                           block: 'start'
                         });
                       }}
-                      className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all duration-200 border ${
+                      className={`flex-shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 shadow-sm hover:shadow-md ${
                         activeSection === section.id 
-                          ? 'text-white' 
-                          : 'bg-transparent'
+                          ? 'text-white transform scale-105' 
+                          : 'bg-white border-2 hover:scale-102'
                       }`}
                       style={{
-                        backgroundColor: activeSection === section.id ? (storeData?.primaryColor || '#FF6B35') : 'transparent',
+                        backgroundColor: activeSection === section.id ? (storeData?.primaryColor || '#FF6B35') : 'white',
                         borderColor: storeData?.primaryColor || '#FF6B35',
                         color: activeSection === section.id ? 'white' : (storeData?.primaryColor || '#FF6B35')
                       }}
@@ -363,12 +362,14 @@ export default function ModernDigitalMenu() {
                 .sort((a, b) => a.displayOrder - b.displayOrder)
                 .map((section) => (
                   <div key={section.id} id={`section-${section.id}`} className="bg-white rounded-lg border border-gray-100 overflow-hidden">
-                    {/* Header da categoria - integrado */}
-                    <div className="menu-primary-bg text-white px-4 py-3">
+                    {/* Header da categoria - mais clean sem descrição */}
+                    <div 
+                      className="text-white px-4 py-3"
+                      style={{
+                        backgroundColor: storeData?.primaryColor || '#FF6B35'
+                      }}
+                    >
                       <h2 className="text-xl font-bold mb-0">{section.name}</h2>
-                      {section.description && (
-                        <p className="text-white/80 text-sm mt-1">{section.description}</p>
-                      )}
                     </div>
                     
                     {/* Grid de produtos - dentro da categoria */}
