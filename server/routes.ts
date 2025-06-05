@@ -514,6 +514,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Public route for store data (used by Facebook Pixel config)
+  app.get('/api/stores/:id', async (req: any, res) => {
+    try {
+      const storeId = parseInt(req.params.id);
+      const store = await storage.getStoreById(storeId);
+      
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      res.json(store);
+    } catch (error) {
+      console.error('Error fetching store:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
   app.get('/api/admin/stores/:id', async (req: any, res) => {
     try {
       const storeId = parseInt(req.params.id);
