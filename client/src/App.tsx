@@ -106,6 +106,7 @@ function SuperAdminApp({ user }: { user: any }) {
             <Route path="/store/:id/dashboard" component={StoreDashboard} />
             <Route path="/analytics" component={Analytics} />
             <Route path="/customers" component={Customers} />
+            <Route path="/config/store" component={StoreConfig} />
             <Route path="/config/integrations" component={IntegrationsNew} />
             <Route path="/config/ai-agent" component={AIAgent} />
             <Route path="/profile" component={Profile} />
@@ -136,6 +137,7 @@ function OwnerApp({ user }: { user: any }) {
             <Route path="/store/:id/dashboard" component={StoreDashboard} />
             <Route path="/analytics" component={Analytics} />
             <Route path="/customers" component={Customers} />
+            <Route path="/config/store" component={StoreConfig} />
             <Route path="/config/integrations" component={IntegrationsNew} />
             <Route path="/config/ai-agent" component={AIAgent} />
             <Route path="/profile" component={Profile} />
