@@ -425,7 +425,7 @@ export default function ModernDigitalMenu() {
                     </div>
                     
                     {/* Lista de produtos - layout compacto */}
-                    <div className="divide-y divide-gray-100">
+                    <div className="divide-y divide-gray-300">
                       {section.products
                         .sort((a, b) => a.displayOrder - b.displayOrder)
                         .map((product) => (
@@ -583,20 +583,10 @@ function ModernProductCard({ product, onAddToCart, storeData }: { product: any; 
         <div className="flex items-center gap-3">
           {/* Conteúdo do produto - expandido */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between mb-1">
-              <h3 className="font-semibold text-base text-gray-900 leading-tight pr-2">
+            <div className="mb-1">
+              <h3 className="font-semibold text-base text-gray-900 leading-tight">
                 {product.name}
               </h3>
-              {product.isPromotion && (
-                <div 
-                  className="text-white text-xs px-2 py-0.5 rounded font-bold shadow-sm flex-shrink-0"
-                  style={{
-                    backgroundColor: storeData?.primaryColor || '#FF6B35'
-                  }}
-                >
-                  50% OFF
-                </div>
-              )}
             </div>
             
             {/* Descrição mais visível */}
@@ -627,8 +617,8 @@ function ModernProductCard({ product, onAddToCart, storeData }: { product: any; 
             <div 
               className="bg-gray-50 relative overflow-hidden rounded-xl"
               style={{ 
-                width: '80px', 
-                height: '80px'
+                width: '92px', 
+                height: '92px'
               }}
             >
               {product.imageUrl ? (
@@ -639,9 +629,24 @@ function ModernProductCard({ product, onAddToCart, storeData }: { product: any; 
                 />
               ) : (
                 <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                  <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
+                </div>
+              )}
+              
+              {/* Badge de promoção sobre a imagem */}
+              {product.isPromotion && (
+                <div className="absolute top-1 left-1">
+                  <div 
+                    className="text-white text-xs px-2 py-0.5 rounded-md font-bold shadow-lg border border-white/20"
+                    style={{
+                      backgroundColor: storeData?.primaryColor || '#FF6B35',
+                      background: `linear-gradient(135deg, ${storeData?.primaryColor || '#FF6B35'}, ${storeData?.primaryColor || '#FF6B35'}dd)`
+                    }}
+                  >
+                    50% OFF
+                  </div>
                 </div>
               )}
             </div>
