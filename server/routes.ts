@@ -1990,6 +1990,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Function to process WhatsApp messages with AI
+  // Function to detect customer name in message
+  function detectCustomerName(messageText: string): string | null {
+    const text = messageText.toLowerCase().trim();
+    
+    // Common patterns for name introduction in Portuguese
+    const namePatterns = [
+      /(?:meu nome é|me chamo|sou o|sou a|eu sou)\s+([a-záàâãéêíóôõúç]+)/i,
+      /(?:é o|é a)\s+([a-záàâãéêíóôõúç]+)(?:\s+aqui|$)/i,
+      /^([a-záàâãéêíóôõúç]+)(?:\s+aqui|$)/i,
+      /(?:nome:?\s*)([a-záàâãéêíóôõúç]+)/i
+    ];
+    
+    for (const pattern of namePatterns) {
+      const match = text.match(pattern);
+      if (match && match[1]) {
+        const name = match[1].charAt(0).toUpperCase() + match[1].slice(1).toLowerCase();
+        // Filter out common words that aren't names
+        const commonWords = ['oi', 'olá', 'bom', 'boa', 'dia', 'tarde', 'noite', 'tudo', 'bem', 'aqui', 'pizza', 'delivery'];
+        if (!commonWords.includes(name.toLowerCase()) && name.length > 2) {
+          return name;
+        }
+      }
+    }
+    
+    return null;
+  }
+
   async function processWhatsAppMessage(storeId: number, message: any, instance: any) {
     try {
       console.log('[WhatsApp AI] Processing message for store:', storeId);
@@ -2062,6 +2089,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (error) {
         console.error('[WhatsApp AI] Error generating AI response:', error);
         responseText = generateFallbackResponse(messageText, store);
+      }
+
+      // Check if customer provided their name and update if needed
+      if (customer && (!customer.name || customer.name === 'Cliente WhatsApp')) {
+        const nameDetected = detectCustomerName(messageText);
+        if (nameDetected) {
+          try {
+            await storage.updateCustomer(customer.id, { name: nameDetected }, storeId);
+            console.log('[WhatsApp AI] Updated customer name to:', nameDetected);
+          } catch (error) {
+            console.error('[WhatsApp AI] Error updating customer name:', error);
+          }
+        }
       }
 
       console.log('[WhatsApp AI] Generated response:', responseText);
@@ -2142,6 +2182,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         description: store.description
       };
 
+      // Build customer context
+      const customerName = customer?.name && customer.name !== 'Cliente WhatsApp' ? customer.name : null;
+      const isFirstInteraction = !conversationHistory || conversationHistory.length <= 1;
+      const customerContext = customerName ? `Cliente: ${customerName}` : 'Cliente novo/anônimo';
+
       const prompt = `Você é um atendente virtual do restaurante "${store.name}". Seja CONCISO e DIRETO.
 
 INFORMAÇÕES DO RESTAURANTE:
@@ -2151,11 +2196,14 @@ INFORMAÇÕES DO RESTAURANTE:
 - Delivery: R$ 5,00, 30-45min, mínimo R$ 25,00
 ${store.address ? `- Endereço: ${store.address}` : ''}
 
-CONTEXTO ANTERIOR: ${contextMessages || 'Primeira mensagem'}
+CONTEXTO DO CLIENTE: ${customerContext}
+HISTÓRICO DA CONVERSA: ${contextMessages || 'Primeira mensagem'}
 
 REGRAS IMPORTANTES:
 - Máximo 2-3 linhas de resposta
 - Use apenas 1-2 emojis por resposta
+- ${customerName ? `SEMPRE use o nome "${customerName}" para se dirigir ao cliente` : 'Se o cliente disser o nome, registre e use nas próximas respostas'}
+- ${isFirstInteraction && !customerName ? 'Na primeira interação, pergunte educadamente o nome do cliente' : ''}
 - Seja direto, sem introduções longas
 - Foque no que o cliente perguntou
 - Não repita informações desnecessárias
