@@ -194,6 +194,39 @@ export default function ManagerStoreDashboard() {
     enabled: !!store?.id
   });
 
+  // Update store settings mutation
+  const updateStoreMutation = useMutation({
+    mutationFn: async (storeData: any) => {
+      const response = await fetch(`/api/stores/${store?.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(storeData),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erro ao atualizar loja');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/manager/store'] });
+      toast({
+        title: "Configurações salvas",
+        description: "As configurações da loja foram atualizadas com sucesso.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erro",
+        description: "Erro ao salvar configurações da loja.",
+        variant: "destructive"
+      });
+    }
+  });
+
   // Load store data into form when store data is available
   useEffect(() => {
     if (store) {
@@ -658,7 +691,40 @@ export default function ManagerStoreDashboard() {
                   Configure as informações básicas da sua loja
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-6">
+                {/* Logo e Banner da Loja */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-orange-600">Logo da Loja</CardTitle>
+                      <CardDescription>Configure o logo que aparecerá no cardápio digital</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <ImageUpload
+                        currentImage={storeSettings.logoUrl}
+                        onImageChange={(logoUrl) => setStoreSettings(prev => ({...prev, logoUrl}))}
+                        className="h-32"
+                      />
+                      <p className="text-xs text-gray-500 mt-2">Recomendado: 200x200px, formato quadrado</p>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-blue-600">Banner da Loja</CardTitle>
+                      <CardDescription>Configure o banner que aparecerá no cardápio digital</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <ImageUpload
+                        currentImage={storeSettings.bannerUrl}
+                        onImageChange={(bannerUrl) => setStoreSettings(prev => ({...prev, bannerUrl}))}
+                        className="h-24"
+                      />
+                      <p className="text-xs text-gray-500 mt-2">Recomendado: 1200x400px, formato retangular</p>
+                    </CardContent>
+                  </Card>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="store-name">Nome da Loja</Label>
@@ -701,6 +767,17 @@ export default function ManagerStoreDashboard() {
                     value={storeSettings.address}
                     onChange={(e) => setStoreSettings(prev => ({ ...prev, address: e.target.value }))}
                   />
+                </div>
+
+                <div className="flex justify-end pt-4 border-t">
+                  <Button 
+                    onClick={() => updateStoreMutation.mutate(storeSettings)}
+                    disabled={updateStoreMutation.isPending}
+                    className="bg-orange-600 hover:bg-orange-700"
+                  >
+                    <Settings className="h-4 w-4 mr-2" />
+                    {updateStoreMutation.isPending ? "Salvando..." : "Salvar Configurações"}
+                  </Button>
                 </div>
               </CardContent>
             </Card>

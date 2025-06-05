@@ -1052,6 +1052,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update store information (managers can update their store)
+  app.put('/api/stores/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const user = req.user as any;
+      const storeId = parseInt(req.params.id);
+      
+      // Verify the manager owns this store
+      const store = await storage.getStoreByManagerId(user.id);
+      if (!store || store.id !== storeId) {
+        return res.status(403).json({ message: 'Acesso negado' });
+      }
+      
+      const { logoUrl, bannerUrl, name, address, phone, email, ...otherData } = req.body;
+      
+      const updateData: any = {};
+      if (name !== undefined) updateData.name = name;
+      if (address !== undefined) updateData.address = address;
+      if (phone !== undefined) updateData.phone = phone;
+      if (email !== undefined) updateData.email = email;
+      if (logoUrl !== undefined) updateData.logoUrl = logoUrl;
+      if (bannerUrl !== undefined) updateData.bannerUrl = bannerUrl;
+      
+      const updatedStore = await storage.updateStore(storeId, updateData);
+      res.json(updatedStore);
+    } catch (error) {
+      console.error('Error updating store:', error);
+      res.status(500).json({ message: 'Erro interno do servidor' });
+    }
+  });
+
   app.put('/api/admin/stores/:id', async (req: any, res) => {
     try {
       const storeId = parseInt(req.params.id);
