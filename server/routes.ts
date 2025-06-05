@@ -2195,8 +2195,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const isFirstInteraction = !conversationHistory || conversationHistory.length <= 1;
       const customerContext = customerName ? `Cliente: ${customerName}` : 'Cliente novo/anônimo';
 
-      // Always use custom domain for customer-facing links
-      const menuLink = `https://dominiomenu.com/menu/${store.slug}`;
+      // Use subdomain that works immediately with simple DNS setup
+      const menuLink = `https://cardapio.dominiomenu.com/menu/${store.slug}`;
       
       const prompt = `Você é um atendente virtual do restaurante "${store.name}". Seja CONCISO e DIRETO.
 
