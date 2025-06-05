@@ -316,6 +316,7 @@ export default function ModernDigitalMenu() {
           <>
             {/* Navegação de categorias - Pills menores */}
             <div className="sticky top-0 bg-white/95 backdrop-blur-sm z-30 py-3 border-b">
+              <h3 className="text-sm font-medium text-gray-500 mb-2 px-1">Categorias</h3>
               <div className="flex gap-2 overflow-x-auto scrollbar-hide">
                 {storeData.sections
                   .sort((a, b) => a.displayOrder - b.displayOrder)
@@ -341,31 +342,33 @@ export default function ModernDigitalMenu() {
               </div>
             </div>
 
-            {/* Produtos por seção - Espaçamento reduzido */}
-            <div className="py-4 space-y-8">
+            {/* Produtos por categoria - Layout integrado */}
+            <div className="py-2 space-y-4">
               {storeData.sections
                 .sort((a, b) => a.displayOrder - b.displayOrder)
                 .map((section) => (
-                  <div key={section.id} id={`section-${section.id}`}>
-                    {/* Header da seção - mais compacto */}
-                    <div className="text-left mb-4">
-                      <h2 className="text-2xl font-bold text-gray-900 mb-1">{section.name}</h2>
+                  <div key={section.id} id={`section-${section.id}`} className="bg-white rounded-lg border border-gray-100 overflow-hidden">
+                    {/* Header da categoria - integrado */}
+                    <div className="menu-primary-bg text-white px-4 py-3">
+                      <h2 className="text-xl font-bold mb-0">{section.name}</h2>
                       {section.description && (
-                        <p className="text-gray-500 text-sm leading-relaxed">{section.description}</p>
+                        <p className="text-white/80 text-sm mt-1">{section.description}</p>
                       )}
                     </div>
                     
-                    {/* Grid responsivo de produtos - gap reduzido */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                      {section.products
-                        .sort((a, b) => a.displayOrder - b.displayOrder)
-                        .map((product) => (
-                          <ModernProductCard 
-                            key={product.id} 
-                            product={product} 
-                            onAddToCart={addToCart}
-                          />
-                        ))}
+                    {/* Grid de produtos - dentro da categoria */}
+                    <div className="p-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {section.products
+                          .sort((a, b) => a.displayOrder - b.displayOrder)
+                          .map((product) => (
+                            <ModernProductCard 
+                              key={product.id} 
+                              product={product} 
+                              onAddToCart={addToCart}
+                            />
+                          ))}
+                      </div>
                     </div>
                   </div>
                 ))}
