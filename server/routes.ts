@@ -1351,8 +1351,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Instância WhatsApp não encontrada" });
       }
 
-      const baseUrl = process.env.REPLIT_DOMAIN || `${req.protocol}://${req.get('host')}`;
-      const webhookUrl = `${baseUrl}/api/webhook/whatsapp/${storeId}`;
+      const webhookUrl = `${getBaseUrl(req)}/api/webhook/whatsapp/${storeId}`;
       
       // Try multiple webhook endpoints for Mega API
       const endpoints = [
