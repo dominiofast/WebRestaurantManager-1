@@ -476,7 +476,23 @@ export default function ModernDigitalMenu() {
                     <span>Total:</span>
                     <span>R$ {cartTotal.toFixed(2).replace('.', ',')}</span>
                   </div>
-                  <Button className="w-full mt-4 bg-orange-600 hover:bg-orange-700">
+                  <Button 
+                    className="w-full mt-4 text-white font-semibold"
+                    style={{
+                      backgroundColor: storeData?.primaryColor || '#FF6B35',
+                      borderColor: storeData?.primaryColor || '#FF6B35'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (storeData?.primaryColor) {
+                        e.currentTarget.style.backgroundColor = `${storeData.primaryColor}CC`;
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (storeData?.primaryColor) {
+                        e.currentTarget.style.backgroundColor = storeData.primaryColor;
+                      }
+                    }}
+                  >
                     Finalizar Pedido
                   </Button>
                 </div>

@@ -2222,6 +2222,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Use custom domain for professional presentation
       const menuLink = `https://dominiomenu.com/menu/${store.slug}`;
       
+      // Check if message is requesting menu/cardapio or is first interaction
+      const isRequestingMenu = messageText.toLowerCase().includes('cardápio') || 
+                               messageText.toLowerCase().includes('cardapio') || 
+                               messageText.toLowerCase().includes('menu') ||
+                               messageText.toLowerCase().includes('opções') ||
+                               messageText.toLowerCase().includes('opcoes') ||
+                               messageText.toLowerCase().includes('pratos');
+      
+      const shouldIncludeLink = isFirstInteraction || isRequestingMenu;
+      
       const prompt = `Você é um atendente virtual do restaurante "${store.name}". Seja CONCISO e DIRETO.
 
 INFORMAÇÕES DO RESTAURANTE:
@@ -2231,8 +2241,6 @@ INFORMAÇÕES DO RESTAURANTE:
 - Delivery: R$ 5,00, 30-45min, mínimo R$ 25,00
 ${store.address ? `- Endereço: ${store.address}` : ''}
 
-LINK DO CARDÁPIO OBRIGATÓRIO: ${menuLink}
-
 CONTEXTO DO CLIENTE: ${customerContext}
 HISTÓRICO DA CONVERSA: ${contextMessages || 'Primeira mensagem'}
 
@@ -2241,14 +2249,15 @@ REGRAS IMPORTANTES:
 - Use apenas 1-2 emojis por resposta
 - ${customerName ? `SEMPRE use o nome "${customerName}" para se dirigir ao cliente` : 'Se o cliente disser o nome, registre e use nas próximas respostas'}
 - ${isFirstInteraction && !customerName ? 'Na primeira interação, pergunte educadamente o nome do cliente' : ''}
-- SEMPRE use EXATAMENTE este link do cardápio: ${menuLink}
+- ${shouldIncludeLink ? `INCLUA o link do cardápio: ${menuLink}` : 'NÃO inclua o link do cardápio a menos que seja especificamente solicitado'}
 - Seja direto, sem introduções longas
 - Foque no que o cliente perguntou
+- Responda apenas o que foi perguntado
 - Não repita informações desnecessárias
 
 CLIENTE PERGUNTOU: "${messageText}"
 
-Responda de forma OBJETIVA e RÁPIDA usando SEMPRE o link: ${menuLink}`;
+Responda de forma OBJETIVA e RÁPIDA ${shouldIncludeLink ? 'incluindo o link do cardápio' : 'sem incluir links desnecessários'}.`;
 
       console.log('[WhatsApp AI] Calling OpenAI API...');
       const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -2311,7 +2320,7 @@ Responda de forma OBJETIVA e RÁPIDA usando SEMPRE o link: ${menuLink}`;
     }
     
     if (message.includes('delivery') || message.includes('entrega') || message.includes('entregar')) {
-      return `🚀 Fazemos delivery sim!\n\nTaxa de entrega: R$ 5,00\nTempo médio: 30-45 minutos\nPedido mínimo: R$ 25,00\n\nFaça seu pedido pelo nosso cardápio digital!`;
+      return `🚀 Fazemos delivery sim!\n\nTaxa de entrega: R$ 5,00\nTempo médio: 30-45 minutos\nPedido mínimo: R$ 25,00\n\nDigite "cardápio" para ver nossas opções!`;
     }
     
     if (message.includes('localização') || message.includes('endereço') || message.includes('endereco') || message.includes('onde')) {
@@ -2323,31 +2332,31 @@ Responda de forma OBJETIVA e RÁPIDA usando SEMPRE o link: ${menuLink}`;
     }
 
     if (message.includes('oi') || message.includes('olá') || message.includes('ola') || message.includes('bom dia') || message.includes('boa tarde') || message.includes('boa noite')) {
-      return `Olá! Seja muito bem-vindo(a) ao ${store.name}! 😊\n\nComo posso ajudá-lo hoje?\n\n🍽️ Cardápio - veja nossas delícias\n⏰ Horário - nosso funcionamento\n🚀 Delivery - informações de entrega`;
+      return `Olá! Seja muito bem-vindo(a) ao ${store.name}! 😊\n\nComo posso ajudá-lo hoje?\n\n🍽️ "cardápio" - veja nossas delícias\n⏰ "horário" - nosso funcionamento\n🚀 "delivery" - informações de entrega`;
     }
 
     if (message.includes('áudio')) {
-      return `🎵 Recebi seu áudio!\n\nPara atendê-lo melhor, por favor envie sua mensagem em texto ou acesse nosso cardápio digital:\n${getBaseUrl()}/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas opções!`;
+      return `🎵 Recebi seu áudio!\n\nPara atendê-lo melhor, por favor envie sua mensagem em texto.\n\nDigite "cardápio" para ver nossas opções!`;
     }
     
     if (message.includes('imagem')) {
-      return `📷 Recebi sua imagem!\n\nComo posso ajudá-lo? Acesse nosso cardápio digital:\n${getBaseUrl()}/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas deliciosas opções!`;
+      return `📷 Recebi sua imagem!\n\nComo posso ajudá-lo?\n\nDigite "cardápio" para ver nossas deliciosas opções!`;
     }
     
     if (message.includes('vídeo')) {
-      return `🎥 Recebi seu vídeo!\n\nPara fazer seu pedido, acesse nosso cardápio digital:\n${getBaseUrl()}/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas opções!`;
+      return `🎥 Recebi seu vídeo!\n\nDigite "cardápio" para ver nossas opções!`;
     }
     
     if (message.includes('documento')) {
-      return `📄 Recebi seu documento!\n\nPara fazer seu pedido, acesse nosso cardápio digital:\n${getBaseUrl()}/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas opções!`;
+      return `📄 Recebi seu documento!\n\nDigite "cardápio" para ver nossas opções!`;
     }
     
     if (message.includes('figurinha')) {
-      return `😄 Que figurinha legal!\n\nComo posso ajudá-lo hoje? Acesse nosso cardápio digital:\n${getBaseUrl()}/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas deliciosas opções!`;
+      return `😄 Que figurinha legal!\n\nComo posso ajudá-lo hoje?\n\nDigite "cardápio" para ver nossas deliciosas opções!`;
     }
     
     // Default response for other messages
-    return `Obrigado pela sua mensagem! 😊\n\nPara fazer seu pedido, acesse nosso cardápio digital:\n${getBaseUrl()}/menu/${store.slug}\n\nOu digite:\n• "cardápio" - ver opções\n• "horário" - horário de funcionamento\n• "delivery" - informações de entrega`;
+    return `Obrigado pela sua mensagem! 😊\n\nComo posso ajudá-lo?\n\nDigite:\n• "cardápio" - ver opções\n• "horário" - horário de funcionamento\n• "delivery" - informações de entrega`;
   }
 
   // AI Agent configuration routes
