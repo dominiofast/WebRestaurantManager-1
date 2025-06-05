@@ -25,7 +25,8 @@ import {
   Store
 } from "lucide-react";
 import ProductImage from "@/components/ProductImage";
-import { FacebookPixel, trackAddToCart, trackViewContent } from "@/components/FacebookPixel";
+import { AutoFacebookPixel } from "@/components/AutoFacebookPixel";
+import { trackAddToCart, trackViewContent } from "@/components/FacebookPixelV2";
 
 interface CartItem {
   productId: number;
@@ -781,7 +782,7 @@ function ModernProductCard({ product, onAddToCart }: { product: any; onAddToCart
       </Dialog>
 
       {/* Facebook Pixel Integration */}
-      {storeData?.slug && <FacebookPixel storeSlug={storeData.slug} />}
+      {storeData?.id && <AutoFacebookPixel storeId={storeData.id} />}
     </>
   );
 }
