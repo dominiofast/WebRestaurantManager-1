@@ -2104,12 +2104,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      // Ensure consistent domain usage in response
-      const currentDomain = getBaseUrl();
-      const correctMenuLink = `${currentDomain}/menu/${store.slug}`;
+      // Force use of custom domain in all responses
+      const customDomainLink = `https://dominiomenu.com/menu/${store.slug}`;
       
-      // Replace any incorrect domain references with the current working domain
-      responseText = responseText.replace(/https:\/\/dominiomenu\.com\/menu\/[^/\s]+/g, correctMenuLink);
+      // Replace any Replit domain references with the custom domain
+      responseText = responseText.replace(/https:\/\/[^/\s]*\.replit\.dev\/menu\/[^/\s]+/g, customDomainLink);
+      responseText = responseText.replace(/https:\/\/[^/\s]*\.kirk\.replit\.dev\/menu\/[^/\s]+/g, customDomainLink);
 
       console.log('[WhatsApp AI] Generated response:', responseText);
 
@@ -2194,8 +2194,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const isFirstInteraction = !conversationHistory || conversationHistory.length <= 1;
       const customerContext = customerName ? `Cliente: ${customerName}` : 'Cliente novo/anônimo';
 
-      const currentDomain = getBaseUrl();
-      const menuLink = `${currentDomain}/menu/${store.slug}`;
+      const menuLink = `https://dominiomenu.com/menu/${store.slug}`;
       
       const prompt = `Você é um atendente virtual do restaurante "${store.name}". Seja CONCISO e DIRETO.
 
