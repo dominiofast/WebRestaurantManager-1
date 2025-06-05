@@ -218,7 +218,7 @@ export default function ModernDigitalMenu() {
     : [];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className={`min-h-screen bg-white menu-font ${storeData?.darkMode ? 'dark-menu' : ''}`}>
       {/* Hero Banner - Apenas o banner sem sobreposições */}
       <div className="relative h-48 overflow-hidden">
         {/* Banner de fundo ou gradiente */}
@@ -329,7 +329,11 @@ export default function ModernDigitalMenu() {
                           block: 'start'
                         });
                       }}
-                      className="flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all duration-200 border border-orange-600 text-[#000000] bg-[#ea580c00]"
+                      className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all duration-200 border menu-primary-border ${
+                        activeSection === section.id 
+                          ? 'menu-primary-bg text-white' 
+                          : 'menu-primary-text bg-transparent'
+                      }`}
                     >
                       {section.name}
                     </button>

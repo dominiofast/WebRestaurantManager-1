@@ -228,3 +228,73 @@
     animation: pulse-glow 2s ease-in-out infinite;
   }
 }
+
+/* Menu Theme Variables */
+:root {
+  --menu-primary: #FF6B35;
+  --menu-secondary: #F7931E;
+  --menu-font: 'Inter', sans-serif;
+}
+
+/* Dark Menu Theme */
+.dark-menu {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+}
+
+.dark-menu .bg-white {
+  background-color: #2a2a2a !important;
+}
+
+.dark-menu .text-gray-900 {
+  color: #ffffff !important;
+}
+
+.dark-menu .text-gray-800 {
+  color: #e5e5e5 !important;
+}
+
+.dark-menu .text-gray-600 {
+  color: #a1a1aa !important;
+}
+
+.dark-menu .text-gray-500 {
+  color: #71717a !important;
+}
+
+.dark-menu .border-gray-200 {
+  border-color: #404040 !important;
+}
+
+.dark-menu .bg-gray-50 {
+  background-color: #262626 !important;
+}
+
+.dark-menu .bg-gray-100 {
+  background-color: #333333 !important;
+}
+
+/* Menu Custom Colors */
+.menu-primary-bg {
+  background-color: var(--menu-primary) !important;
+}
+
+.menu-primary-text {
+  color: var(--menu-primary) !important;
+}
+
+.menu-secondary-bg {
+  background-color: var(--menu-secondary) !important;
+}
+
+.menu-secondary-text {
+  color: var(--menu-secondary) !important;
+}
+
+.menu-primary-border {
+  border-color: var(--menu-primary) !important;
+}
+
+.menu-font {
+  font-family: var(--menu-font) !important;
+}
