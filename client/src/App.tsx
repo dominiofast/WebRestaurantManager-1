@@ -19,9 +19,7 @@ import ModernDigitalMenu from "@/pages/ModernDigitalMenu";
 import MenuManager from "@/pages/MenuManager";
 import MenuIndex from "@/pages/MenuIndex";
 import PDV from "@/pages/PDV";
-import AIAgent from "@/pages/AIAgent";
-import AIAgentNew from "@/pages/AIAgentNew";
-import AIAgentSimple from "@/pages/AIAgentSimple";
+
 import SimpleLogin from "@/pages/SimpleLogin";
 import Integrations from "@/pages/Integrations";
 import IntegrationsNew from "@/pages/IntegrationsNew";
@@ -76,7 +74,7 @@ function ManagerApp({ user }: { user: any }) {
             <Route path="/pdv" component={PDV} />
             <Route path="/customers" component={Customers} />
             <Route path="/analytics" component={Analytics} />
-            <Route path="/ai-agent" component={AIAgentSimple} />
+            <Route path="/ai-agent" component={AiAgentConfig} />
             <Route path="/config/profile" component={Profile} />
             <Route path="/config/store" component={StoreConfig} />
             <Route path="/config/ai-agent" component={AiAgentConfig} />
@@ -111,7 +109,7 @@ function SuperAdminApp({ user }: { user: any }) {
             <Route path="/customers" component={Customers} />
             <Route path="/config/store" component={StoreConfig} />
             <Route path="/config/integrations" component={IntegrationsNew} />
-            <Route path="/config/ai-agent" component={AIAgent} />
+            <Route path="/config/ai-agent" component={AiAgentConfig} />
             <Route path="/profile" component={Profile} />
             <Route component={NotFound} />
           </Switch>
@@ -142,7 +140,7 @@ function OwnerApp({ user }: { user: any }) {
             <Route path="/customers" component={Customers} />
             <Route path="/config/store" component={StoreConfig} />
             <Route path="/config/integrations" component={IntegrationsNew} />
-            <Route path="/config/ai-agent" component={AIAgent} />
+            <Route path="/config/ai-agent" component={AiAgentConfig} />
             <Route path="/profile" component={Profile} />
             <Route component={NotFound} />
           </Switch>
