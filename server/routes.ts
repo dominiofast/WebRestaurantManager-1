@@ -3028,6 +3028,155 @@ Responda de forma OBJETIVA e RÁPIDA usando SEMPRE o link: ${menuLink}`;
     }
   });
 
+  // Get Facebook Pixel configuration for a store
+  app.get('/api/stores/:slug/pixel-config', async (req, res) => {
+    try {
+      const slug = req.params.slug;
+      const store = await storage.getStoreBySlug(slug);
+      
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      // Return only public pixel configuration (no sensitive tokens)
+      res.json({
+        facebookPixelId: store.facebookPixelId,
+        pixelEnabled: store.pixelEnabled,
+        facebookTestEventCode: store.facebookTestEventCode
+      });
+    } catch (error) {
+      console.error('Erro ao buscar configuração do pixel:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  // Update Facebook Pixel configuration for a store
+  app.put('/api/stores/:storeId/pixel-config', isAuthenticated, async (req, res) => {
+    try {
+      const storeId = parseInt(req.params.storeId);
+      const store = await storage.getStoreById(storeId);
+      
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      const user = req.user!;
+      if (user.role !== 'super_admin' && 
+          user.role !== 'owner' && 
+          store.managerId !== user.id) {
+        return res.status(403).json({ message: "Acesso negado" });
+      }
+
+      const updateData = {
+        facebookPixelId: req.body.facebookPixelId,
+        facebookAccessToken: req.body.facebookAccessToken,
+        facebookDatasetId: req.body.facebookDatasetId,
+        facebookTestEventCode: req.body.facebookTestEventCode,
+        pixelEnabled: req.body.pixelEnabled,
+        conversionsApiEnabled: req.body.conversionsApiEnabled
+      };
+
+      const updatedStore = await storage.updateStore(storeId, updateData);
+      
+      // Return only non-sensitive data
+      res.json({
+        facebookPixelId: updatedStore.facebookPixelId,
+        pixelEnabled: updatedStore.pixelEnabled,
+        conversionsApiEnabled: updatedStore.conversionsApiEnabled,
+        facebookTestEventCode: updatedStore.facebookTestEventCode
+      });
+    } catch (error) {
+      console.error('Erro ao atualizar configuração do pixel:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  // Track Facebook conversion events
+  app.post('/api/stores/:slug/facebook-conversion', async (req, res) => {
+    try {
+      const slug = req.params.slug;
+      const store = await storage.getStoreBySlug(slug);
+      
+      if (!store || !store.conversionsApiEnabled) {
+        return res.status(404).json({ message: "Conversions API não configurada para esta loja" });
+      }
+
+      if (!store.facebookPixelId || !store.facebookAccessToken) {
+        return res.status(400).json({ message: "Configuração do Facebook incompleta" });
+      }
+
+      const facebookAPI = new FacebookConversionsAPI({
+        pixelId: store.facebookPixelId,
+        accessToken: store.facebookAccessToken,
+        datasetId: store.facebookDatasetId || undefined,
+        testEventCode: store.facebookTestEventCode || undefined
+      });
+
+      const { eventType, eventData } = req.body;
+      const userIp = req.ip || req.connection.remoteAddress || '';
+      const userAgent = req.get('User-Agent') || '';
+      const pageUrl = req.get('Referer') || '';
+
+      let success = false;
+
+      switch (eventType) {
+        case 'PageView':
+          success = await facebookAPI.trackPageView(userIp, userAgent, pageUrl, eventData.email);
+          break;
+        case 'ViewContent':
+          success = await facebookAPI.trackViewContent(
+            userIp, userAgent, pageUrl, 
+            eventData.contentIds, eventData.contentType, eventData.email
+          );
+          break;
+        case 'AddToCart':
+          success = await facebookAPI.trackAddToCart(
+            userIp, userAgent, pageUrl,
+            eventData.productId, eventData.productName, 
+            eventData.value, eventData.currency, eventData.quantity, eventData.email
+          );
+          break;
+        case 'InitiateCheckout':
+          success = await facebookAPI.trackInitiateCheckout(
+            userIp, userAgent, pageUrl,
+            eventData.contentIds, eventData.value, eventData.currency, 
+            eventData.numItems, eventData.email
+          );
+          break;
+        case 'Purchase':
+          success = await facebookAPI.trackPurchase(
+            userIp, userAgent, pageUrl,
+            eventData.orderId, eventData.contentIds, eventData.value, 
+            eventData.currency, eventData.numItems, eventData.email, eventData.phone
+          );
+          break;
+        case 'Lead':
+          success = await facebookAPI.trackLead(
+            userIp, userAgent, pageUrl,
+            eventData.contentName, eventData.email, eventData.phone
+          );
+          break;
+        case 'Search':
+          success = await facebookAPI.trackSearch(
+            userIp, userAgent, pageUrl,
+            eventData.searchString, eventData.email
+          );
+          break;
+        default:
+          return res.status(400).json({ message: "Tipo de evento não suportado" });
+      }
+
+      if (success) {
+        res.json({ success: true, message: "Evento enviado com sucesso" });
+      } else {
+        res.status(500).json({ success: false, message: "Erro ao enviar evento" });
+      }
+    } catch (error) {
+      console.error('Erro ao processar conversão do Facebook:', error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

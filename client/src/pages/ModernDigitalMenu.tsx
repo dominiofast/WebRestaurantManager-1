@@ -25,6 +25,7 @@ import {
   Store
 } from "lucide-react";
 import ProductImage from "@/components/ProductImage";
+import { FacebookPixel, trackAddToCart, trackViewContent } from "@/components/FacebookPixel";
 
 interface CartItem {
   productId: number;

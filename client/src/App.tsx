@@ -28,6 +28,7 @@ import Analytics from "@/pages/Analytics";
 import Profile from "@/pages/Profile";
 import StoreConfig from "@/pages/StoreConfig";
 import AiAgentConfigAdvanced from "@/pages/AiAgentConfigAdvanced";
+import FacebookPixelConfig from "@/pages/FacebookPixelConfig";
 import Sidebar from "@/components/Sidebar";
 import TopBar from "@/components/TopBar";
 import NotFound from "@/pages/not-found";
@@ -79,6 +80,7 @@ function ManagerApp({ user }: { user: any }) {
             <Route path="/config/store" component={StoreConfig} />
             <Route path="/config/ai-agent" component={AiAgentConfigAdvanced} />
             <Route path="/config/integrations" component={IntegrationsNew} />
+            <Route path="/config/facebook-pixel" component={FacebookPixelConfig} />
             <Route component={OrderManagement} />
           </Switch>
         </main>
