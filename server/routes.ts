@@ -2191,7 +2191,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 INFORMAÇÕES DO RESTAURANTE:
 - Nome: ${store.name}
-- Cardápio: https://dominiomenu-app.replit.app/menu/${store.slug}
+- Cardápio: https://dominiomenu.com/menu/${store.slug}
 - Horário: Seg-Sex 11h-23h, Sáb-Dom 18h-23h
 - Delivery: R$ 5,00, 30-45min, mínimo R$ 25,00
 ${store.address ? `- Endereço: ${store.address}` : ''}
@@ -2255,7 +2255,7 @@ Responda de forma OBJETIVA e RÁPIDA:`;
     
     // Check for specific keywords and respond accordingly
     if (message.includes('cardápio') || message.includes('cardapio') || message.includes('menu')) {
-      return `🍽️ Confira nosso delicioso cardápio!\n\nAcesse: https://dominiomenu-app.replit.app/menu/${store.slug}\n\nTemos diversas opções especiais esperando por você! 😋`;
+      return `🍽️ Confira nosso delicioso cardápio!\n\nAcesse: https://dominiomenu.com/menu/${store.slug}\n\nTemos diversas opções especiais esperando por você! 😋`;
     }
     
     if (message.includes('horário') || message.includes('horario') || message.includes('funcionamento') || message.includes('aberto')) {
@@ -2271,7 +2271,7 @@ Responda de forma OBJETIVA e RÁPIDA:`;
     }
     
     if (message.includes('preço') || message.includes('preco') || message.includes('valor') || message.includes('quanto custa')) {
-      return `💰 Nossos preços são super acessíveis!\n\nConfira todas as opções e valores no nosso cardápio:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nTemos opções para todos os bolsos! 😊`;
+      return `💰 Nossos preços são super acessíveis!\n\nConfira todas as opções e valores no nosso cardápio:\nhttps://dominiomenu.com/menu/${store.slug}\n\nTemos opções para todos os bolsos! 😊`;
     }
 
     if (message.includes('oi') || message.includes('olá') || message.includes('ola') || message.includes('bom dia') || message.includes('boa tarde') || message.includes('boa noite')) {
@@ -2279,19 +2279,19 @@ Responda de forma OBJETIVA e RÁPIDA:`;
     }
 
     if (message.includes('áudio')) {
-      return `🎵 Recebi seu áudio!\n\nPara atendê-lo melhor, por favor envie sua mensagem em texto ou acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas opções!`;
+      return `🎵 Recebi seu áudio!\n\nPara atendê-lo melhor, por favor envie sua mensagem em texto ou acesse nosso cardápio digital:\nhttps://dominiomenu.com/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas opções!`;
     }
     
     if (message.includes('imagem')) {
-      return `📷 Recebi sua imagem!\n\nComo posso ajudá-lo? Acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas deliciosas opções!`;
+      return `📷 Recebi sua imagem!\n\nComo posso ajudá-lo? Acesse nosso cardápio digital:\nhttps://dominiomenu.com/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas deliciosas opções!`;
     }
     
     if (message.includes('vídeo')) {
-      return `🎥 Recebi seu vídeo!\n\nPara fazer seu pedido, acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas opções!`;
+      return `🎥 Recebi seu vídeo!\n\nPara fazer seu pedido, acesse nosso cardápio digital:\nhttps://dominiomenu.com/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas opções!`;
     }
     
     if (message.includes('documento')) {
-      return `📄 Recebi seu documento!\n\nPara fazer seu pedido, acesse nosso cardápio digital:\nhttps://dominiomenu-app.replit.app/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas opções!`;
+      return `📄 Recebi seu documento!\n\nPara fazer seu pedido, acesse nosso cardápio digital:\nhttps://dominiomenu.com/menu/${store.slug}\n\nOu digite "cardápio" para ver nossas opções!`;
     }
     
     if (message.includes('figurinha')) {
