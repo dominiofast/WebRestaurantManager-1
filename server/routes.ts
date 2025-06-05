@@ -3055,9 +3055,13 @@ Responda de forma OBJETIVA e RÁPIDA usando SEMPRE o link: ${menuLink}`;
     try {
       const storeId = parseInt(req.params.storeId);
       
+      console.log(`Attempting to update Facebook Pixel config for store ID: ${storeId}`);
+      
       // For now, allow access to store 4 (300 Graus) to enable configuration
       // TODO: Implement proper authentication when needed
       const store = await storage.getStoreById(storeId);
+      console.log(`Store found:`, store ? `${store.name} (ID: ${store.id})` : 'null');
+      
       if (!store) {
         return res.status(404).json({ message: "Loja não encontrada" });
       }
