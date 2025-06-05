@@ -184,6 +184,19 @@ export default function Sidebar() {
                         <span className="font-medium text-sm">Aparência da Loja</span>
                       </div>
                     </Link>
+                    <Link href="/config/ai-agent">
+                      <div
+                        className={cn(
+                          "flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors cursor-pointer",
+                          location === "/config/ai-agent"
+                            ? "bg-coral text-white"
+                            : "text-white/70 hover:bg-white/10 hover:text-white"
+                        )}
+                      >
+                        <Bot className="w-4 h-4" />
+                        <span className="font-medium text-sm">Agente IA</span>
+                      </div>
+                    </Link>
                     <Link href="/config/integrations">
                       <div
                         className={cn(

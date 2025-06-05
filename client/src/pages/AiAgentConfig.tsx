@@ -66,16 +66,7 @@ export default function AiAgentConfig() {
   });
 
   const { data: agentData, isLoading } = useQuery({
-    queryKey: ['/api/ai-agent'],
-    onSuccess: (data) => {
-      if (data) {
-        setConfig({
-          ...data,
-          blockedTopics: data.blockedTopics || [],
-          prohibitedWords: data.prohibitedWords || []
-        });
-      }
-    }
+    queryKey: ['/api/ai-agent']
   });
 
   useEffect(() => {
