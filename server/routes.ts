@@ -17,6 +17,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import express from "express";
+import { FacebookConversionsAPI } from "./facebook-conversions";
 
 // Criar diretório de uploads se não existir
 const uploadsDir = path.join(process.cwd(), 'uploads');

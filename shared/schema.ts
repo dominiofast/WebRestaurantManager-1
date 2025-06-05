@@ -122,6 +122,13 @@ export const stores = pgTable("stores", {
   fontFamily: varchar("font_family").default("Inter"),
   showBanner: boolean("show_banner").default(true),
   showLogo: boolean("show_logo").default(true),
+  // Facebook Pixel and Conversions API
+  facebookPixelId: varchar("facebook_pixel_id"),
+  facebookAccessToken: varchar("facebook_access_token"),
+  facebookDatasetId: varchar("facebook_dataset_id"),
+  facebookTestEventCode: varchar("facebook_test_event_code"),
+  pixelEnabled: boolean("pixel_enabled").default(false),
+  conversionsApiEnabled: boolean("conversions_api_enabled").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
