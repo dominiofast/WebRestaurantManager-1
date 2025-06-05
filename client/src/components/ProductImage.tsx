@@ -52,12 +52,13 @@ export default function ProductImage({
       {showPromoBadge && (
         <div className="absolute -top-1 -right-1 z-10">
           <div 
-            className="text-white text-xs px-2 py-1 rounded-full font-bold"
+            className="text-white text-xs px-2 py-1 rounded-lg font-bold shadow-lg border border-white/20"
             style={{
-              backgroundColor: 'var(--primary-color, #ff0000)'
+              backgroundColor: 'var(--store-primary-color, #FF6B35)',
+              background: `linear-gradient(135deg, var(--store-primary-color, #FF6B35), var(--store-primary-color, #FF6B35)dd)`
             }}
           >
-            30%OFF
+            -30%
           </div>
         </div>
       )}

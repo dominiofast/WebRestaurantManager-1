@@ -224,7 +224,12 @@ export default function ModernDigitalMenu() {
     : [];
 
   return (
-    <div className={`min-h-screen bg-white menu-font pb-24 ${storeData?.darkMode ? 'dark-menu' : ''}`}>
+    <div 
+      className={`min-h-screen bg-white menu-font pb-24 ${storeData?.darkMode ? 'dark-menu' : ''}`}
+      style={{
+        '--store-primary-color': storeData?.primaryColor || '#FF6B35'
+      } as React.CSSProperties}
+    >
       {/* Hero Banner - 40% menor em telas pequenas */}
       <div className="relative h-28 sm:h-48 overflow-hidden">
         {/* Banner de fundo ou gradiente */}
@@ -344,12 +349,13 @@ export default function ModernDigitalMenu() {
                         />
                         {product.isPromotion && (
                           <div 
-                            className="absolute top-1 left-1 text-white text-xs px-1.5 py-0.5 rounded-full font-bold"
+                            className="absolute top-1 left-1 text-white text-xs px-2 py-1 rounded-lg font-bold shadow-md border border-white/20"
                             style={{
-                              backgroundColor: storeData?.primaryColor || '#FF6B35'
+                              backgroundColor: storeData?.primaryColor || '#FF6B35',
+                              background: `linear-gradient(135deg, ${storeData?.primaryColor || '#FF6B35'}, ${storeData?.primaryColor || '#FF6B35'}dd)`
                             }}
                           >
-                            COMBO
+                            -30%
                           </div>
                         )}
                       </div>
@@ -639,12 +645,13 @@ function ModernProductCard({ product, onAddToCart, storeData }: { product: any; 
               {product.isPromotion && (
                 <div className="absolute -top-1 -right-1 z-10">
                   <div 
-                    className="text-white text-xs px-2 py-1 rounded-full font-bold"
+                    className="text-white text-xs px-2 py-1 rounded-lg font-bold shadow-lg border border-white/20"
                     style={{
-                      backgroundColor: storeData?.primaryColor || '#ff0000'
+                      backgroundColor: storeData?.primaryColor || '#FF6B35',
+                      background: `linear-gradient(135deg, ${storeData?.primaryColor || '#FF6B35'}, ${storeData?.primaryColor || '#FF6B35'}dd)`
                     }}
                   >
-                    30%OFF
+                    -30%
                   </div>
                 </div>
               )}
