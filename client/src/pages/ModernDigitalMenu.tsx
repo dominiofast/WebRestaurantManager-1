@@ -55,6 +55,10 @@ interface StoreData {
   fontFamily?: string;
   showBanner?: boolean;
   showLogo?: boolean;
+  openingHours?: string;
+  deliveryFee?: string;
+  minimumOrder?: string;
+  estimatedDeliveryTime?: string;
   company: {
     name: string;
   };
@@ -404,7 +408,23 @@ export default function ModernDigitalMenu() {
         <div className="fixed bottom-20 left-4 right-4 z-40">
           <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
             <SheetTrigger asChild>
-              <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded-xl shadow-lg">
+              <Button 
+                className="w-full text-white py-4 rounded-xl shadow-lg"
+                style={{ 
+                  backgroundColor: storeData?.primaryColor || '#FF6B35',
+                  borderColor: storeData?.primaryColor || '#FF6B35'
+                }}
+                onMouseEnter={(e) => {
+                  if (storeData?.primaryColor) {
+                    e.currentTarget.style.backgroundColor = `${storeData.primaryColor}CC`;
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (storeData?.primaryColor) {
+                    e.currentTarget.style.backgroundColor = storeData.primaryColor;
+                  }
+                }}
+              >
                 <ShoppingCart className="w-5 h-5 mr-2" />
                 Ver sacola ({cartItemCount}) • R$ {cartTotal.toFixed(2).replace('.', ',')}
               </Button>
