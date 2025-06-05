@@ -225,8 +225,8 @@ export default function ModernDigitalMenu() {
 
   return (
     <div className={`min-h-screen bg-white menu-font pb-24 ${storeData?.darkMode ? 'dark-menu' : ''}`}>
-      {/* Hero Banner - Apenas o banner sem sobreposições */}
-      <div className="relative h-48 overflow-hidden">
+      {/* Hero Banner - 40% menor em telas pequenas */}
+      <div className="relative h-28 sm:h-48 overflow-hidden">
         {/* Banner de fundo ou gradiente */}
         {storeData.bannerUrl ? (
           <img 
@@ -324,46 +324,44 @@ export default function ModernDigitalMenu() {
           </div>)
         ) : (
           <>
-            {/* Carrossel de Produtos em Destaque */}
+            {/* Carrossel de Produtos em Destaque - Formato horizontal compacto */}
             {featuredProducts.length > 0 && (
-              <div className="py-6">
-                <h2 className="text-xl font-bold mb-4 px-1 text-gray-900">Produtos em Destaque</h2>
-                <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2">
+              <div className="py-4">
+                <h2 className="text-lg font-bold mb-3 px-1 text-gray-900">Destaques</h2>
+                <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 px-1">
                   {featuredProducts.map((product) => (
                     <div 
                       key={product.id} 
-                      className="flex-shrink-0 w-60 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-200"
+                      className="flex-shrink-0 w-44 bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-200"
                     >
                       <div className="relative">
                         <ProductImage 
                           src={product.imageUrl} 
                           alt={product.name}
-                          size="lg"
-                          className="w-full h-32 rounded-t-xl"
+                          size="md"
+                          className="w-full h-24 rounded-t-lg"
                           showPromoBadge={product.isPromotion}
                         />
                         {product.isPromotion && (
-                          <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">
-                            OFERTA
+                          <div className="absolute top-1 left-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full font-bold">
+                            COMBO
                           </div>
                         )}
                       </div>
-                      <div className="p-4">
-                        <h3 className="font-semibold text-gray-900 mb-1 line-clamp-1">{product.name}</h3>
-                        <p className="text-gray-600 text-sm mb-2 line-clamp-2">{product.description}</p>
+                      <div className="p-3">
+                        <h3 className="font-semibold text-gray-900 mb-1 text-sm line-clamp-1">{product.name}</h3>
+                        <p className="text-gray-500 text-xs mb-2 line-clamp-1">{product.description}</p>
                         <div className="flex items-center justify-between">
-                          <span className="text-lg font-bold text-green-600">
-                            R$ {parseFloat(product.price).toFixed(2).replace('.', ',')}
-                          </span>
-                          <button
-                            onClick={() => addToCart(product)}
-                            className="px-3 py-1.5 text-white text-sm font-medium rounded-lg hover:opacity-90 transition-opacity"
-                            style={{
-                              backgroundColor: storeData?.primaryColor || '#FF6B35'
-                            }}
-                          >
-                            Adicionar
-                          </button>
+                          <div className="flex items-center gap-2">
+                            {product.isPromotion && (
+                              <span className="text-xs text-gray-400 line-through">
+                                R$ {(parseFloat(product.price) * 1.3).toFixed(2).replace('.', ',')}
+                              </span>
+                            )}
+                            <span className="text-sm font-bold text-green-600">
+                              R$ {parseFloat(product.price).toFixed(2).replace('.', ',')}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
