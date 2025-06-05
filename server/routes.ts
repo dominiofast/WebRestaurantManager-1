@@ -1676,7 +1676,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         body: JSON.stringify({
           messageData: {
-            limit: 3,
+            limit: 5,
             where: {
               fromMe: false
             }
@@ -1687,25 +1687,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (response.ok) {
         const data = await response.json();
         const messages = data.messages || [];
+        console.log(`[Polling] Found ${messages.length} messages for store ${storeId}`);
         
+        // Processar todas as mensagens recentes que não foram processadas
         for (const message of messages) {
           if (message.key && !message.key.fromMe && message.message) {
             const messageId = message.key.id;
             const lastId = lastMessageIds.get(instance.instanceKey);
             
-            if (messageId && messageId !== lastId) {
-              console.log(`[Polling] Nova mensagem encontrada para loja ${storeId}:`, message.key.id);
+            // Processar mensagem se for nova ou se não há ID registrado
+            if (messageId && (messageId !== lastId || !lastId)) {
+              console.log(`[Polling] Processing message ${messageId} for store ${storeId}`);
+              
+              const messageText = message.message.conversation || 
+                                message.message.extendedTextMessage?.text || 
+                                message.message.ephemeralMessage?.message?.extendedTextMessage?.text ||
+                                'mensagem';
               
               // Processar mensagem
               await processWhatsAppMessage(storeId, {
                 from: message.key.remoteJid,
-                body: message.message.conversation || message.message.extendedTextMessage?.text || 'mensagem',
+                body: messageText,
                 fromMe: message.key.fromMe
               }, instance);
               
-              // Atualizar último ID processado
-              lastMessageIds.set(instance.instanceKey, messageId);
-              break; // Processar apenas a mensagem mais recente
+              // Atualizar último ID processado apenas para a mensagem mais recente
+              if (messages.indexOf(message) === 0) {
+                lastMessageIds.set(instance.instanceKey, messageId);
+              }
             }
           }
         }
@@ -1725,63 +1734,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: 'Instância WhatsApp não encontrada' });
       }
 
-      // Buscar mensagens recentes
-      const response = await fetch(`https://${instance.apiHost}/rest/chat/findMessages/${instance.instanceKey}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${instance.apiToken}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          messageData: {
-            limit: 5,
-            where: {
-              fromMe: false
-            }
-          }
-        })
-      });
+      // Tentar diferentes endpoints da MegaAPI para buscar mensagens
+      const endpoints = [
+        `/rest/chat/findMessages/${instance.instanceKey}`,
+        `/rest/chat/messages/${instance.instanceKey}`,
+        `/rest/instance/messages/${instance.instanceKey}`
+      ];
 
-      if (!response.ok) {
-        return res.status(400).json({ message: 'Erro ao buscar mensagens' });
+      let messages = [];
+      let apiResponse = null;
+
+      for (const endpoint of endpoints) {
+        try {
+          console.log(`[Message Check] Trying endpoint: https://${instance.apiHost}${endpoint}`);
+          
+          const response = await fetch(`https://${instance.apiHost}${endpoint}`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${instance.apiToken}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              messageData: {
+                limit: 10,
+                where: {
+                  fromMe: false
+                }
+              }
+            })
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            messages = data.messages || data.data || [];
+            apiResponse = data;
+            console.log(`[Message Check] Success with endpoint ${endpoint}, found ${messages.length} messages`);
+            break;
+          } else {
+            console.log(`[Message Check] Failed endpoint ${endpoint}: ${response.status} ${response.statusText}`);
+          }
+        } catch (endpointError) {
+          console.log(`[Message Check] Error with endpoint ${endpoint}:`, endpointError.message);
+        }
       }
 
-      const data = await response.json();
-      const messages = data.messages || [];
-      
-      console.log(`[Message Check] Found ${messages.length} recent messages for store ${storeId}`);
+      console.log(`[Message Check] Total messages found: ${messages.length}`);
+
+      let processedCount = 0;
 
       // Processar mensagens encontradas
       for (const message of messages) {
         if (message.key && !message.key.fromMe && message.message) {
-          const webhookData = {
-            instance_key: instance.instanceKey,
-            jid: message.key.remoteJid,
-            messageType: message.messageType || 'conversation',
-            key: message.key,
-            message: message.message
-          };
-
-          console.log(`[Message Check] Processing message: ${JSON.stringify(webhookData, null, 2)}`);
+          console.log(`[Message Check] Processing message from ${message.key.remoteJid}`);
+          
+          const messageText = message.message.conversation || 
+                            message.message.extendedTextMessage?.text || 
+                            message.message.ephemeralMessage?.message?.extendedTextMessage?.text ||
+                            'mensagem sem texto';
           
           // Processar mensagem através do sistema de webhook interno
           await processWhatsAppMessage(storeId, {
             from: message.key.remoteJid,
-            body: message.message.conversation || message.message.extendedTextMessage?.text || 'mensagem',
+            body: messageText,
             fromMe: message.key.fromMe
           }, instance);
+          
+          processedCount++;
         }
       }
 
       res.json({
         success: true,
         messagesFound: messages.length,
-        processed: messages.filter(m => m.key && !m.key.fromMe).length
+        processed: processedCount,
+        apiResponse: apiResponse
       });
 
     } catch (error) {
       console.error('[Message Check] Error:', error);
-      res.status(500).json({ message: 'Erro interno do servidor' });
+      res.status(500).json({ message: 'Erro interno do servidor', error: error.message });
     }
   });
 
