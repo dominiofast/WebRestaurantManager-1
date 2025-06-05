@@ -1184,6 +1184,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Rota para obter dados da loja por slug (para checkout)
+  app.get("/api/stores/slug/:slug", async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const store = await storage.getStoreBySlug(slug);
+      
+      if (!store) {
+        return res.status(404).json({ message: "Loja não encontrada" });
+      }
+
+      res.json(store);
+    } catch (error) {
+      console.error("Erro ao buscar loja:", error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
   // Rota para obter adicionais de um produto
   app.get("/api/products/:id/addons", async (req, res) => {
     try {

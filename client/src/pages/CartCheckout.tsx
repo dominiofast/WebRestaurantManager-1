@@ -80,6 +80,28 @@ export default function CartCheckout() {
         console.error('Erro ao carregar carrinho:', error);
         setCartItems([]);
       }
+    } else {
+      // Se não há carrinho salvo, adicionar itens de demonstração
+      const demoCart = [
+        {
+          productId: 1,
+          name: "Pizza Margherita",
+          price: 35.90,
+          quantity: 2,
+          subtotal: 71.80,
+          selectedAddons: [
+            { id: 1, name: "Borda recheada", price: 5.00 }
+          ]
+        },
+        {
+          productId: 2,
+          name: "Refrigerante 2L",
+          price: 8.50,
+          quantity: 1,
+          subtotal: 8.50
+        }
+      ];
+      setCartItems(demoCart);
     }
   }, []);
 
