@@ -4,14 +4,9 @@
 async function configurarEventosWebhook() {
   const instances = [
     {
-      storeId: 3,
+      storeId: 4,
       instanceKey: 'megacode-MDT3OHEGIyu',
       apiToken: 'MDT3OHEGIyu'
-    },
-    {
-      storeId: 5,
-      instanceKey: 'megacode-McmAMknxcxu',
-      apiToken: 'McmAMknxcxu'
     }
   ];
 
@@ -20,7 +15,7 @@ async function configurarEventosWebhook() {
       console.log(`\n=== Configurando webhook para loja ${instance.storeId} ===`);
       
       // Configurar webhook
-      const webhookUrl = `https://dominiomenu-app.replit.app/api/webhook/whatsapp/${instance.storeId}`;
+      const webhookUrl = `https://b81619e6-3892-4ada-8f35-1f9ad2756b3e-00-12466fifx9u9l.picard.replit.dev/api/webhook/whatsapp/${instance.storeId}`;
       
       const response = await fetch(`https://apinocode01.megaapi.com.br/rest/webhook/${instance.instanceKey}/configWebhook`, {
         method: 'POST',
