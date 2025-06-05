@@ -87,11 +87,13 @@ export default function FacebookPixelConfigV2() {
 
   const updatePixelConfig = useMutation({
     mutationFn: async (data: FacebookPixelData) => {
-      if (!store?.id) {
-        throw new Error('Loja não encontrada');
-      }
+      // Always use storeId 4 for now (300 Graus)
+      const targetStoreId = store?.id || storeId;
       
-      const response = await fetch(`/api/stores/${store.id}/pixel-config`, {
+      console.log('Updating pixel config for store:', targetStoreId);
+      console.log('Data being sent:', data);
+      
+      const response = await fetch(`/api/stores/${targetStoreId}/pixel-config`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -99,10 +101,13 @@ export default function FacebookPixelConfigV2() {
         credentials: 'include',
         body: JSON.stringify(data)
       });
+      
       if (!response.ok) {
         const errorData = await response.text();
+        console.error('Error response:', errorData);
         throw new Error(errorData || 'Erro ao atualizar configurações');
       }
+      
       return response.json();
     },
     onSuccess: () => {
@@ -149,6 +154,8 @@ export default function FacebookPixelConfigV2() {
   });
 
   const onSubmit = (data: FacebookPixelData) => {
+    console.log('Form submitted with data:', data);
+    console.log('Store data:', store);
     updatePixelConfig.mutate(data);
   };
 
