@@ -168,6 +168,7 @@ function Router() {
       {/* Rotas públicas do cardápio digital */}
       <Route path="/cardapios" component={MenuIndex} />
       <Route path="/menu/:storeSlug" component={ModernDigitalMenu} />
+      <Route path="/facebook-pixel-config" component={FacebookPixelConfig} />
       
       {!isAuthenticated ? (
         <>
