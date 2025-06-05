@@ -1052,7 +1052,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update store information (managers can update their store)
-  app.put('/api/stores/:id', isAuthenticated, async (req: any, res) => {
+  app.put('/api/stores/:id', requireAuth, async (req: any, res) => {
     try {
       const user = req.user as any;
       const storeId = parseInt(req.params.id);
