@@ -424,8 +424,9 @@ export default function ModernDigitalMenu() {
                       <h2 className="text-xl font-bold mb-0 text-black">{section.name}</h2>
                     </div>
                     
-                    {/* Lista de produtos - layout compacto */}
-                    <div className="divide-y divide-gray-100">
+                    {/* Layout responsivo - lista no mobile, grid no desktop */}
+                    <div className="md:hidden divide-y divide-gray-100">
+                      {/* Layout de lista para mobile */}
                       {section.products
                         .sort((a, b) => a.displayOrder - b.displayOrder)
                         .map((product) => (
@@ -434,8 +435,26 @@ export default function ModernDigitalMenu() {
                             product={product} 
                             onAddToCart={addToCart}
                             storeData={storeData}
+                            layout="list"
                           />
                         ))}
+                    </div>
+                    
+                    {/* Layout de grid para desktop */}
+                    <div className="hidden md:block p-4">
+                      <div className="grid grid-cols-2 gap-3">
+                        {section.products
+                          .sort((a, b) => a.displayOrder - b.displayOrder)
+                          .map((product) => (
+                            <ModernProductCard 
+                              key={product.id} 
+                              product={product} 
+                              onAddToCart={addToCart}
+                              storeData={storeData}
+                              layout="grid"
+                            />
+                          ))}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -562,7 +581,7 @@ export default function ModernDigitalMenu() {
 }
 
 // Componente moderno para produtos - Layout clean com imagens SEMPRE QUADRADAS
-function ModernProductCard({ product, onAddToCart, storeData }: { product: any; onAddToCart: (product: any) => void; storeData?: StoreData }) {
+function ModernProductCard({ product, onAddToCart, storeData, layout = "list" }: { product: any; onAddToCart: (product: any) => void; storeData?: StoreData; layout?: "list" | "grid" }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAddons, setSelectedAddons] = useState<any[]>([]);
   const [quantity, setQuantity] = useState(1);
@@ -574,6 +593,95 @@ function ModernProductCard({ product, onAddToCart, storeData }: { product: any; 
     enabled: isModalOpen && !!product.id,
   });
 
+  if (layout === "grid") {
+    // Layout de grid para desktop
+    return (
+      <>
+        <div 
+          className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-sm transition-all duration-300 cursor-pointer"
+          onClick={() => setIsModalOpen(true)}
+        >
+          <div className="flex p-3">
+            {/* Conteúdo do produto */}
+            <div className="flex-1 pr-3 flex flex-col justify-between">
+              <div>
+                <h3 className="font-bold text-sm text-gray-900 mb-1 leading-tight">
+                  {product.name}
+                </h3>
+                
+                {product.description ? (
+                  <p className="text-gray-500 text-xs leading-relaxed line-clamp-1 mb-1">
+                    {product.description}
+                  </p>
+                ) : (
+                  <p className="text-gray-400 text-xs italic mb-1">
+                    Sem descrição disponível
+                  </p>
+                )}
+              </div>
+              
+              {/* Preços na parte inferior */}
+              <div className="flex items-center gap-2">
+                {product.originalPrice && parseFloat(product.originalPrice) !== parseFloat(product.price) && (
+                  <span className="text-xs text-gray-400 line-through">
+                    R$ {Math.max(parseFloat(product.originalPrice), parseFloat(product.price)).toFixed(2).replace('.', ',')}
+                  </span>
+                )}
+                <span className="font-bold text-base text-[#196e00]">
+                  R$ {product.originalPrice ? 
+                    Math.min(parseFloat(product.originalPrice), parseFloat(product.price)).toFixed(2).replace('.', ',') :
+                    parseFloat(product.price).toFixed(2).replace('.', ',')
+                  }
+                </span>
+              </div>
+            </div>
+            
+            {/* Imagem à direita */}
+            <div className="flex-shrink-0">
+              <div 
+                className="bg-gray-50 relative overflow-hidden rounded-lg"
+                style={{ 
+                  width: '90px', 
+                  height: '80px'
+                }}
+              >
+                {product.imageUrl ? (
+                  <img 
+                    src={product.imageUrl} 
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                    <svg className="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                )}
+                
+                {/* Badge de promoção */}
+                {product.isPromotion && (
+                  <div className="absolute -top-1 -right-1 z-10">
+                    <div 
+                      className="text-white text-xs px-2 py-1 rounded-lg font-bold shadow-lg border border-white/20"
+                      style={{
+                        backgroundColor: storeData?.primaryColor || '#FF6B35',
+                        background: `linear-gradient(135deg, ${storeData?.primaryColor || '#FF6B35'}, ${storeData?.primaryColor || '#FF6B35'}dd)`
+                      }}
+                    >
+                      -30%
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+    </>
+    );
+  }
+
+  // Layout de lista para mobile (padrão)
   return (
     <>
       <div 
