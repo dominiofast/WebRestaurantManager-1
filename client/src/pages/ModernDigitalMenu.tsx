@@ -677,85 +677,89 @@ function ModernProductCard({ product, onAddToCart, storeData, layout = "list" }:
             </div>
           </div>
         </div>
-    </>
+      </>
     );
   }
 
   // Layout de lista para mobile (padrão)
-  return (
-    <>
-      <div 
-        className="bg-white hover:bg-gray-50 transition-colors duration-200 cursor-pointer px-4 py-3"
-        onClick={() => setIsModalOpen(true)}
-      >
-        <div className="flex items-center gap-3">
-          {/* Conteúdo do produto - expandido */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between mb-1">
-              <h3 className="font-semibold text-base text-gray-900 leading-tight pr-2">
-                {product.name}
-              </h3>
-              {product.isPromotion && (
-                <div 
-                  className="text-white text-xs px-2 py-0.5 rounded font-bold shadow-sm flex-shrink-0"
-                  style={{
-                    backgroundColor: storeData?.primaryColor || '#FF6B35'
-                  }}
-                >
-                  50% OFF
-                </div>
-              )}
-            </div>
-            
-            {/* Descrição mais visível */}
-            {product.description && (
-              <p className="text-gray-600 text-sm leading-relaxed line-clamp-2 mb-2">
-                {product.description}
-              </p>
+  const listLayout = (
+    <div 
+      className="bg-white hover:bg-gray-50 transition-colors duration-200 cursor-pointer px-4 py-3"
+      onClick={() => setIsModalOpen(true)}
+    >
+      <div className="flex items-center gap-3">
+        {/* Conteúdo do produto - expandido */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between mb-1">
+            <h3 className="font-semibold text-base text-gray-900 leading-tight pr-2">
+              {product.name}
+            </h3>
+            {product.isPromotion && (
+              <div 
+                className="text-white text-xs px-2 py-0.5 rounded font-bold shadow-sm flex-shrink-0"
+                style={{
+                  backgroundColor: storeData?.primaryColor || '#FF6B35'
+                }}
+              >
+                50% OFF
+              </div>
             )}
-            
-            {/* Preços lado a lado */}
-            <div className="flex items-center gap-2">
-              {product.originalPrice && parseFloat(product.originalPrice) !== parseFloat(product.price) && (
-                <span className="text-sm text-gray-400 line-through">
-                  R$ {Math.max(parseFloat(product.originalPrice), parseFloat(product.price)).toFixed(2).replace('.', ',')}
-                </span>
-              )}
-              <span className="font-bold text-lg text-green-600">
-                R$ {product.originalPrice ? 
-                  Math.min(parseFloat(product.originalPrice), parseFloat(product.price)).toFixed(2).replace('.', ',') :
-                  parseFloat(product.price).toFixed(2).replace('.', ',')
-                }
-              </span>
-            </div>
           </div>
           
-          {/* Imagem maior à direita */}
-          <div className="flex-shrink-0">
-            <div 
-              className="bg-gray-50 relative overflow-hidden rounded-xl"
-              style={{ 
-                width: '80px', 
-                height: '80px'
-              }}
-            >
-              {product.imageUrl ? (
-                <img 
-                  src={product.imageUrl} 
-                  alt={product.name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                  <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
-              )}
-            </div>
+          {/* Descrição mais visível */}
+          {product.description && (
+            <p className="text-gray-600 text-sm leading-relaxed line-clamp-2 mb-2">
+              {product.description}
+            </p>
+          )}
+          
+          {/* Preços lado a lado */}
+          <div className="flex items-center gap-2">
+            {product.originalPrice && parseFloat(product.originalPrice) !== parseFloat(product.price) && (
+              <span className="text-sm text-gray-400 line-through">
+                R$ {Math.max(parseFloat(product.originalPrice), parseFloat(product.price)).toFixed(2).replace('.', ',')}
+              </span>
+            )}
+            <span className="font-bold text-lg text-green-600">
+              R$ {product.originalPrice ? 
+                Math.min(parseFloat(product.originalPrice), parseFloat(product.price)).toFixed(2).replace('.', ',') :
+                parseFloat(product.price).toFixed(2).replace('.', ',')
+              }
+            </span>
+          </div>
+        </div>
+        
+        {/* Imagem maior à direita */}
+        <div className="flex-shrink-0">
+          <div 
+            className="bg-gray-50 relative overflow-hidden rounded-xl"
+            style={{ 
+              width: '80px', 
+              height: '80px'
+            }}
+          >
+            {product.imageUrl ? (
+              <img 
+                src={product.imageUrl} 
+                alt={product.name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                <svg className="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+            )}
           </div>
         </div>
       </div>
+    </div>
+  );
+
+  return (
+    <>
+      {listLayout}
       {/* Modal de detalhes do produto - Layout fixo */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="max-w-md mx-auto h-[90vh] flex flex-col p-0">
