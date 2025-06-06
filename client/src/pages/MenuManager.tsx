@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Search, Eye, EyeOff, Plus, Edit, Trash2, UtensilsCrossed, DollarSign, Upload, Settings } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import ImageUpload from "../components/ImageUpload";
 
 export default function MenuManager() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -478,11 +479,11 @@ export default function MenuManager() {
               </Select>
             </div>
             <div className="grid gap-2">
-              <Label>URL da Imagem</Label>
-              <Input
-                value={productForm.imageUrl}
-                onChange={(e) => setProductForm(prev => ({ ...prev, imageUrl: e.target.value }))}
-                placeholder="https://exemplo.com/imagem.jpg"
+              <Label>Imagem do Produto</Label>
+              <ImageUpload
+                currentImage={productForm.imageUrl}
+                onImageChange={(imageUrl) => setProductForm(prev => ({ ...prev, imageUrl }))}
+                className="h-32"
               />
             </div>
             <div className="flex justify-end gap-2">
