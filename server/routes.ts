@@ -42,10 +42,12 @@ const upload = multer({
     fileSize: 5 * 1024 * 1024, // 5MB limit
   },
   fileFilter: (req, file, cb) => {
+    // Aceitar arquivos de imagem
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
-      cb(new Error('Apenas arquivos de imagem são permitidos'));
+      // Retornar erro sem throw
+      cb(null, false);
     }
   }
 });
@@ -1369,25 +1371,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/uploads', express.static(uploadsDir));
 
   // Rota para upload de imagens
-  app.post("/api/upload", upload.single('image'), async (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ message: "Nenhum arquivo fornecido" });
+  app.post("/api/upload", (req, res) => {
+    upload.single('image')(req, res, (err) => {
+      if (err) {
+        console.error("Erro no upload:", err);
+        if (err instanceof multer.MulterError) {
+          if (err.code === 'LIMIT_FILE_SIZE') {
+            return res.status(400).json({ message: "Arquivo muito grande. Máximo 5MB" });
+          }
+          return res.status(400).json({ message: `Erro no upload: ${err.message}` });
+        }
+        return res.status(400).json({ message: "Erro no upload da imagem" });
       }
 
-      // Gerar URL do arquivo
-      const imageUrl = `/uploads/${req.file.filename}`;
-      
-      res.json({ 
-        imageUrl,
-        filename: req.file.filename,
-        originalName: req.file.originalname,
-        size: req.file.size
-      });
-    } catch (error) {
-      console.error("Erro no upload:", error);
-      res.status(500).json({ message: "Erro no upload da imagem" });
-    }
+      if (!req.file) {
+        return res.status(400).json({ message: "Nenhum arquivo de imagem fornecido" });
+      }
+
+      // Verificar se é realmente uma imagem
+      if (!req.file.mimetype.startsWith('image/')) {
+        return res.status(400).json({ message: "Apenas arquivos de imagem são permitidos" });
+      }
+
+      try {
+        // Gerar URL do arquivo
+        const imageUrl = `/uploads/${req.file.filename}`;
+        
+        res.json({ 
+          imageUrl,
+          filename: req.file.filename,
+          originalName: req.file.originalname,
+          size: req.file.size
+        });
+      } catch (error) {
+        console.error("Erro ao processar upload:", error);
+        res.status(500).json({ message: "Erro interno do servidor" });
+      }
+    });
   });
 
   // Webhook endpoint for Mega API WhatsApp messages
